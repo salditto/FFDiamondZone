@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+  --primary-color: #0a0a0a;
+  --accent-color: #8A2BE2; /* Violeta */
+  --accent-color-2: #DA70D6; /* Orquídea (un tono de violeta/rosa más claro) */
+  --text-color: #f0f0f0;
+  --border-radius: 8px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background-color: var(--primary-color);
+  color: var(--text-color);
+  line-height: 1.6;
+}
+
+button {
+  font-family: 'Rajdhani', sans-serif;
+  cursor: pointer;
+}
+
+input, select, button {
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 20px;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.5); /* Violeta */
+}
+
+.glow-border {
+  box-shadow: 0 0 5px rgba(138, 43, 226, 0.7), 0 0 10px rgba(138, 43, 226, 0.3); /* Violeta */
+}
+
+.btn {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--accent-color);
+  border-radius: var(--border-radius);
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all var(--transition-speed);
+}
+
+.btn:hover {
+  background-color: rgba(138, 43, 226, 0.2); /* Violeta */
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.3); /* Violeta */
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: #ffffff; /* Cambiado a blanco para mejor contraste con violeta */
+}
+
+.btn-primary:hover {
+  background-color: #9932CC; /* Violeta oscuro */
+  border-color: #9932CC; /* Violeta oscuro */
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.8), 0 0 30px rgba(138, 43, 226, 0.4); /* Violeta */
+}
