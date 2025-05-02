@@ -1,10 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFacebookF, faTwitter, faInstagram, faDiscord } from '@fortawesome/free-brands-svg-icons';
 import { faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons';
 
-const Footer = () => {
+const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { labelKey: 'navbar.home', handler: onHomeClick },
+    { labelKey: 'navbar.about', handler: onAboutClick },
+    { labelKey: 'navbar.buy', handler: onBuyClick },
+    { labelKey: 'navbar.faq', handler: onFAQClick },
+  ];
 
   return (
     <footer className="footer" id="contact">
@@ -12,7 +21,7 @@ const Footer = () => {
         
         {/* Section 1: About */}
         <div className="footer-section about">
-          <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="footer-logo-svg" />
+          <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="footer-logo-svg" onClick={onHomeClick} />
           <p className="footer-description">
              The premier destination for Free Fire diamonds. Fast, secure, and reliable service for gamers.
           </p>
@@ -26,19 +35,21 @@ const Footer = () => {
         
         {/* Section 2: Quick Links */}
         <div className="footer-section links">
-          <h3 className="footer-heading">Quick Links</h3>
+          <h3 className="footer-heading">{t('footer.quick_links')}</h3>
           <ul className="footer-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#buy-diamonds">Buy Diamonds</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
+            {quickLinks.map(link => (
+              <li key={link.labelKey}>
+                <a href="#" onClick={(e) => { e.preventDefault(); link.handler ? link.handler() : void(0); }}>
+                  {t(link.labelKey)}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         
         {/* Section 3: Contact Us */}
         <div className="footer-section contact">
-          <h3 className="footer-heading">Contact Us</h3>
+          <h3 className="footer-heading">{t('footer.contact_us')}</h3>
           <ul className="contact-info">
             <li><FontAwesomeIcon icon={faEnvelope} className="contact-icon" /> support@ffdiamondzone.com</li>
             <li><FontAwesomeIcon icon={faClock} className="contact-icon" /> 24/7 Customer Support</li>
@@ -49,8 +60,7 @@ const Footer = () => {
       
       {/* Bottom Bar */}
       <div className="footer-bottom">
-        <p>&copy; {currentYear} FF Diamond Zone. All rights reserved.</p>
-         {/* <p className="disclaimer">FF Diamond Zone is not affiliated...</p> */}
+        <p>{t('footer.copyright', { year: currentYear })}</p>
       </div>
       
       <style jsx>{`

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faStar, faShieldAlt, faRocket, faHeadset, 
@@ -18,11 +19,13 @@ const paymentOptions = [
 ];
 
 const About = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="about-section">
       <div className="about-content-wrapper">
         <h2 className="about-title">
-          <FontAwesomeIcon icon={faStar} className="title-icon" /> Why Choose Us?
+          <FontAwesomeIcon icon={faStar} className="title-icon" /> {t('about.title')}
         </h2>
         
         {/* Contenedor para el layout de dos columnas */}
@@ -30,7 +33,9 @@ const About = () => {
           {/* Columna Izquierda: Texto */}
           <div className="about-text-column">
             <p className="about-description">
-              We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
+               <Trans i18nKey="about.description">
+                 We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
+               </Trans>
             </p>
           </div>
           {/* Columna Derecha: Imagen */}
@@ -40,29 +45,29 @@ const About = () => {
         </div>
         
         {/* Features Grid */}
-        <h3 className="section-title">Our Core Features</h3>
+        <h3 className="section-title">{t('about.features_title')}</h3>
         <div className="about-features-grid">
            {/* Cards (Security, Fast Delivery, Support) - Sin cambios */}
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faShieldAlt} className="feature-icon" />
              </div>
-             <h3>Fortress Security</h3>
-             <p>Your account and payment details are protected with top-tier security measures.</p>
+             <h3>{t('about.feature1_title')}</h3>
+             <p>{t('about.feature1_desc')}</p>
            </div>
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faRocket} className="feature-icon" />
              </div>
-             <h3>Instant Delivery</h3>
-             <p>Receive your diamonds immediately after payment confirmation. No waiting!</p>
+             <h3>{t('about.feature2_title')}</h3>
+             <p>{t('about.feature2_desc')}</p>
            </div>
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faHeadset} className="feature-icon" />
              </div>
-             <h3>Dedicated Support</h3>
-             <p>Our customer support team is ready to assist you with any questions or issues.</p>
+             <h3>{t('about.feature3_title')}</h3>
+             <p>{t('about.feature3_desc')}</p>
            </div>
         </div>
 

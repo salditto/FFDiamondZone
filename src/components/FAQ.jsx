@@ -1,35 +1,13 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
 
-const faqData = [
-  {
-    question: "How long does it take to receive the diamonds?",
-    answer: "Diamond delivery is usually instant or takes just a few minutes after payment confirmation. Delays are rare but can occur due to high traffic or technical issues."
-  },
-  {
-    question: "Is my account information safe?",
-    answer: "Absolutely. We only require your Player ID to top up diamonds. We never ask for your password or login details. Our payment process is also secured."
-  },
-  {
-    question: "What payment methods do you accept?",
-    answer: "We accept various payment methods including MercadoPago, Bank Transfer (ARS), Wise, and Cryptocurrencies (like Bitcoin and Ethereum). More options may be added in the future."
-  },
-  {
-    question: "What if I enter the wrong Player ID?",
-    answer: "Please double-check your Player ID before confirming the purchase. Diamonds sent to an incorrect ID due to user error cannot be refunded or transferred. Ensure the ID is correct."
-  },
-  {
-    question: "Can I get a refund?",
-    answer: "Due to the nature of digital goods, all sales are final once the diamonds have been delivered. Refunds are only possible in specific cases where delivery fails due to our system error."
-  },
-  {
-    question: "Are you affiliated with Garena Free Fire?",
-    answer: "No, FF Diamond Zone is an independent third-party service. We are not affiliated, endorsed, or sponsored by Garena or Free Fire."
-  }
-];
+// Definimos cuántos items de FAQ tenemos (basado en las claves q0-q5, a0-a5)
+const FAQ_ITEM_COUNT = 6;
 
 const FAQ = () => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(null);
 
   const toggleFAQ = (index) => {
@@ -38,19 +16,19 @@ const FAQ = () => {
 
   return (
     <div className="faq-container">
-      <h2 className="section-title">Frequently Asked Questions</h2>
+      <h2 className="section-title">{t('faq.title')}</h2>
       <div className="faq-list">
-        {faqData.map((item, index) => (
+        {[...Array(FAQ_ITEM_COUNT)].map((_, index) => (
           <div key={index} className="faq-item">
             <button 
               className={`faq-question ${activeIndex === index ? 'active' : ''}`}
               onClick={() => toggleFAQ(index)}
             >
-              <span>{item.question}</span>
+              <span>{t(`faq.q${index}`)}</span>
               <FontAwesomeIcon icon={activeIndex === index ? faChevronUp : faChevronDown} />
             </button>
             <div className={`faq-answer ${activeIndex === index ? 'open' : ''}`}>
-              <p>{item.answer}</p>
+              <p>{t(`faq.a${index}`)}</p>
             </div>
           </div>
         ))}

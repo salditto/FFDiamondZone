@@ -1,9 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import freefireLogo from '../assets/img/freefire.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBolt, faLock, faCoins, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="welcome-screen">
       <div className="background-effects">
@@ -30,26 +33,35 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
               <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="hero-logo-svg" />
             </div>
             
-            <p className="hero-subtitle">Get your diamonds quickly and safely. Dominate the game with the best prices.</p>
+            <p className="hero-subtitle">{t('welcome.subtitle')}</p>
             
             <div className="hero-features">
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faBolt} />
                 </div>
-                <div className="feature-text">Instant Delivery</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature1_title')}</h4>
+                  <p>{t('welcome.feature1_desc')}</p>
+                </div>
               </div>
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faLock} />
                 </div>
-                <div className="feature-text">Secure Payment</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature2_title')}</h4>
+                  <p>{t('welcome.feature2_desc')}</p>
+                </div>
               </div>
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faCoins} />
                 </div>
-                <div className="feature-text">Best Prices</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature3_title')}</h4>
+                  <p>{t('welcome.feature3_desc')}</p>
+                </div>
               </div>
             </div>
             
@@ -57,7 +69,7 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
               className="btn btn-primary hero-button"
               onClick={onBuyClick}
             >
-              Buy Diamonds Now
+              {t('welcome.cta_button')}
             </button>
           </div>
         </div>

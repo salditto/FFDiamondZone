@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, faGem, faShoppingCart, 
@@ -28,21 +29,23 @@ const paymentOptions = [
 ];
 
 const PurchaseForm = () => {
+  const { t } = useTranslation();
   const [playerId, setPlayerId] = useState('');
   const [quantity, setQuantity] = useState(diamondOptions[2].id); // Default a 520
   const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id); // Default a Wise
   const [playerIdError, setPlayerIdError] = useState('');
   const [isSuccess, setIsSuccess] = useState(false); // <<<--- Nuevo estado
+  const [region, setRegion] = useState(''); // <<<--- AÑADIR ESTADO PARA REGIÓN
 
   const validatePlayerId = (id) => {
     if (!id) {
-      return 'Player ID is required.';
+      return t('form.error_playerId_required');
     }
     if (!/^[0-9]+$/.test(id)) {
-      return 'Player ID must contain only numbers.';
+      return t('form.error_playerId_numeric');
     }
     if (id.length < 8 || id.length > 10) {
-      return 'Player ID must be between 8 and 10 digits.';
+      return t('form.error_playerId_length');
     }
     return ''; // No error
   };
@@ -88,23 +91,44 @@ const PurchaseForm = () => {
       <div className="form-step">
         <div className="step-header">
           <span className="step-number">1</span>
-          <h3 className="step-title">Enter Your Player ID</h3>
+          <h3 className="step-title">{t('form.step1_title')}</h3>
         </div>
         <div className="form-group">
-          <label htmlFor="playerId" className="sr-only">Player ID</label>
-          <div className="input-with-icon full-width-input-container">
-             <FontAwesomeIcon icon={faUser} className="input-icon" />
-             <input
-               type="text"
-               id="playerId"
-               value={playerId}
-               onChange={handlePlayerIdChange}
-               placeholder="Enter your 8-10 digit Player ID"
-               className={playerIdError ? 'input-error' : ''}
-               maxLength="10"
-               aria-describedby={playerIdError ? "player-id-error" : undefined}
-               disabled={isSuccess} // <<<--- Deshabilitar en éxito
-             />
+          <div className="player-id-row">
+            <div className="input-with-icon player-id-input-wrapper">
+               <FontAwesomeIcon icon={faUser} className="input-icon" />
+               <input
+                 type="text"
+                 id="playerId"
+                 value={playerId}
+                 onChange={handlePlayerIdChange}
+                 placeholder={t('form.playerId_placeholder')}
+                 className={playerIdError ? 'input-error' : ''}
+                 maxLength="10"
+                 aria-describedby={playerIdError ? "player-id-error" : undefined}
+                 disabled={isSuccess}
+               />
+            </div>
+            
+            <select 
+              id="region" 
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              className="region-select"
+              disabled={isSuccess}
+              required
+            >
+              <option value="" disabled>{t('form.region_select')}</option>
+              <option value="LATAM">LATAM</option>
+              <option value="BR">BR</option>
+              <option value="NA">NA</option>
+              <option value="EU">EU</option>
+              <option value="INDIA">INDIA</option>
+              <option value="SEA">SEA</option>
+              <option value="MEA">MEA</option>
+              <option value="RU">RU</option>
+              <option value="TW">TW</option>
+            </select>
           </div>
           {playerIdError && !isSuccess && <p id="player-id-error" className="error-message">{playerIdError}</p>}
         </div>
@@ -114,7 +138,7 @@ const PurchaseForm = () => {
       <div className="form-step">
         <div className="step-header">
            <span className="step-number">2</span>
-           <h3 className="step-title">Select Diamond Quantity</h3>
+           <h3 className="step-title">{t('form.step2_title')}</h3>
         </div>
         <div className="form-group">
           <div className="quantity-options">
@@ -128,10 +152,10 @@ const PurchaseForm = () => {
               >
                 <div className="button-main-content">
                    <FontAwesomeIcon icon={faGem} className="button-icon" />
-                   <span className="button-label">{option.label} Diamonds</span> 
+                   <span className="button-label">{t('form.diamonds_label', { label: option.label })}</span> 
                 </div>
                 {option.bonus > 0 && (
-                    <span className="bonus-text">+ {option.bonus} Bonus!</span>
+                    <span className="bonus-text">{t('form.bonus_text', { bonus: option.bonus })}</span>
                 )}
                 <span className="price">{option.price}</span>
               </button>
@@ -144,7 +168,7 @@ const PurchaseForm = () => {
       <div className="form-step">
          <div className="step-header">
            <span className="step-number">3</span>
-           <h3 className="step-title">Choose Payment Method</h3>
+           <h3 className="step-title">{t('form.step3_title')}</h3>
          </div>
         <div className="form-group">
            {/* El label ahora está en el header */} 
@@ -171,16 +195,16 @@ const PurchaseForm = () => {
         className="btn btn-primary purchase-button" 
         disabled={!!playerIdError || !playerId || isSuccess} // <<<--- Deshabilitar en éxito
       >
-         <FontAwesomeIcon icon={faShoppingCart} /> Purchase Now ({getSelectedPrice()})
+         <FontAwesomeIcon icon={faShoppingCart} /> {t('form.submit_button', { price: getSelectedPrice() })}
       </button>
       
-      {/* --- Mensaje de Éxito Condicional --- */} 
-      {isSuccess && (
+      {/* --- Mensaje de Éxito Condicional (usando ternario) --- */}
+      {isSuccess ? (
           <div className="success-message">
               <FontAwesomeIcon icon={faCheckCircle} />
-              <span>Purchase successful! Your diamonds are on the way.</span>
+              <span>{t('form.success_message')}</span>
           </div>
-      )}
+      ) : null}
 
       <style jsx>{`
         .purchase-form {
@@ -248,8 +272,6 @@ const PurchaseForm = () => {
           color: var(--text-color);
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-size: var(--font-size-md);
         }
 
         input[type="text"] {
@@ -551,6 +573,96 @@ const PurchaseForm = () => {
         .error-message {
             /* ... (estilos existentes) */
             /* El ocultamiento se hace ahora con renderizado condicional */
+        }
+
+        /* <<<--- Añadir estilos para la fila de Player ID */
+        .player-id-row {
+            display: flex;
+            gap: 15px; /* Espacio entre input y select */
+            align-items: flex-start; /* Alinear arriba por si hay mensaje de error */
+        }
+
+        .player-id-input-wrapper {
+            flex-grow: 1; /* Permitir que el input ocupe el espacio disponible */
+            position: relative; /* Para el icono */
+            display: flex; /* Alinear icono e input */
+            align-items: center;
+        }
+        
+        .player-id-input-wrapper input {
+            width: 100%; /* Asegurar que el input llene el wrapper */
+        }
+
+        .input-with-icon {
+          position: relative;
+        }
+
+        .input-icon {
+           position: absolute;
+           left: 15px;
+           top: 50%;
+           transform: translateY(-50%);
+           color: var(--subtext-color);
+           font-size: var(--font-size-sm);
+        }
+
+        input[type="text"] {
+          width: 100%;
+          padding: 12px 15px 12px 40px; /* Padding izquierdo para icono */
+          border: 1px solid var(--border-color-light);
+          background-color: rgba(0, 0, 0, 0.2);
+          color: var(--text-color);
+          border-radius: 6px;
+          font-size: var(--font-size-md);
+          transition: border-color 0.3s ease, box-shadow 0.3s ease;
+          box-sizing: border-box; 
+        }
+        
+        /* <<<--- Estilos para el nuevo selector de región */
+        .region-select {
+            padding: 12px 15px; 
+            border: 1px solid var(--border-color-light);
+            background-color: rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            border-radius: 6px;
+            font-size: var(--font-size-md);
+            font-family: var(--font-base);
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            min-width: 150px; /* Ancho mínimo para que se lea "Select Region" */
+            height: 48.8px; /* Igualar altura con input (puede requerir ajuste) */
+            flex-shrink: 0; /* Evitar que se encoja */
+        }
+
+        .region-select:focus,
+        input[type="text"]:focus {
+          outline: none;
+          border-color: var(--accent-color);
+          box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3);
+        }
+
+        .region-select:disabled,
+        input[type="text"]:disabled {
+           background-color: rgba(50, 50, 50, 0.3);
+           cursor: not-allowed;
+           opacity: 0.6;
+        }
+
+        /* Estilos para opciones del select (limitado por navegador) */
+        .region-select option {
+            background-color: var(--bg-color-dark);
+            color: var(--text-color);
+        }
+
+        input.input-error {
+          border-color: var(--error-color);
+          box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.3);
+        }
+
+        .error-message {
+          color: var(--error-color);
+          font-size: var(--font-size-xs);
+          margin-top: 5px;
         }
 
       `}</style>
