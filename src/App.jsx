@@ -64,10 +64,11 @@ function App() {
       {/* Other sections might keep their container or need adjustment */}
       {/* Form Section */}
       <div ref={formRef} className="section form-section" id="buy-diamonds">
-        <div className="form-section-container">
-           <h2 className="section-title">Purchase Your Diamonds</h2>
-           <PurchaseForm /> 
-        </div>
+        <h2 className="section-title">Purchase Your Diamonds</h2>
+        <p className="section-subtitle purchase-subtitle">
+          Complete the steps below to get your diamonds instantly and securely.
+        </p>
+        <PurchaseForm /> 
       </div>
       
       {/* FAQ Section */}

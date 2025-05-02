@@ -13,7 +13,7 @@ const About = () => {
           <FontAwesomeIcon icon={faStar} className="title-icon" /> Why Choose Us?
         </h2>
         <p className="about-description">
-          We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups, secure transactions, exceptional customer support, and a wide range of payment options.
+          We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
         </p>
         
         {/* Features Grid */}

@@ -92,22 +92,13 @@ html, body {
 
 /* Form Section */
 .form-section {
-  padding: 80px 20px 60px;
+  padding: 80px 0 60px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: auto;
   background: linear-gradient(180deg, rgba(10, 10, 20, 0) 0%, rgba(14, 10, 48, 0.6) 50%, rgba(10, 10, 20, 0) 100%);
-}
-
-.form-section-container {
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
 }
 
 .section-title {
@@ -130,6 +121,20 @@ html, body {
   background: linear-gradient(to right, var(--accent-color), var(--accent-color-2));
   border-radius: 2px;
   box-shadow: 0 0 10px var(--accent-color);
+}
+
+/* Estilo para subtítulos de sección */
+.section-subtitle {
+  font-size: 1.2rem;
+  color: #b0c4de; /* Color claro, menos prominente que el título */
+  max-width: 600px; /* Limitar ancho para lectura */
+  margin: -20px auto 40px auto; /* Ajustar margen superior negativo para acercar al título, margen inferior, centrado */
+  line-height: 1.6;
+  text-align: center;
+}
+
+.purchase-subtitle {
+   /* Estilos específicos si son necesarios */
 }
 
 /* FAQ Section */

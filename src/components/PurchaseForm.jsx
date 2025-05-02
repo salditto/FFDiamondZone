@@ -187,22 +187,22 @@ const PurchaseForm = () => {
           display: flex;
           flex-direction: column;
           gap: 20px; 
-          width: 100%;
-          max-width: 900px; /* Aumentar ancho máximo */
+          width: 100%; 
+          max-width: 1300px; /* <<<--- Aumentar max-width (ej. a 1300px) */
           margin: 0 auto; 
-          padding: 0; /* Eliminar padding del contenedor principal */
-          background-color: transparent; /* Hacer fondo transparente */
-          border-radius: 0; /* Quitar borde redondeado */
-          border: none; /* Quitar borde */
-          box-shadow: none; /* Quitar sombra */
+          padding: 0 30px; 
+          background-color: transparent; 
+          border: none; 
+          box-shadow: none; 
+          box-sizing: border-box; 
         }
 
         .form-step {
-          padding: 30px; /* Aumentar padding interno si es necesario */
-          border: 1px solid rgba(138, 43, 226, 0.2); /* Borde más visible */
+          padding: 30px;
+          border: 1px solid rgba(138, 43, 226, 0.2); 
           border-radius: 10px;
-          background-color: rgba(15, 8, 35, 0.5); /* Fondo ligeramente más opaco */
-          margin-bottom: 25px; /* Aumentar espacio entre steps */
+          background-color: rgba(15, 8, 35, 0.5); 
+          margin-bottom: 25px; 
           backdrop-filter: blur(5px);
         }
 
