@@ -7,6 +7,7 @@ import PurchaseForm from './components/PurchaseForm'; // Importar el nuevo formu
 import Footer from './components/Footer';
 import FAQ from './components/FAQ';
 import Navbar from './components/Navbar';
+import banner_ff from './assets/img/banner_ff.jpg'; // <<<--- Importar banner
 
 function App() {
   const formRef = useRef(null);
@@ -80,6 +81,13 @@ function App() {
       <div ref={footerRef} className="section footer-section">
         <Footer />
       </div>
+
+      {/* --- Eliminar Banner --- */}
+      {/* <img 
+         src={banner_ff} 
+         alt="Free Fire Promotional Banner" 
+         className="app-banner" 
+      /> */}
     </div>
   );
 }

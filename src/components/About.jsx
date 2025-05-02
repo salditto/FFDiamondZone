@@ -40,7 +40,7 @@ const About = () => {
         </div>
         
         {/* Features Grid */}
-        <h3 className="subsection-title features-title">Our Core Features</h3>
+        <h3 className="section-title">Our Core Features</h3>
         <div className="about-features-grid">
            {/* Cards (Security, Fast Delivery, Support) - Sin cambios */}
            <div className="about-feature-card">
@@ -66,20 +66,6 @@ const About = () => {
            </div>
         </div>
 
-        {/* Payment Methods Section - Actualizar los iconos y textos */}
-        <div className="about-subsection payment-methods">
-          <h3 className="subsection-title">Accepted Payment Methods</h3>
-          <div className="payment-icons">
-            {/* Mapear desde las opciones correctas */}
-            {paymentOptions.map(option => (
-              <div key={option.id} className="payment-option">
-                <FontAwesomeIcon icon={option.icon} />
-                <span>{option.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
       </div>
 
       {/* Background Effects for About Section */}
@@ -100,8 +86,8 @@ const About = () => {
           display: flex; /* Usar flex para centrar */
           align-items: center; /* Centrar verticalmente el wrapper */
           overflow: hidden;
-          background-color: #0a051a; /* Color de fondo base oscuro */
-          color: #e0e0e0;
+          color: var(--text-color);
+          background-color: var(--bg-color-dark);
           box-sizing: border-box;
           left: 0; /* Asegurar que empieza en el borde izquierdo */
           right: 0; /* Asegurar que termina en el borde derecho */
@@ -124,10 +110,10 @@ const About = () => {
         }
 
         .about-title {
-          font-size: 2.8rem;
+          font-size: var(--font-size-xxxl);
           color: #fff;
           margin-bottom: 20px;
-          font-weight: 700;
+          font-weight: var(--font-weight-bold);
           display: inline-flex; /* Para alinear icono y texto */
           align-items: center;
           gap: 15px;
@@ -138,8 +124,8 @@ const About = () => {
         }
 
         .title-icon {
-          font-size: 2.5rem;
-          color: #a951f0; /* Color del icono */
+          font-size: var(--font-size-xxxl);
+          color: var(--accent-color);
           filter: none; /* Quitar filtro si no se quiere el gradiente */
           -webkit-text-fill-color: initial; /* Restaurar color */
         }
@@ -180,9 +166,9 @@ const About = () => {
         }
 
         .about-description {
-          font-size: 1.6rem;
-          line-height: 1.9;
-          color: #ccc;
+          font-size: var(--font-size-lg);
+          line-height: var(--line-height-loose);
+          color: var(--subtext-color);
           text-align: center; 
           margin: 0;
           padding: 0 20px;    /* Espacio interno para no pegar a los bordes de la columna */
@@ -193,11 +179,11 @@ const About = () => {
         }
         
         .about-description strong {
-            color: var(--accent-color); /* Destacar métodos de pago */
-            font-weight: 600;
+            color: var(--accent-color);
+            font-weight: var(--font-weight-semibold);
         }
 
-        .subsection-title.features-title {
+        .section-title {
             margin-top: 0; /* Resetear margen si es necesario */
         }
 
@@ -214,7 +200,7 @@ const About = () => {
           background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
           padding: 40px 25px; /* Aumentar padding vertical */
           border-radius: 8px;
-          border: 1px solid rgba(138, 43, 226, 0.2);
+          border: 1px solid var(--border-color-accent);
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           text-align: center;
           backdrop-filter: blur(3px);
@@ -240,7 +226,7 @@ const About = () => {
         .about-feature-card:hover {
           transform: translateY(-8px) scale(1.02);
           box-shadow: 0 15px 30px rgba(138, 43, 226, 0.25);
-          border-color: rgba(138, 43, 226, 0.6);
+          border-color: var(--accent-color);
         }
         
         .about-feature-card:hover::before {
@@ -258,7 +244,7 @@ const About = () => {
           align-items: center;
           justify-content: center;
           box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
-          border: 1px solid rgba(138, 43, 226, 0.5);
+          border: 1px solid var(--accent-color-2);
           position: relative;
           z-index: 1;
           transition: all 0.3s ease;
@@ -270,23 +256,23 @@ const About = () => {
         }
 
         .feature-icon {
-          font-size: 2rem; /* Tamaño del icono */
+          font-size: var(--font-size-xl);
           color: #fff;
         }
 
         .about-feature-card h3 {
-          font-size: 1.6rem;
-          color: #fff;
-          margin-bottom: 15px; /* Ajustar espacio */
-          font-weight: 700;
+          font-size: var(--font-size-xl);
+          color: var(--text-color);
+          margin-bottom: 15px;
+          font-weight: var(--font-weight-bold);
           position: relative;
           z-index: 1;
         }
 
         .about-feature-card p {
-          color: #bbb;
-          font-size: 1.6rem;
-          line-height: 1.6;
+          color: var(--subtext-color);
+          font-size: var(--font-size-md);
+          line-height: var(--line-height-base);
           position: relative;
           z-index: 1;
         }
@@ -325,18 +311,21 @@ const About = () => {
             padding: 30px; /* Mantener padding reducido en móvil */
           }
           .about-title {
-            font-size: 2.2rem;
+            font-size: var(--font-size-xxl);
           }
           .title-icon {
-             font-size: 2rem;
+             font-size: var(--font-size-xxl);
           }
           .about-description {
-            font-size: 1.05rem;
+            font-size: var(--font-size-md);
             padding: 25px;
           }
            .about-feature-card h3 {
-             font-size: 1.4rem;
+             font-size: var(--font-size-md);
           }
+           .about-feature-card p {
+              font-size: var(--font-size-xs); /* Más pequeño en móvil */
+           }
            .about-section {
              /* Podríamos ajustar el padding si es necesario en móvil */
            }
@@ -346,8 +335,10 @@ const About = () => {
              margin-bottom: 20px;
           }
           .feature-icon {
-             font-size: 1.8rem;
+             font-size: var(--font-size-lg);
           }
+          .about-features-grid {
+             grid-template-columns: 1fr; /* Una columna en móvil */
         }
 
         /* Estilos para los efectos de fondo */
@@ -408,18 +399,7 @@ const About = () => {
           border: none;
         }
 
-        .subsection-title {
-          font-size: 2.6rem;
-          color: #e0e0e0;
-          margin-bottom: 20px;
-          font-weight: 600;
-          border-bottom: 1px solid rgba(138, 43, 226, 0.2);
-          padding-bottom: 8px;
-          display: inline-block;
-        }
-        
-        .features-title {
-           border-bottom: none; /* Quitar borde del título de features */
+        .section-title {
            margin-bottom: 30px; 
            text-align: center;
            width: 100%;
@@ -428,37 +408,35 @@ const About = () => {
         }
 
         .about-subsection.payment-methods {
-          margin: 0 auto 80px; /* Centrar y espacio inferior */
-          width: 100%; /* Asegurar que ocupa el ancho si es necesario */
-          padding: 0 20px;      /* Padding interno */
+          margin: 0 auto 80px; 
+          width: 100%; 
+          padding: 0 20px;
         }
 
         .payment-icons {
           display: flex;
-          justify-content: space-evenly; /* Espacio uniforme */
-          gap: 20px;                      
-          margin-top: 20px;
-          overflow-x: auto; /* Añadir scroll horizontal si no caben */
-          padding-bottom: 10px; /* Espacio para el scrollbar */
+          justify-content: center; 
+          gap: 80px; /* <<<--- Incrementar más gap horizontal */
+          margin-top: 40px; 
+          overflow-x: auto; 
+          padding-bottom: 15px; 
+          align-items: flex-start; 
+          flex-wrap: nowrap; /* <<<--- Añadir esto */
         }
 
         .payment-option {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 12px;
-          color: #ccc;
-          font-size: 1.8rem; /* <<<--- Aumentar tamaño texto */
+          gap: 18px; 
+          color: var(--subtext-color);
+          font-size: var(--font-size-xxxl); /* <<<--- Cambiar a xxxl */
           transition: transform 0.3s ease; 
-          flex-shrink: 0; /* Evitar que se encojan */
+          flex-shrink: 0; 
+          min-width: 120px; 
         }
         .payment-option:hover {
           transform: scale(1.1);
-        }
-
-        .payment-option svg {
-          font-size: 3.5rem; 
-          color: #fff; /* <<<--- Cambiar a blanco */
         }
 
       `}</style>

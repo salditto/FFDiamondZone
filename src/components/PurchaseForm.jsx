@@ -199,9 +199,9 @@ const PurchaseForm = () => {
 
         .form-step {
           padding: 30px;
-          border: 1px solid rgba(138, 43, 226, 0.2); 
+          border: 1px solid var(--border-color-accent); 
           border-radius: 10px;
-          background-color: rgba(15, 8, 35, 0.5); 
+          background-color: var(--bg-color-medium);
           margin-bottom: 25px; 
           backdrop-filter: blur(5px);
         }
@@ -212,7 +212,7 @@ const PurchaseForm = () => {
           gap: 15px;
           margin-bottom: 25px; /* Espacio debajo del header */
           padding-bottom: 15px;
-          border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+          border-bottom: 1px solid var(--border-color-accent);
         }
 
         .step-number {
@@ -223,16 +223,16 @@ const PurchaseForm = () => {
           height: 35px;
           background-color: var(--accent-color);
           color: white;
-          font-weight: bold;
-          font-size: 1.1rem;
+          font-weight: var(--font-weight-bold);
+          font-size: var(--font-size-md);
           border-radius: 50%;
           flex-shrink: 0; /* Evitar que se achique */
         }
 
         .step-title {
-          font-size: 1.6rem;
-          color: #e0e0e0;
-          font-weight: 600;
+          font-size: var(--font-size-xl);
+          color: var(--text-color);
+          font-weight: var(--font-weight-semibold);
           margin: 0;
         }
 
@@ -244,21 +244,21 @@ const PurchaseForm = () => {
         }
 
         label {
-          font-weight: 600;
-          color: #e0e0e0;
+          font-weight: var(--font-weight-semibold);
+          color: var(--text-color);
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 1.1rem;
+          font-size: var(--font-size-md);
         }
 
         input[type="text"] {
           padding: 14px 15px 14px 45px;
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-color-light);
           background-color: rgba(255, 255, 255, 0.05);
           color: #fff;
-          font-size: 1.1rem;
+          font-size: var(--font-size-md);
           transition: border-color 0.3s ease, box-shadow 0.3s ease;
           width: 100%; /* Hacer que el input llene su contenedor */
           box-sizing: border-box; /* Incluir padding/border en el ancho */
@@ -271,13 +271,13 @@ const PurchaseForm = () => {
         }
         
         input.input-error {
-          border-color: #ff4d4d;
+          border-color: var(--error-color);
           box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.3);
         }
 
         .error-message {
-          color: #ff4d4d;
-          font-size: 0.85rem;
+          color: var(--error-color);
+          font-size: var(--font-size-xs);
           margin-top: 5px;
         }
 
@@ -303,9 +303,9 @@ const PurchaseForm = () => {
           text-align: center;
           position: relative; /* Para posicionar bonus si es necesario */
           border-radius: 8px;
-          border: 1px solid rgba(255, 255, 255, 0.2);
+          border: 1px solid var(--border-color-light);
           background-color: rgba(255, 255, 255, 0.05);
-          color: #ccc;
+          color: var(--subtext-color);
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
@@ -320,21 +320,21 @@ const PurchaseForm = () => {
         }
         
         .quantity-button .button-icon {
-            font-size: 1.3rem; /* Tamaño icono */
+            font-size: var(--font-size-md);
             width: auto; /* Ancho automático */
             margin-right: 0;
         }
         
         .quantity-button .button-label {
-            font-size: 1.05rem; /* Un poco más grande */
-            font-weight: 600;
-            color: #e0e0e0; /* Color claro */
+            font-size: var(--font-size-md);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-color);
         }
 
         .bonus-text {
-            font-size: 0.85rem;
-            font-weight: bold;
-            color: #ffd700; /* Color dorado para el bonus */
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            color: #ffd700;
             background-color: rgba(255, 215, 0, 0.1);
             padding: 2px 8px;
             border-radius: 4px;
@@ -343,9 +343,9 @@ const PurchaseForm = () => {
         }
 
         .quantity-button .price {
-           font-size: 1.1rem; 
-           font-weight: bold; 
-           color: #b0c4de; /* Color diferente para el precio (ej: lightsteelblue) */
+           font-size: var(--font-size-md);
+           font-weight: var(--font-weight-bold); 
+           color: var(--subtext-color);
            margin-top: 0; /* Quitar margen extra */
         }
         
@@ -366,7 +366,7 @@ const PurchaseForm = () => {
 
         .quantity-button.selected .button-label {
            color: #fff;
-           font-weight: 600;
+           font-weight: var(--font-weight-bold);
         }
         
         .quantity-button.selected .price {
@@ -395,7 +395,7 @@ const PurchaseForm = () => {
            top: 50%;
            transform: translateY(-50%);
            color: rgba(255, 255, 255, 0.4);
-           font-size: 1.1rem;
+           font-size: var(--font-size-md);
         }
         
         .sr-only {
@@ -411,8 +411,8 @@ const PurchaseForm = () => {
         }
 
         .purchase-button {
-          padding: 18px 35px;
-          font-size: 1.3rem;
+          padding: 15px 30px; /* Asegurar buen tamaño */
+          font-size: var(--font-size-lg);
           margin-top: 15px; /* Add some space above */
           display: flex;
           align-items: center;
@@ -423,7 +423,7 @@ const PurchaseForm = () => {
         .purchase-button:disabled {
            opacity: 0.6;
            cursor: not-allowed;
-           background: #555; /* Darker background when disabled */
+           background: #555;
            border-color: #555;
         }
 
@@ -454,7 +454,12 @@ const PurchaseForm = () => {
            /* ... (payment layout styles) ... */
         }
         .payment-button .button-icon {
-            /* ... (payment icon styles) ... */
+            font-size: var(--font-size-lg);
+            margin-bottom: 5px;
+        }
+        
+        .payment-button span {
+             font-size: var(--font-size-md);
         }
 
         /* Hover y Selected */
@@ -480,7 +485,7 @@ const PurchaseForm = () => {
           background-color: var(--accent-color);
           border-color: var(--accent-color);
           color: #fff;
-          font-weight: 600; /* Texto un poco más grueso */
+          font-weight: var(--font-weight-semibold);
           box-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
         }
         
@@ -493,8 +498,8 @@ const PurchaseForm = () => {
         .payment-button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background-color: rgba(255, 255, 255, 0.03); /* Fondo más apagado */
-            border-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.03);
+            border-color: var(--border-color-light);
             box-shadow: none;
             transform: none;
         }
@@ -503,7 +508,7 @@ const PurchaseForm = () => {
         .payment-button:disabled:hover {
              /* Quitar efectos hover */
              background-color: rgba(255, 255, 255, 0.03);
-             border-color: rgba(255, 255, 255, 0.1);
+             border-color: var(--border-color-light);
              transform: none;
              box-shadow: none;
         }
@@ -513,28 +518,33 @@ const PurchaseForm = () => {
            background-color: rgba(255, 255, 255, 0.05);
            opacity: 0.6;
            cursor: not-allowed;
-           border-color: rgba(255, 255, 255, 0.1);
+           border-color: var(--border-color-light);
         }
         
         /* Estilo para el mensaje de éxito */
         .success-message {
             margin-top: 20px;
             padding: 15px 20px;
-            background-color: rgba(46, 204, 113, 0.15); /* Fondo verde translúcido */
-            border: 1px solid rgba(46, 204, 113, 0.5); /* Borde verde */
-            color: #2ecc71; /* Texto verde */
+            background-color: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            color: var(--success-color);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: var(--font-weight-semibold);
+            font-size: var(--font-size-md);
             text-align: center;
         }
         
         .success-message svg {
-            font-size: 1.4rem;
+            font-size: var(--font-size-lg);
+        }
+        
+        .success-message span {
+            margin-left: 10px;
+            font-size: var(--font-size-md);
         }
         
         /* Ocultar error si hay éxito */

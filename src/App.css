@@ -37,10 +37,6 @@
   padding: 2em;
 }
 
-.read-the-docs {
-  color: #888;
-}
-
 html, body {
   height: 100%;
   margin: 0;
@@ -102,12 +98,12 @@ html, body {
 }
 
 .section-title {
-  font-size: 2.8rem;
+  font-size: var(--font-size-xxxl);
   margin-bottom: 50px;
   text-align: center;
   color: var(--accent-color);
   position: relative;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .section-title::after {
@@ -125,11 +121,11 @@ html, body {
 
 /* Estilo para subtítulos de sección */
 .section-subtitle {
-  font-size: 1.2rem;
-  color: #b0c4de; /* Color claro, menos prominente que el título */
-  max-width: 600px; /* Limitar ancho para lectura */
-  margin: -20px auto 40px auto; /* Ajustar margen superior negativo para acercar al título, margen inferior, centrado */
-  line-height: 1.6;
+  font-size: var(--font-size-md);
+  color: var(--subtext-color);
+  max-width: 600px;
+  margin: -20px auto 40px auto;
+  line-height: var(--line-height-base);
   text-align: center;
 }
 
@@ -139,15 +135,47 @@ html, body {
 
 /* FAQ Section */
 .faq-section {
-  padding: 80px 20px;
-  min-height: 100vh;
+  padding: 80px 0;
+  min-height: auto;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--bg-color-dark) 0%, rgba(14, 10, 48, 0.4) 50%, var(--bg-color-dark) 100%);
+}
+
+/* Efectos de fondo para FAQ */
+.faq-section::before, 
+.faq-section::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.faq-section::before {
+    width: 50%;
+    height: 70%;
+    background-color: var(--accent-color);
+    top: -20%;
+    left: -20%;
+    animation: pulse-glow 14s ease-in-out infinite alternate;
+}
+
+.faq-section::after {
+    width: 45%;
+    height: 60%;
+    background-color: var(--accent-color-2);
+    bottom: -15%;
+    right: -15%;
+    animation: pulse-glow 12s ease-in-out infinite alternate-reverse;
 }
 
 /* Footer Section */
 .footer-section {
   padding: 0;
-  height: 100vh;
-  min-height: 100vh;
+  justify-content: flex-end;
 }
 
 .navbar {

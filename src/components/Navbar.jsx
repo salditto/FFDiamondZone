@@ -113,9 +113,9 @@ const Navbar = ({ onFAQClick, onHomeClick, onContactClick, onBuyClick, onAboutCl
         
         .navbar.scrolled {
           padding: 10px 0;
-          background: #000000 !important;
+          background-color: #000000;
           backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+          border-bottom: 1px solid var(--border-color-accent);
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
 
@@ -253,13 +253,20 @@ const Navbar = ({ onFAQClick, onHomeClick, onContactClick, onBuyClick, onAboutCl
         
         @media (max-width: 480px) {
            .navbar-container {
-              padding: 0 20px;
+              padding: 0 15px;
            }
            .navbar-logo {
-               height: 40px;
+               height: 35px;
            }
            .mobile-menu {
-                width: 250px;
+                width: 220px;
+           }
+           .mobile-nav-link {
+               font-size: var(--font-size-md);
+               padding: 15px;
+           }
+           .mobile-menu-toggle {
+              font-size: var(--font-size-lg);
            }
         }
 

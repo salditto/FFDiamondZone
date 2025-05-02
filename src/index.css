@@ -1,39 +1,105 @@
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
 
 :root {
-  --primary-color: #0a0a0a;
-  --accent-color: #8A2BE2; /* Violeta */
-  --accent-color-2: #DA70D6; /* Orquídea (un tono de violeta/rosa más claro) */
-  --text-color: #f0f0f0;
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
-}
+  /* Font */
+  --font-base: 'Rajdhani', sans-serif;
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+  /* Font Sizes - Ajustados */
+  --font-size-xs: 0.875rem;  /* 14px */
+  --font-size-sm: 1rem;      /* 16px */
+  --font-size-md: 1.125rem;  /* 18px */
+  --font-size-lg: 1.375rem;  /* 22px */
+  --font-size-xl: 1.75rem;   /* 28px */
+  --font-size-xxl: 2.25rem;  /* 36px */
+  --font-size-xxxl: 3rem;    /* 48px */
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-base: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Colors */
+  --text-color: #e5e5e5;
+  --subtext-color: #aaa;
+  --accent-color: #a951f0;
+  --accent-color-2: #c371f9;
+  --bg-color-dark: #0a051a;
+  --bg-color-medium: rgba(15, 8, 35, 0.5);
+  --border-color-light: rgba(255, 255, 255, 0.2);
+  --border-color-accent: rgba(138, 43, 226, 0.3);
+  --success-color: #2ecc71;
+  --error-color: #ff4d4d;
 }
 
 body {
-  font-family: 'Rajdhani', sans-serif;
-  background-color: var(--primary-color);
+  margin: 0;
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm); /* Usamos 'sm' como base */
   color: var(--text-color);
-  line-height: 1.6;
+  background-color: var(--bg-color-dark);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset básico */
+h1, h2, h3, h4, h5, h6, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
 button {
-  font-family: 'Rajdhani', sans-serif;
+  font-family: inherit;
+  border: none;
+  background: none;
   cursor: pointer;
+  padding: 0;
 }
 
-input, select, button {
-  font-family: 'Rajdhani', sans-serif;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Scrollbar Styles (Opcional pero recomendado para consistencia) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color-2);
+}
+
+/* Limpiar cualquier estilo global anterior */
+#root {
+  /* Asegurar que no haya estilos tipográficos aquí */
 }
 
 .container {
@@ -55,11 +121,11 @@ input, select, button {
   background-color: transparent;
   color: var(--text-color);
   border: 2px solid var(--accent-color);
-  border-radius: var(--border-radius);
+  border-radius: 8px;
   padding: 10px 20px;
   font-size: 1rem;
   font-weight: 600;
-  transition: all var(--transition-speed);
+  transition: all 0.3s;
 }
 
 .btn:hover {
