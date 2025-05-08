@@ -1,0 +1,68 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "buy": "Buy Diamonds",
+    "faq": "FAQ",
+    "contact": "Contact"
+  },
+  "welcome": {
+    "title": "FF DIAMOND ZONE",
+    "subtitle": "Instant Top-Ups for Free Fire",
+    "feature1_title": "Instant Delivery",
+    "feature1_desc": "Immediate diamond top-up.",
+    "feature2_title": "Secure Payment",
+    "feature2_desc": "Safe and reliable transactions.",
+    "feature3_title": "Best Prices",
+    "feature3_desc": "Competitive diamond rates.",
+    "cta_button": "Buy Diamonds Now"
+  },
+  "about": {
+    "title": "Why Choose Us?",
+    "description": "We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!",
+    "features_title": "Our Core Features",
+    "feature1_title": "Fortress Security",
+    "feature1_desc": "Your account and payment details are protected with top-tier security measures.",
+    "feature2_title": "Instant Delivery",
+    "feature2_desc": "Receive your diamonds immediately after payment confirmation. No waiting!",
+    "feature3_title": "Dedicated Support",
+    "feature3_desc": "Our customer support team is ready to assist you with any questions or issues."
+  },
+  "form": {
+    "step1_title": "Enter Player ID & Region",
+    "playerId_placeholder": "Enter your 8-10 digit Player ID",
+    "region_select": "Select Region",
+    "error_playerId_required": "Player ID is required.",
+    "error_playerId_numeric": "Player ID must contain only numbers.",
+    "error_playerId_length": "Player ID must be between 8 and 10 digits.",
+    "step2_title": "Select Diamond Quantity",
+    "bonus_text": "+ {{bonus}} Bonus!",
+    "diamonds_label": "{{label}} Diamonds",
+    "step3_title": "Choose Payment Method",
+    "submit_button": "Purchase Now ({{price}})",
+    "success_message": "Purchase successful! Your diamonds are on the way."
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q0": "How long does it take to receive the diamonds?",
+    "a0": "Diamond delivery is usually instant or takes just a few minutes after payment confirmation. Delays are rare but can occur due to high traffic or technical issues.",
+    "q1": "Is my account information safe?",
+    "a1": "Absolutely. We only require your Player ID to top up diamonds. We never ask for your password or login details. Our payment process is also secured.",
+    "q2": "What payment methods do you accept?",
+    "a2": "We accept various payment methods including MercadoPago, Bank Transfer (ARS), Wise, and Cryptocurrencies (like Bitcoin and Ethereum). More options may be added in the future.",
+    "q3": "What if I enter the wrong Player ID?",
+    "a3": "Please double-check your Player ID before confirming the purchase. Diamonds sent to an incorrect ID due to user error cannot be refunded or transferred. Ensure the ID is correct.",
+    "q4": "Can I get a refund?",
+    "a4": "Due to the nature of digital goods, all sales are final once the diamonds have been delivered. Refunds are only possible in specific cases where delivery fails due to our system error.",
+    "q5": "Are you affiliated with Garena Free Fire?",
+    "a5": "No, FF Diamond Zone is an independent third-party service. We are not affiliated, endorsed, or sponsored by Garena or Free Fire."
+  },
+  "footer": {
+    "quick_links": "Quick Links",
+    "contact_us": "Contact Us",
+    "privacy_policy": "Privacy Policy",
+    "terms_service": "Terms of Service",
+    "contact_info": "Need help? Contact us via WhatsApp or Email for support.",
+    "copyright": "© {{year}} FF Diamond Zone. All Rights Reserved."
+  }
+} 
