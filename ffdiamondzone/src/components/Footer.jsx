@@ -1,136 +1,139 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookF, faTwitter, faInstagram, faDiscord } from '@fortawesome/free-brands-svg-icons';
+import { faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons';
 
-const Footer = () => {
+const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
+  const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
+
+  const quickLinks = [
+    { labelKey: 'navbar.home', handler: onHomeClick },
+    { labelKey: 'navbar.about', handler: onAboutClick },
+    { labelKey: 'navbar.buy', handler: onBuyClick },
+    { labelKey: 'navbar.faq', handler: onFAQClick },
+  ];
+
   return (
     <footer className="footer" id="contact">
       <div className="footer-content">
+        
+        {/* Section 1: About */}
         <div className="footer-section about">
-          <div className="footer-logo">
-            <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="footer-logo-svg" />
-          </div>
+          <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="footer-logo-svg" onClick={onHomeClick} />
           <p className="footer-description">
-            The premier destination for Free Fire diamonds. Fast, secure, and reliable service for gamers.
+             The premier destination for Free Fire diamonds. Fast, secure, and reliable service for gamers.
           </p>
-          <div className="social-links">
-            <a href="#" className="social-link"><i className="social-icon">📱</i></a>
-            <a href="#" className="social-link"><i className="social-icon">🐦</i></a>
-            <a href="#" className="social-link"><i className="social-icon">📸</i></a>
-            <a href="#" className="social-link"><i className="social-icon">💬</i></a>
-          </div>
+           <div className="social-links">
+             <a href="#" aria-label="Facebook" className="social-link"><FontAwesomeIcon icon={faFacebookF} /></a>
+             <a href="#" aria-label="Twitter" className="social-link"><FontAwesomeIcon icon={faTwitter} /></a>
+             <a href="#" aria-label="Instagram" className="social-link"><FontAwesomeIcon icon={faInstagram} /></a>
+             <a href="#" aria-label="Discord" className="social-link"><FontAwesomeIcon icon={faDiscord} /></a>
+           </div>
         </div>
         
+        {/* Section 2: Quick Links */}
         <div className="footer-section links">
-          <h3 className="footer-heading">Quick Links</h3>
+          <h3 className="footer-heading">{t('footer.quick_links')}</h3>
           <ul className="footer-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#buy-diamonds">Buy Diamonds</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#">Terms &amp; Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
+            {quickLinks.map(link => (
+              <li key={link.labelKey}>
+                <a href="#" onClick={(e) => { e.preventDefault(); link.handler ? link.handler() : void(0); }}>
+                  {t(link.labelKey)}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         
+        {/* Section 3: Contact Us */}
         <div className="footer-section contact">
-          <h3 className="footer-heading">Contact Us</h3>
+          <h3 className="footer-heading">{t('footer.contact_us')}</h3>
           <ul className="contact-info">
-            <li><span className="contact-icon">✉️</span> support@ffdiamondzone.com</li>
-            <li><span className="contact-icon">🕓</span> 24/7 Customer Support</li>
+            <li><FontAwesomeIcon icon={faEnvelope} className="contact-icon" /> support@ffdiamondzone.com</li>
+            <li><FontAwesomeIcon icon={faClock} className="contact-icon" /> 24/7 Customer Support</li>
           </ul>
         </div>
+
       </div>
       
+      {/* Bottom Bar */}
       <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} FF Diamond Zone. All rights reserved.</p>
-        <p className="disclaimer">FF Diamond Zone is not affiliated with Garena or Free Fire. All game-related assets belong to their respective owners.</p>
+        <p>{t('footer.copyright', { year: currentYear })}</p>
       </div>
       
       <style jsx>{`
         .footer {
-          background-color: rgba(10, 10, 15, 0.95);
-          padding: 70px 0 30px;
-          border-top: 1px solid rgba(138, 43, 226, 0.3);
+          background-color: var(--bg-color-dark);
+          padding: 30px 30px 20px; /* Reducir padding vertical */
+          border-top: 1px solid var(--border-color-accent);
           position: relative;
           z-index: 1;
-        }
-        
-        .footer::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
-          height: 100%;
-          background: linear-gradient(to right, rgba(138, 43, 226, 0.05), rgba(218, 112, 214, 0.05));
-          z-index: -1;
-          pointer-events: none;
+          box-sizing: border-box;
         }
         
         .footer-content {
           display: flex;
-          flex-wrap: wrap;
-          justify-content: space-between;
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 0 20px;
+          flex-wrap: wrap; /* Permitir que las secciones se envuelvan */
+          justify-content: space-between; 
+          gap: 30px; /* Espacio entre secciones */
+          max-width: 1400px; 
+          margin: 0 auto; 
+          width: 100%; 
         }
         
         .footer-section {
-          flex: 1;
-          margin-right: 30px;
-          margin-bottom: 40px;
-          min-width: 250px;
+           flex: 1 1 250px; /* Flex-grow, flex-shrink, base width */
+           margin-bottom: 20px; /* Reducir margen inferior */
         }
-        
-        .footer-section:last-child {
-          margin-right: 0;
+
+        .footer-section.about {
+          /* Estilos específicos si son necesarios */
         }
-        
-        .footer-logo {
-          display: flex;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        
+
         .footer-logo-svg {
-          height: 40px;
+          height: 40px; /* Restaurar tamaño logo */
           width: auto;
-          filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.4));
+          margin-bottom: 15px; /* Espacio bajo el logo */
         }
         
         .footer-description {
-          color: #ccc;
+          color: var(--subtext-color);
           margin-bottom: 20px;
-          line-height: 1.6;
+          line-height: var(--line-height-base);
+          font-size: var(--font-size-sm);
         }
         
         .social-links {
-          display: flex;
-          gap: 15px;
+           display: flex;
+           gap: 15px;
         }
         
         .social-link {
-          display: flex;
+          color: var(--subtext-color);
+          font-size: var(--font-size-lg); 
+          transition: color 0.3s ease, transform 0.3s ease;
+          display: flex; /* Para centrar el icono si tuviera fondo */
           align-items: center;
           justify-content: center;
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          background-color: rgba(138, 43, 226, 0.1);
-          border: 1px solid rgba(138, 43, 226, 0.3);
-          transition: all 0.3s;
+          /* background-color: rgba(138, 43, 226, 0.1); opcional */
+          /* border-radius: 50%; opcional */
+          /* width: 36px; opcional */
+          /* height: 36px; opcional */
         }
         
         .social-link:hover {
-          background-color: rgba(138, 43, 226, 0.2);
-          transform: translateY(-3px);
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+          color: var(--accent-color);
+          transform: scale(1.1);
         }
         
         .footer-heading {
-          color: white;
-          font-size: 1.2rem;
+          color: var(--text-color);
+          font-size: var(--font-size-lg); /* Más grande */
           margin-bottom: 20px;
-          font-weight: 600;
+          font-weight: var(--font-weight-semibold);
           position: relative;
           padding-bottom: 10px;
         }
@@ -151,13 +154,13 @@ const Footer = () => {
         }
         
         .footer-links li {
-          margin-bottom: 10px;
+          margin-bottom: 12px; /* Ajustar espacio */
         }
         
         .footer-links a {
-          color: #ccc;
-          text-decoration: none;
+          color: var(--subtext-color);
           transition: all 0.3s;
+          font-size: var(--font-size-md);
           display: inline-block;
         }
         
@@ -175,50 +178,49 @@ const Footer = () => {
           display: flex;
           align-items: center;
           margin-bottom: 15px;
-          color: #ccc;
+          color: var(--subtext-color);
+          font-size: var(--font-size-md);
         }
         
         .contact-icon {
-          margin-right: 10px;
-          font-size: 1.2rem;
+          margin-right: 12px; /* Espacio icono-texto */
+          font-size: var(--font-size-md);
+          color: var(--accent-color); /* Dar color al icono */
+          width: 20px; /* Ancho fijo para alinear texto */
+          text-align: center;
         }
         
         .footer-bottom {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 20px;
           text-align: center;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          margin-top: 30px;
-          color: #aaa;
-          font-size: 0.9rem;
+          margin-top: 20px; /* Reducir margen superior */
+          padding-top: 15px; /* Reducir padding superior */
+          border-top: 1px solid var(--border-color-light);
+          color: var(--subtext-color);
+          font-size: var(--font-size-sm);
         }
         
-        .disclaimer {
-          margin-top: 10px;
-          font-size: 0.8rem;
-          color: #888;
-        }
-        
-        @media (max-width: 992px) {
-          .footer-section {
-            flex: 1 1 calc(50% - 30px);
-          }
-        }
-        
+        /* Responsive */
         @media (max-width: 768px) {
-          .footer-content {
-            flex-direction: column;
-          }
-          
-          .footer-section {
-            margin-right: 0;
-            margin-bottom: 40px;
-          }
-          
-          .footer-section:last-child {
-            margin-bottom: 0;
-          }
+           /* .footer-content ya es wrap, se ajustará solo */
+           .footer-section {
+             flex-basis: 100%; /* Ocupar todo el ancho en móvil */
+             margin-bottom: 40px; /* Más espacio vertical */
+             text-align: center; /* Centrar contenido de secciones */
+           }
+           .footer-logo-svg {
+              margin-left: auto;
+              margin-right: auto;
+           }
+           .social-links {
+             justify-content: center;
+           }
+           .footer-heading::after {
+             left: 50%; /* Centrar línea bajo título */
+             transform: translateX(-50%);
+           }
+           .contact-info li {
+             justify-content: center; /* Centrar items de contacto */
+           }
         }
       `}</style>
     </footer>

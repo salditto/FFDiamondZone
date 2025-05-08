@@ -1,9 +1,12 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import freefireLogo from '../assets/img/freefire.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBolt, faLock, faCoins, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 
 const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="welcome-screen">
       <div className="background-effects">
@@ -30,26 +33,35 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
               <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="hero-logo-svg" />
             </div>
             
-            <p className="hero-subtitle">Get your diamonds quickly and safely. Dominate the game with the best prices.</p>
+            <p className="hero-subtitle">{t('welcome.subtitle')}</p>
             
             <div className="hero-features">
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faBolt} />
                 </div>
-                <div className="feature-text">Instant Delivery</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature1_title')}</h4>
+                  <p>{t('welcome.feature1_desc')}</p>
+                </div>
               </div>
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faLock} />
                 </div>
-                <div className="feature-text">Secure Payment</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature2_title')}</h4>
+                  <p>{t('welcome.feature2_desc')}</p>
+                </div>
               </div>
               <div className="feature">
                 <div className="feature-icon">
                   <FontAwesomeIcon icon={faCoins} />
                 </div>
-                <div className="feature-text">Best Prices</div>
+                <div className="feature-text">
+                  <h4>{t('welcome.feature3_title')}</h4>
+                  <p>{t('welcome.feature3_desc')}</p>
+                </div>
               </div>
             </div>
             
@@ -57,7 +69,7 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
               className="btn btn-primary hero-button"
               onClick={onBuyClick}
             >
-              Buy Diamonds Now
+              {t('welcome.cta_button')}
             </button>
           </div>
         </div>
@@ -465,10 +477,17 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
         }
         
         @media (max-width: 992px) {
+          .welcome-screen {
+             min-height: 100vh;
+             height: auto;
+             padding-top: 100px;
+             padding-bottom: 50px;
+             justify-content: flex-start;
+          }
           .hero-section {
             flex-direction: column;
-            height: auto;
-            padding: 100px 20px 40px;
+            padding: 0 20px;
+            gap: 40px;
           }
           
           .hero-column {
@@ -476,16 +495,18 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
           }
           
           .hero-image-column {
-            height: auto;
-            padding-right: 0;
-            margin-bottom: 0;
+             padding-right: 0;
+             flex: none;
+             margin-bottom: 0;
+             order: 1;
           }
           
           .hero-content-column {
-            padding-left: 0;
-            padding-right: 0;
-            text-align: center;
-            margin-bottom: 40px;
+             padding-left: 0;
+             padding-right: 0;
+             flex: none;
+             margin-bottom: 0;
+             order: 2;
           }
           
           .hero-content {
@@ -495,7 +516,7 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
           }
           
           .hero-brand-logo {
-            max-width: 400px;
+             max-width: 300px;
           }
           
           .hero-subtitle, .hero-features, .hero-button {
@@ -508,19 +529,11 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
           }
           
           .freefire-logo {
-            width: 140%;
+            width: 90%;
+            max-width: 400px;
             transform: scale(1);
-            margin-top: 20px;
-            animation: logo-float-sm 6s ease-in-out infinite alternate;
-          }
-          
-          @keyframes logo-float-sm {
-            0% {
-              transform: scale(1) translateY(0);
-            }
-            100% {
-              transform: scale(1) translateY(-10px);
-            }
+            margin-top: 0;
+            animation: none;
           }
           
           .bg-lines {
@@ -557,29 +570,44 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
           }
           
           .hero-subtitle {
-            font-size: 1.2rem;
+            font-size: var(--font-size-md);
           }
           
           .hero-features {
-            flex-direction: column;
+            flex-direction: row;
             gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+          }
+          
+          .feature {
+            
+          }
+          
+          .feature-icon {
+             width: 50px;
+             height: 50px;
+             font-size: var(--font-size-lg);
+             margin-bottom: 8px;
+          }
+          
+          .feature-text {
+             font-size: var(--font-size-xs);
+             font-weight: var(--font-weight-medium);
           }
           
           .hero-button {
-            font-size: 1.2rem;
+            font-size: var(--font-size-md);
             padding: 12px 30px;
           }
           
           .freefire-logo {
-            width: 130%;
-            height: auto;
-            transform: scale(1);
-            margin-top: 15px;
-            animation: logo-float-sm 6s ease-in-out infinite alternate;
+             width: 85%;
+             max-width: 350px;
           }
           
           .hero-brand-logo {
-            max-width: 350px;
+             max-width: 250px;
           }
           
           .bg-lines {
@@ -640,6 +668,19 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
             opacity: 1;
           }
         }
+
+        /* Animación Floating */
+        /* 
+        .floating {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+          0% { transform: translateY(0px); }
+          50% { transform: translateY(-15px); }
+          100% { transform: translateY(0px); }
+        } 
+        */
       `}</style>
     </div>
   );

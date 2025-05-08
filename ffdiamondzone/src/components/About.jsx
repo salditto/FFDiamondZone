@@ -1,66 +1,74 @@
 import React from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faStar, faShieldAlt, faRocket, faHeadset, 
-  faCreditCard, faMoneyBillWave, faMobileAlt // Iconos para pagos
+  faMoneyBillTransfer, // Para Wise
+  faCreditCard, // Para MP
+  faLandmark, // Para Transferencia
 } from '@fortawesome/free-solid-svg-icons';
+import { faBitcoin } from '@fortawesome/free-brands-svg-icons'; // Importar Bitcoin de brands
+import freefireImage2 from '../assets/img/freefire2.png'; // <<<--- Importar la nueva imagen
+
+// Definir las opciones aquí también para consistencia
+const paymentOptions = [
+  { id: 'wise', label: 'Tarjeta Internacional (USD)', icon: faMoneyBillTransfer },
+  { id: 'mercadopago', label: 'MercadoPago (Argentina)', icon: faCreditCard }, 
+  { id: 'bank_transfer_ars', label: 'Bank Transfer (ARS)', icon: faLandmark },
+  { id: 'crypto', label: 'Cryptocurrency', icon: faBitcoin },
+];
 
 const About = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="about-section">
       <div className="about-content-wrapper">
         <h2 className="about-title">
-          <FontAwesomeIcon icon={faStar} className="title-icon" /> Why Choose Us?
+          <FontAwesomeIcon icon={faStar} className="title-icon" /> {t('about.title')}
         </h2>
-        <p className="about-description">
-          We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups, secure transactions, exceptional customer support, and a wide range of payment options.
-        </p>
+        
+        {/* Contenedor para el layout de dos columnas */}
+        <div className="about-intro-layout">
+          {/* Columna Izquierda: Texto */}
+          <div className="about-text-column">
+            <p className="about-description">
+               <Trans i18nKey="about.description">
+                 We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
+               </Trans>
+            </p>
+          </div>
+          {/* Columna Derecha: Imagen */}
+          <div className="about-image-column">
+            <img src={freefireImage2} alt="Free Fire Character" className="about-image" />
+          </div>
+        </div>
         
         {/* Features Grid */}
-        <h3 className="subsection-title features-title">Our Core Features</h3>
+        <h3 className="section-title">{t('about.features_title')}</h3>
         <div className="about-features-grid">
            {/* Cards (Security, Fast Delivery, Support) - Sin cambios */}
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faShieldAlt} className="feature-icon" />
              </div>
-             <h3>Fortress Security</h3>
-             <p>Your account and payment details are protected with top-tier security measures.</p>
+             <h3>{t('about.feature1_title')}</h3>
+             <p>{t('about.feature1_desc')}</p>
            </div>
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faRocket} className="feature-icon" />
              </div>
-             <h3>Instant Delivery</h3>
-             <p>Receive your diamonds immediately after payment confirmation. No waiting!</p>
+             <h3>{t('about.feature2_title')}</h3>
+             <p>{t('about.feature2_desc')}</p>
            </div>
            <div className="about-feature-card">
              <div className="feature-icon-wrapper">
                <FontAwesomeIcon icon={faHeadset} className="feature-icon" />
              </div>
-             <h3>Dedicated Support</h3>
-             <p>Our customer support team is ready to assist you with any questions or issues.</p>
+             <h3>{t('about.feature3_title')}</h3>
+             <p>{t('about.feature3_desc')}</p>
            </div>
-        </div>
-
-        {/* Payment Methods Section */}
-        <div className="about-subsection payment-methods">
-          <h3 className="subsection-title">Accepted Payment Methods</h3>
-          <div className="payment-icons">
-            <div className="payment-option">
-              <FontAwesomeIcon icon={faCreditCard} />
-              <span>Credit/Debit Cards</span>
-            </div>
-            <div className="payment-option">
-              <FontAwesomeIcon icon={faMoneyBillWave} />
-              <span>Online Banking</span>
-            </div>
-            <div className="payment-option">
-              <FontAwesomeIcon icon={faMobileAlt} />
-              <span>Mobile Wallets</span>
-            </div>
-            {/* Añadir más si es necesario */}
-          </div>
         </div>
 
       </div>
@@ -83,18 +91,18 @@ const About = () => {
           display: flex; /* Usar flex para centrar */
           align-items: center; /* Centrar verticalmente el wrapper */
           overflow: hidden;
-          background-color: #0a051a; /* Color de fondo base oscuro */
-          color: #e0e0e0;
+          color: var(--text-color);
+          background-color: var(--bg-color-dark);
           box-sizing: border-box;
           left: 0; /* Asegurar que empieza en el borde izquierdo */
           right: 0; /* Asegurar que termina en el borde derecho */
         }
 
         .about-content-wrapper {
-          max-width: 1400px; 
-          width: 100%; /* Ocupar el ancho del padding de .about-section */
-          margin: 0 auto; 
-          padding: 0; /* Quitar padding interno */
+          max-width: 1300px; /* Igual que PurchaseForm */
+          width: 100%;
+          margin: 0 auto;
+          padding: 0 30px; /* Padding horizontal consistente */
           background-color: transparent; /* <<<--- Quitar fondo */
           border-radius: 0; /* <<<--- Quitar borde redondeado */
           border: none; /* <<<--- Quitar borde */
@@ -107,10 +115,10 @@ const About = () => {
         }
 
         .about-title {
-          font-size: 2.8rem;
+          font-size: var(--font-size-xxxl);
           color: #fff;
           margin-bottom: 20px;
-          font-weight: 700;
+          font-weight: var(--font-weight-bold);
           display: inline-flex; /* Para alinear icono y texto */
           align-items: center;
           gap: 15px;
@@ -121,40 +129,83 @@ const About = () => {
         }
 
         .title-icon {
-          font-size: 2.5rem;
-          color: #a951f0; /* Color del icono */
+          font-size: var(--font-size-xxxl);
+          color: var(--accent-color);
           filter: none; /* Quitar filtro si no se quiere el gradiente */
           -webkit-text-fill-color: initial; /* Restaurar color */
         }
         
+        .about-intro-layout {
+          display: flex;
+          justify-content: center; /* Centrar todo el grupo */
+          align-items: center;  /* Alinear verticalmente */
+          gap: 24px;            /* Espacio reducido entre texto e imagen */
+          margin-bottom: 60px;
+        }
+
+        .about-text-column {
+           flex: 0 0 auto;       /* Tamaño automático según el contenido */
+           max-width: 450px;     /* Limitar la anchura del bloque de texto */
+           display: flex;
+           flex-direction: column;
+           justify-content: center; /* Centrar verticalmente el párrafo */
+        }
+
+        .about-image-column {
+           flex: 0 0 auto;       /* Tamaño automático según la imagen */
+           display: flex;
+           justify-content: center;
+           align-items: center;
+        }
+
+        .about-image {
+          max-width: 350px;
+          width: 100%;
+          height: auto;
+          max-height: 70vh;
+          object-fit: contain;
+          filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.4));
+          border-radius: 0;
+          box-shadow: none;
+          border: none;
+        }
+
         .about-description {
-          font-size: 1.1rem;
-          line-height: 1.7;
-          max-width: 750px;
-          text-align: center;
-          margin-bottom: 50px;
-          background: rgba(10, 10, 20, 0.3);
-          padding: 30px;
-          border-radius: 15px;
-          backdrop-filter: blur(5px);
-          border: 1px solid rgba(138, 43, 226, 0.1);
-          margin-left: auto;
-          margin-right: auto;
+          font-size: var(--font-size-lg);
+          line-height: var(--line-height-loose);
+          color: var(--subtext-color);
+          text-align: center; 
+          margin: 0;
+          padding: 0 20px;    /* Espacio interno para no pegar a los bordes de la columna */
+          background: none;
+          border-radius: 0;
+          backdrop-filter: none;
+          border: none;
+        }
+        
+        .about-description strong {
+            color: var(--accent-color);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .section-title {
+            margin-top: 0; /* Resetear margen si es necesario */
         }
 
         .about-features-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 30px;
+          grid-template-columns: repeat(3, 1fr); 
+          gap: 40px; 
           width: 100%;
-          margin-bottom: 50px;
+          margin: 0 0 60px 0;
+          box-sizing: border-box;
         }
 
         .about-feature-card {
           background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
           padding: 40px 25px; /* Aumentar padding vertical */
           border-radius: 8px;
-          border: 1px solid rgba(138, 43, 226, 0.2);
+          border: 1px solid var(--border-color-accent);
           transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
           text-align: center;
           backdrop-filter: blur(3px);
@@ -180,7 +231,7 @@ const About = () => {
         .about-feature-card:hover {
           transform: translateY(-8px) scale(1.02);
           box-shadow: 0 15px 30px rgba(138, 43, 226, 0.25);
-          border-color: rgba(138, 43, 226, 0.6);
+          border-color: var(--accent-color);
         }
         
         .about-feature-card:hover::before {
@@ -198,7 +249,7 @@ const About = () => {
           align-items: center;
           justify-content: center;
           box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
-          border: 1px solid rgba(138, 43, 226, 0.5);
+          border: 1px solid var(--accent-color-2);
           position: relative;
           z-index: 1;
           transition: all 0.3s ease;
@@ -210,34 +261,45 @@ const About = () => {
         }
 
         .feature-icon {
-          font-size: 2rem; /* Tamaño del icono */
+          font-size: var(--font-size-xl);
           color: #fff;
         }
 
         .about-feature-card h3 {
-          font-size: 1.6rem;
-          color: #fff;
-          margin-bottom: 15px; /* Ajustar espacio */
-          font-weight: 700;
+          font-size: var(--font-size-xl);
+          color: var(--text-color);
+          margin-bottom: 15px;
+          font-weight: var(--font-weight-bold);
           position: relative;
           z-index: 1;
         }
 
         .about-feature-card p {
-          color: #bbb;
-          font-size: 1rem;
-          line-height: 1.6;
+          color: var(--subtext-color);
+          font-size: var(--font-size-md);
+          line-height: var(--line-height-base);
           position: relative;
           z-index: 1;
         }
 
         @media (max-width: 992px) {
-          .about-features-grid {
-             grid-template-columns: 1fr;
+          .about-intro-layout {
+            flex-direction: column; /* Apilar en pantallas medianas/pequeñas */
+            text-align: center; /* Centrar texto al apilar */
+            gap: 30px;
+          }
+          .about-image-column {
+            flex-basis: auto; /* Resetear base */
+            width: 60%; /* Ajustar ancho en móvil */
+            max-width: 300px; /* Limitar tamaño en móvil */
+          }
+          .about-text-column {
+             order: 2; /* Poner texto debajo de la imagen en móvil */
+             padding-right: 0; /* Quitar padding en móvil */
           }
            .about-description {
-            max-width: 90%;
-          }
+              text-align: center; /* Centrar descripción en móvil */
+           }
         }
 
         @media (max-width: 1450px) { /* Ajustar breakpoint si es necesario */
@@ -254,18 +316,21 @@ const About = () => {
             padding: 30px; /* Mantener padding reducido en móvil */
           }
           .about-title {
-            font-size: 2.2rem;
+            font-size: var(--font-size-xxl);
           }
           .title-icon {
-             font-size: 2rem;
+             font-size: var(--font-size-xxl);
           }
           .about-description {
-            font-size: 1.05rem;
+            font-size: var(--font-size-md);
             padding: 25px;
           }
            .about-feature-card h3 {
-             font-size: 1.4rem;
+             font-size: var(--font-size-md);
           }
+           .about-feature-card p {
+              font-size: var(--font-size-xs); /* Más pequeño en móvil */
+           }
            .about-section {
              /* Podríamos ajustar el padding si es necesario en móvil */
            }
@@ -275,8 +340,10 @@ const About = () => {
              margin-bottom: 20px;
           }
           .feature-icon {
-             font-size: 1.8rem;
+             font-size: var(--font-size-lg);
           }
+          .about-features-grid {
+             grid-template-columns: 1fr; /* Una columna en móvil */
         }
 
         /* Estilos para los efectos de fondo */
@@ -337,18 +404,7 @@ const About = () => {
           border: none;
         }
 
-        .subsection-title {
-          font-size: 1.8rem;
-          color: #e0e0e0;
-          margin-bottom: 20px;
-          font-weight: 600;
-          border-bottom: 1px solid rgba(138, 43, 226, 0.2);
-          padding-bottom: 8px;
-          display: inline-block;
-        }
-        
-        .features-title {
-           border-bottom: none; /* Quitar borde del título de features */
+        .section-title {
            margin-bottom: 30px; 
            text-align: center;
            width: 100%;
@@ -356,30 +412,36 @@ const About = () => {
            margin-top: 0; /* Ajustar si se quitó la sección anterior */
         }
 
-        .payment-methods {
-          margin-top: 40px; /* Ajustar margen */
+        .about-subsection.payment-methods {
+          margin: 0 auto 80px; 
+          width: 100%; 
+          padding: 0 20px;
         }
 
         .payment-icons {
           display: flex;
-          justify-content: center;
-          gap: 40px;
-          margin-bottom: 0; /* Quitar margen inferior si se quitó la nota */
-          flex-wrap: wrap; /* Para que quepan en móvil */
+          justify-content: center; 
+          gap: 80px; /* <<<--- Incrementar más gap horizontal */
+          margin-top: 40px; 
+          overflow-x: auto; 
+          padding-bottom: 15px; 
+          align-items: flex-start; 
+          flex-wrap: nowrap; /* <<<--- Añadir esto */
         }
 
         .payment-option {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 10px;
-          color: #ccc;
-          font-size: 1rem;
+          gap: 18px; 
+          color: var(--subtext-color);
+          font-size: var(--font-size-xxxl); /* <<<--- Cambiar a xxxl */
+          transition: transform 0.3s ease; 
+          flex-shrink: 0; 
+          min-width: 120px; 
         }
-
-        .payment-option svg {
-          font-size: 2.5rem; /* Tamaño iconos de pago */
-          color: var(--accent-color, #8a2be2);
+        .payment-option:hover {
+          transform: scale(1.1);
         }
 
       `}</style>
