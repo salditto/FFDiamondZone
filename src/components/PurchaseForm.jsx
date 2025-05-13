@@ -3,206 +3,184 @@ import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faUser, faGem, faShoppingCart, 
-  faMoneyBillTransfer, // Para Wise (alternativa)
+  faMoneyBillTransfer, // Para stripe (alternativa)
   faCreditCard, // Para MercadoPago (fallback)
   faLandmark, // Para Transferencia Bancaria
   faCheckCircle, // Añadir icono de éxito
 } from '@fortawesome/free-solid-svg-icons';
 import { faBitcoin } from '@fortawesome/free-brands-svg-icons';
+import { EmbeddedCheckout } from '../payments/StripeElementsWrapper'; 
+import { loadStripe } from '@stripe/stripe-js'
 
-// Opciones de cantidad de diamantes (ejemplo) - CON BONUS
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+
 const diamondOptions = [
-  { id: '100', label: '100', price: '$1.00', bonus: 10, outOfStock: true },
-  { id: '310', label: '310', price: '$3.00', bonus: 35 },
-  { id: '520', label: '520', price: '$5.00', bonus: 60 },
-  { id: '1060', label: '1060', price: '$10.00', bonus: 130 },
-  { id: '2180', label: '2180', price: '$20.00', bonus: 300 },
-  { id: '5600', label: '5600', price: '$50.00', bonus: 800 },
-];
+  { id: '100',  label: '100',  price: '$1.00',  bonus: 10,  outOfStock: true  },
+  { id: '310',  label: '310',  price: '$3.00',  bonus: 35 },
+  { id: '520',  label: '520',  price: '$5.00',  bonus: 60 },
+  { id: '1060', label: '1060', price: '$10.00', bonus: 130},
+  { id: '2180', label: '2180', price: '$20.00', bonus: 300},
+  { id: '5600', label: '5600', price: '$50.00', bonus: 800},
+]
 
-// Opciones de método de pago ACTUALIZADAS
 const paymentOptions = [
-  { id: 'wise', labelKey: 'form.paymentMethods.wise', icon: faMoneyBillTransfer },
-  { id: 'mercadopago', labelKey: 'form.paymentMethods.mercadopago', icon: faCreditCard },
-  { id: 'bank_transfer_ars', labelKey: 'form.paymentMethods.bank_transfer_ars', icon: faLandmark },
-  { id: 'crypto', labelKey: 'form.paymentMethods.crypto', icon: faBitcoin },
-];
+  { id: 'stripe',           label: 'Stripe',          icon: faMoneyBillTransfer },
+  { id: 'mercadopago',      label: 'MercadoPago',     icon: faCreditCard       },
+  { id: 'bank_transfer_ars', label: 'Transferencia',  icon: faLandmark         },
+  { id: 'crypto',           label: 'Cripto',          icon: faBitcoin          },
+]
 
-const PurchaseForm = () => {
-  const { t } = useTranslation();
-  const [playerId, setPlayerId] = useState('');
-  const [quantity, setQuantity] = useState(diamondOptions[2].id); // Default a 520
-  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id); // Default a Wise
-  const [playerIdError, setPlayerIdError] = useState('');
-  const [isSuccess, setIsSuccess] = useState(false); // <<<--- Nuevo estado
-  const [region, setRegion] = useState(''); // <<<--- AÑADIR ESTADO PARA REGIÓN
+export default function PurchaseForm() {
+  const { t } = useTranslation()
+  const [playerId,      setPlayerId]      = useState('')
+  const [quantity,      setQuantity]      = useState(diamondOptions[2].id)
+  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id)
+  const [playerIdError, setPlayerIdError] = useState('')
+  const [isLoading,     setIsLoading]     = useState(false)
+  const [isSuccess,     setIsSuccess]     = useState(false)
 
-  const validatePlayerId = (id) => {
-    if (!id) {
-      return t('form.error_playerId_required');
+  function validatePlayerId(id) {
+    if (!id)            return t('form.error_playerId_required')
+    if (!/^\d+$/.test(id)) return t('form.error_playerId_numeric')
+    if (id.length < 8 || id.length > 10) return t('form.error_playerId_length')
+    return ''
+  }
+
+  function handlePlayerIdChange(e) {
+    const v = e.target.value
+    setPlayerId(v)
+    setPlayerIdError(validatePlayerId(v))
+  }
+
+  function getSelectedPrice() {
+    const opt = diamondOptions.find(o => o.id === quantity)
+    return opt ? opt.price : '$0.00'
+  }
+
+  async function handleBuy() {
+    const err = validatePlayerId(playerId)
+    setPlayerIdError(err)
+    if (err) return
+
+    setIsLoading(true)
+    try {
+      const res = await fetch('/api/payments/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packageId: quantity, playerId })
+      })
+      const { sessionId } = await res.json()
+      const stripe = await stripePromise
+      await stripe.redirectToCheckout({ sessionId })
+    } catch (e) {
+      console.error(e)
+      alert(t('form.error_creating_session'))
+    } finally {
+      setIsLoading(false)
     }
-    if (!/^[0-9]+$/.test(id)) {
-      return t('form.error_playerId_numeric');
-    }
-    if (id.length < 8 || id.length > 10) {
-      return t('form.error_playerId_length');
-    }
-    return ''; // No error
-  };
-
-  const handlePlayerIdChange = (e) => {
-    const newId = e.target.value;
-    setPlayerId(newId);
-    setPlayerIdError(validatePlayerId(newId));
-  };
-  
-  const getSelectedPrice = () => {
-      const selectedOption = diamondOptions.find(option => option.id === quantity);
-      return selectedOption ? selectedOption.price : '$0.00';
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // No procesar si ya fue exitoso
-    if (isSuccess) return; 
-    
-    const idError = validatePlayerId(playerId);
-    setPlayerIdError(idError);
-
-    if (!idError) {
-      const selectedOption = diamondOptions.find(opt => opt.id === quantity);
-      const selectedPaymentLabel = paymentOptions.find(p => p.id === paymentMethod)?.label || paymentMethod;
-      console.log('Form Submitted:', { playerId, quantity: selectedOption?.label, bonus: selectedOption?.bonus, paymentMethod });
-      
-      // --- Quitar Alert y poner estado de Éxito ---
-      // alert(`Purchase Submitted!...`); 
-      setIsSuccess(true); // <<<--- Establecer éxito
-      // Aquí iría la lógica real de enviar datos...
-
-    } else {
-      console.log('Form validation failed');
-    }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="purchase-form">
-      
-      {/* Step 1: Player ID */}
+    <form
+      className="purchase-form"
+      onSubmit={e => e.preventDefault()}
+    >
+      {/* Step 1 */}
       <div className="form-step">
         <div className="step-header">
           <span className="step-number">1</span>
           <h3 className="step-title">{t('form.step1_title')}</h3>
         </div>
         <div className="form-group">
-          <div className="player-id-row">
-            <div className="input-with-icon player-id-input-wrapper">
-               <FontAwesomeIcon icon={faUser} className="input-icon" />
-               <input
-                 type="text"
-                 id="playerId"
-                 value={playerId}
-                 onChange={handlePlayerIdChange}
-                 placeholder={t('form.playerId_placeholder')}
-                 className={playerIdError ? 'input-error' : ''}
-                 maxLength="10"
-                 aria-describedby={playerIdError ? "player-id-error" : undefined}
-                 disabled={isSuccess}
-               />
-            </div>
-            
-            <select 
-              id="region" 
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              className="region-select"
+          <div className="input-with-icon player-id-input-wrapper">
+            <FontAwesomeIcon icon={faUser} className="input-icon" />
+            <input
+              type="text"
+              value={playerId}
+              onChange={handlePlayerIdChange}
+              placeholder={t('form.playerId_placeholder')}
+              className={playerIdError ? 'input-error' : ''}
+              maxLength={10}
               disabled={isSuccess}
-              required
-            >
-              <option value="" disabled>{t('form.region_select')}</option>
-              <option value="LATAM">LATAM</option>
-              <option value="BR">BR</option>
-              <option value="NA">NA</option>
-              <option value="EU">EU</option>
-              <option value="INDIA">INDIA</option>
-              <option value="SEA">SEA</option>
-              <option value="MEA">MEA</option>
-              <option value="RU">RU</option>
-              <option value="TW">TW</option>
-            </select>
+            />
           </div>
-          {playerIdError && !isSuccess && <p id="player-id-error" className="error-message">{playerIdError}</p>}
+          {playerIdError && !isSuccess && (
+            <p className="error-message">{playerIdError}</p>
+          )}
         </div>
       </div>
 
-      {/* Step 2: Quantity */}
+      {/* Step 2 */}
       <div className="form-step">
         <div className="step-header">
-           <span className="step-number">2</span>
-           <h3 className="step-title">{t('form.step2_title')}</h3>
+          <span className="step-number">2</span>
+          <h3 className="step-title">{t('form.step2_title')}</h3>
         </div>
-        <div className="form-group">
-          <div className="quantity-options">
-            {diamondOptions.map((option) => (
-              <button
-                type="button"
-                key={option.id}
-                className={`quantity-button ${quantity === option.id ? 'selected' : ''} ${option.outOfStock ? 'out-of-stock' : ''}`}
-                onClick={() => !isSuccess && !option.outOfStock && setQuantity(option.id)}
-                disabled={isSuccess || option.outOfStock}
-              >
-                <div className="button-main-content">
-                   <FontAwesomeIcon icon={faGem} className="button-icon" />
-                   <span className="button-label">{t('form.diamonds_label', { label: option.label })}</span>
-                </div>
-                {option.outOfStock ? (
-                  <span className="out-of-stock-text">{t('form.out_of_stock')}</span>
-                ) : (
-                  <>
-                    {option.bonus > 0 && (
-                        <span className="bonus-text">{t('form.bonus_text', { bonus: option.bonus })}</span>
-                    )}
-                    <span className="price">{option.price}</span>
-                  </>
-                )}
-              </button>
-            ))}
-          </div>
+        <div className="form-group quantity-options">
+          {diamondOptions.map(opt => (
+            <button
+              key={opt.id}
+              type="button"
+              className={`quantity-button ${quantity===opt.id?'selected':''} ${opt.outOfStock?'out-of-stock':''}`}
+              disabled={isSuccess || opt.outOfStock}
+              onClick={() => setQuantity(opt.id)}
+            >
+              <div className="button-main-content">
+                <FontAwesomeIcon icon={faGem} className="button-icon" />
+                <span>{t('form.diamonds_label',{label:opt.label})}</span>
+              </div>
+              {!opt.outOfStock && (
+                <>
+                  {opt.bonus>0 && (
+                    <span className="bonus-text">
+                      {t('form.bonus_text',{bonus:opt.bonus})}
+                    </span>
+                  )}
+                  <span className="price">{opt.price}</span>
+                </>
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Step 3: Payment Method */}
+      {/* Step 3 */}
       <div className="form-step">
-         <div className="step-header">
-           <span className="step-number">3</span>
-           <h3 className="step-title">{t('form.step3_title')}</h3>
-         </div>
-        <div className="form-group">
-           {/* El label ahora está en el header */} 
-          <div className="payment-options">
-            {paymentOptions.map((option) => (
-              <button
-                type="button"
-                key={option.id}
-                className={`payment-button ${paymentMethod === option.id ? 'selected' : ''}`}
-                onClick={() => !isSuccess && setPaymentMethod(option.id)} // <<<--- Prevenir cambio en éxito
-                disabled={isSuccess} // <<<--- Deshabilitar en éxito
-              >
-                <FontAwesomeIcon icon={option.icon} className="button-icon"/>
-                <span>{t(option.labelKey)}</span>
-              </button>
-            ))}
-          </div>
+        <div className="step-header">
+          <span className="step-number">3</span>
+          <h3 className="step-title">{t('form.step3_title')}</h3>
+        </div>
+        <div className="form-group payment-options">
+          {paymentOptions.map(opt => (
+            <button
+              key={opt.id}
+              type="button"
+              className={`payment-button ${paymentMethod===opt.id?'selected':''}`}
+              disabled={isSuccess}
+              onClick={() => setPaymentMethod(opt.id)}
+            >
+              <FontAwesomeIcon icon={opt.icon} className="button-icon"/>
+              <span>{opt.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Submit Button */}
-      <button 
-        type="submit" 
-        className="btn btn-primary purchase-button" 
-        disabled={!!playerIdError || !playerId || isSuccess} // <<<--- Deshabilitar en éxito
-      >
-         <FontAwesomeIcon icon={faShoppingCart} /> {t('form.submit_button', { price: getSelectedPrice() })}
-      </button>
+      {/* Buy button for Stripe */}
+      {paymentMethod === 'stripe' && (
+        <button
+          type="button"
+          className="purchase-button"
+          disabled={!!playerIdError || !playerId || isLoading}
+          onClick={handleBuy}
+        >
+          <FontAwesomeIcon icon={faShoppingCart} />{' '}
+          {isLoading
+            ? t('form.loading')
+            : t('form.submit_button',{price:getSelectedPrice()})
+          }
+        </button>
+      )}
       
       {/* --- Mensaje de Éxito Condicional (usando ternario) --- */}
       {isSuccess ? (
@@ -695,5 +673,3 @@ const PurchaseForm = () => {
     </form>
   );
 };
-
-export default PurchaseForm; 

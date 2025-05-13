@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 const paymentMethodTranslationKeys = {
   mercadopago: 'form.paymentMethods.mercadopago',
   bank_transfer_ars: 'form.paymentMethods.bank_transfer_ars',
-  wise: 'form.paymentMethods.wise',
+  stripe: 'form.paymentMethods.stripe',
   crypto: 'form.paymentMethods.crypto'
 };
 

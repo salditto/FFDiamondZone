@@ -3,7 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faStar, faShieldAlt, faRocket, faHeadset, 
-  faMoneyBillTransfer, // Para Wise
+  faMoneyBillTransfer, // Para stripe
   faCreditCard, // Para MP
   faLandmark, // Para Transferencia
 } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +12,7 @@ import freefireImage2 from '../assets/img/freefire2.png'; // <<<--- Importar la 
 
 // Definir las opciones aquí también para consistencia
 const paymentOptions = [
-  { id: 'wise', label: 'Tarjeta Internacional (USD)', icon: faMoneyBillTransfer },
+  { id: 'stripe', label: 'Tarjeta Internacional (USD)', icon: faMoneyBillTransfer },
   { id: 'mercadopago', label: 'MercadoPago (Argentina)', icon: faCreditCard }, 
   { id: 'bank_transfer_ars', label: 'Bank Transfer (ARS)', icon: faLandmark },
   { id: 'crypto', label: 'Cryptocurrency', icon: faBitcoin },
@@ -34,7 +34,7 @@ const About = () => {
           <div className="about-text-column">
             <p className="about-description">
                <Trans i18nKey="about.description">
-                 We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
+                 We are dedicated to providing the best experience for Free Fire players. Our platform offers instant diamond top-ups and secure transactions. We accept a wide range of payment methods, including <strong>stripe</strong>, <strong>MercadoPago</strong>, <strong>Bank Transfers (ARS)</strong>, and <strong>Cryptocurrency</strong>. Choose FF Diamond Zone for a seamless and flexible top-up process!
                </Trans>
             </p>
           </div>

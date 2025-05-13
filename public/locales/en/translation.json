@@ -43,7 +43,7 @@
     "success_message": "Purchase successful! Your diamonds are on the way.",
     "out_of_stock": "Out of Stock",
     "paymentMethods": {
-      "wise": "International Card (USD)",
+      "stripe": "International Card (USD)",
       "mercadopago": "MercadoPago (Argentina)",
       "bank_transfer_ars": "Bank Transfer (ARS)",
       "crypto": "Crypto"
@@ -56,7 +56,7 @@
     "q1": "Is my account information safe?",
     "a1": "Absolutely. We only require your Player ID to top up diamonds. We never ask for your password or login details. Our payment process is also secured.",
     "q2": "What payment methods do you accept?",
-    "a2": "We accept various payment methods including MercadoPago, Bank Transfer (ARS), Wise, and Cryptocurrencies (like Bitcoin and Ethereum). More options may be added in the future.",
+    "a2": "We accept various payment methods including MercadoPago, Bank Transfer (ARS), stripe, and Cryptocurrencies (like Bitcoin and Ethereum). More options may be added in the future.",
     "q3": "What if I enter the wrong Player ID?",
     "a3": "Please double-check your Player ID before confirming the purchase. Diamonds sent to an incorrect ID due to user error cannot be refunded or transferred. Ensure the ID is correct.",
     "q4": "Can I get a refund?",

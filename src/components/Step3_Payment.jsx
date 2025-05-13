@@ -6,7 +6,7 @@ import { faBitcoin } from '@fortawesome/free-brands-svg-icons'; // Use brand ico
 const paymentMethods = [
   { id: 'mercadopago', name: 'MercadoPago', icon: faCreditCard },
   { id: 'bank', name: 'Bank Transfer (ARS)', icon: faUniversity },
-  { id: 'wise', name: 'Wise', icon: faExchangeAlt },
+  { id: 'stripe', name: 'stripe', icon: faExchangeAlt },
   { id: 'crypto', name: 'Crypto (BTC, ETH)', icon: faBitcoin }
 ];
 
