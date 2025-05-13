@@ -12,7 +12,7 @@ import { faBitcoin } from '@fortawesome/free-brands-svg-icons';
 
 // Opciones de cantidad de diamantes (ejemplo) - CON BONUS
 const diamondOptions = [
-  { id: '100', label: '100', price: '$1.00', bonus: 10 },
+  { id: '100', label: '100', price: '$1.00', bonus: 10, outOfStock: true },
   { id: '310', label: '310', price: '$3.00', bonus: 35 },
   { id: '520', label: '520', price: '$5.00', bonus: 60 },
   { id: '1060', label: '1060', price: '$10.00', bonus: 130 },
@@ -22,10 +22,10 @@ const diamondOptions = [
 
 // Opciones de método de pago ACTUALIZADAS
 const paymentOptions = [
-  { id: 'wise', label: 'Wise', icon: faMoneyBillTransfer },
-  { id: 'mercadopago', label: 'MercadoPago', icon: faCreditCard }, // Usar fallback si no hay icono específico
-  { id: 'bank_transfer_ars', label: 'Bank Transfer (ARS)', icon: faLandmark },
-  { id: 'crypto', label: 'Cryptocurrency', icon: faBitcoin },
+  { id: 'wise', labelKey: 'form.paymentMethods.wise', icon: faMoneyBillTransfer },
+  { id: 'mercadopago', labelKey: 'form.paymentMethods.mercadopago', icon: faCreditCard },
+  { id: 'bank_transfer_ars', labelKey: 'form.paymentMethods.bank_transfer_ars', icon: faLandmark },
+  { id: 'crypto', labelKey: 'form.paymentMethods.crypto', icon: faBitcoin },
 ];
 
 const PurchaseForm = () => {
@@ -146,18 +146,24 @@ const PurchaseForm = () => {
               <button
                 type="button"
                 key={option.id}
-                className={`quantity-button ${quantity === option.id ? 'selected' : ''}`}
-                onClick={() => !isSuccess && setQuantity(option.id)} // <<<--- Prevenir cambio en éxito
-                disabled={isSuccess} // <<<--- Deshabilitar en éxito
+                className={`quantity-button ${quantity === option.id ? 'selected' : ''} ${option.outOfStock ? 'out-of-stock' : ''}`}
+                onClick={() => !isSuccess && !option.outOfStock && setQuantity(option.id)}
+                disabled={isSuccess || option.outOfStock}
               >
                 <div className="button-main-content">
                    <FontAwesomeIcon icon={faGem} className="button-icon" />
-                   <span className="button-label">{t('form.diamonds_label', { label: option.label })}</span> 
+                   <span className="button-label">{t('form.diamonds_label', { label: option.label })}</span>
                 </div>
-                {option.bonus > 0 && (
-                    <span className="bonus-text">{t('form.bonus_text', { bonus: option.bonus })}</span>
+                {option.outOfStock ? (
+                  <span className="out-of-stock-text">{t('form.out_of_stock')}</span>
+                ) : (
+                  <>
+                    {option.bonus > 0 && (
+                        <span className="bonus-text">{t('form.bonus_text', { bonus: option.bonus })}</span>
+                    )}
+                    <span className="price">{option.price}</span>
+                  </>
                 )}
-                <span className="price">{option.price}</span>
               </button>
             ))}
           </div>
@@ -182,7 +188,7 @@ const PurchaseForm = () => {
                 disabled={isSuccess} // <<<--- Deshabilitar en éxito
               >
                 <FontAwesomeIcon icon={option.icon} className="button-icon"/>
-                <span>{option.label}</span>
+                <span>{t(option.labelKey)}</span>
               </button>
             ))}
           </div>
@@ -663,6 +669,26 @@ const PurchaseForm = () => {
           color: var(--error-color);
           font-size: var(--font-size-xs);
           margin-top: 5px;
+        }
+
+        /* Estilos para el botón sin stock */
+        .quantity-button.out-of-stock {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: rgba(255, 255, 255, 0.03); /* Un poco más oscuro o diferente */
+            border-color: var(--border-color-light);
+        }
+        .quantity-button.out-of-stock:hover {
+            background-color: rgba(255, 255, 255, 0.03);
+            border-color: var(--border-color-light);
+            transform: none;
+            box-shadow: none;
+        }
+        .out-of-stock-text {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-bold);
+            color: var(--error-color); /* Usar color de error o uno específico */
+            margin-top: 4px; /* Espacio respecto al contenido principal */
         }
 
       `}</style>

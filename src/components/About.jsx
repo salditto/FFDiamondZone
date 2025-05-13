@@ -12,8 +12,8 @@ import freefireImage2 from '../assets/img/freefire2.png'; // <<<--- Importar la 
 
 // Definir las opciones aquí también para consistencia
 const paymentOptions = [
-  { id: 'wise', label: 'Wise', icon: faMoneyBillTransfer },
-  { id: 'mercadopago', label: 'MercadoPago', icon: faCreditCard }, 
+  { id: 'wise', label: 'Tarjeta Internacional (USD)', icon: faMoneyBillTransfer },
+  { id: 'mercadopago', label: 'MercadoPago (Argentina)', icon: faCreditCard }, 
   { id: 'bank_transfer_ars', label: 'Bank Transfer (ARS)', icon: faLandmark },
   { id: 'crypto', label: 'Cryptocurrency', icon: faBitcoin },
 ];

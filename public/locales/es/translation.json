@@ -2,7 +2,7 @@
   "cta_button": "Comprar Diamantes Ahora",
   "about": {
     "title": "¿Por Qué Elegirnos?",
-    "description": "Nos dedicamos a brindar la mejor experiencia a los jugadores de Free Fire. Nuestra plataforma ofrece recargas de diamantes instantáneas y transacciones seguras. Aceptamos una amplia gama de métodos de pago, incluyendo <strong>Wise</strong>, <strong>MercadoPago</strong>, <strong>Transferencias Bancarias (ARS)</strong> y <strong>Criptomonedas</strong>. ¡Elige FF Diamond Zone para un proceso de recarga flexible y sin interrupciones!",
+    "description": "Nos dedicamos a brindar la mejor experiencia a los jugadores de Free Fire. Nuestra plataforma ofrece recargas de diamantes instantáneas y transacciones seguras. Aceptamos una amplia gama de métodos de pago, incluyendo <strong>Tarjeta Internacional (USD)</strong>, <strong>MercadoPago (Argentina)</strong>, <strong>Transferencias Bancarias (ARS)</strong> y <strong>Criptomonedas</strong>. ¡Elige FF Diamond Zone para un proceso de recarga flexible y sin interrupciones!",
     "features_title": "Nuestras Características Principales",
     "feature1_title": "Seguridad Fortaleza",
     "feature1_desc": "Los detalles de tu cuenta y pago están protegidos con medidas de seguridad de primer nivel.",
@@ -23,7 +23,14 @@
     "diamonds_label": "{{label}} Diamantes",
     "step3_title": "Elige Método de Pago",
     "submit_button": "Comprar Ahora ({{price}})",
-    "success_message": "¡Compra exitosa! Tus diamantes están en camino."
+    "success_message": "¡Compra exitosa! Tus diamantes están en camino.",
+    "out_of_stock": "Sin Stock",
+    "paymentMethods": {
+      "wise": "Tarjeta Internacional (USD)",
+      "mercadopago": "MercadoPago (Argentina)",
+      "bank_transfer_ars": "Transferencia Bancaria (Argentina)",
+      "crypto": "Crypto"
+    }
   },
   "faq": {
     "title": "Preguntas Frecuentes",

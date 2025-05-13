@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { useTranslation } from 'react-i18next';
 
-const paymentMethodNames = {
-  mercadopago: 'MercadoPago',
-  bank: 'Bank Transfer (ARS)',
-  wise: 'Wise',
-  crypto: 'Crypto (BTC, ETH)'
+const paymentMethodTranslationKeys = {
+  mercadopago: 'form.paymentMethods.mercadopago',
+  bank_transfer_ars: 'form.paymentMethods.bank_transfer_ars',
+  wise: 'form.paymentMethods.wise',
+  crypto: 'form.paymentMethods.crypto'
 };
 
 const Summary = ({ formData, prevStep }) => {
+  const { t } = useTranslation();
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   const handleConfirm = () => {
@@ -86,7 +88,7 @@ const Summary = ({ formData, prevStep }) => {
         
         <div className="summary-item">
           <div className="summary-label">Payment Method</div>
-          <div className="summary-value">{paymentMethodNames[formData.paymentMethod]}</div>
+          <div className="summary-value">{t(paymentMethodTranslationKeys[formData.paymentMethod])}</div>
         </div>
       </div>
       
