@@ -1,0 +1,58 @@
+{
+  "cta_button": "Comprar Diamantes Ahora",
+  "about": {
+    "title": "¿Por Qué Elegirnos?",
+    "description": "Nos dedicamos a brindar la mejor experiencia a los jugadores de Free Fire. Nuestra plataforma ofrece recargas de diamantes instantáneas y transacciones seguras. Aceptamos una amplia gama de métodos de pago, incluyendo <strong>Tarjeta Internacional (USD)</strong>, <strong>MercadoPago (Argentina)</strong>, <strong>Transferencias Bancarias (ARS)</strong> y <strong>Criptomonedas</strong>. ¡Elige FF Diamond Zone para un proceso de recarga flexible y sin interrupciones!",
+    "features_title": "Nuestras Características Principales",
+    "feature1_title": "Seguridad Fortaleza",
+    "feature1_desc": "Los detalles de tu cuenta y pago están protegidos con medidas de seguridad de primer nivel.",
+    "feature2_title": "Entrega Instantánea",
+    "feature2_desc": "Recibe tus diamantes inmediatamente después de la confirmación del pago. ¡Sin esperas!",
+    "feature3_title": "Soporte Dedicado",
+    "feature3_desc": "Nuestro equipo de soporte está listo para ayudarte con cualquier pregunta o problema."
+  },
+  "form": {
+    "step1_title": "Ingresa ID de Jugador y Región",
+    "playerId_placeholder": "Ingresa tu ID de Jugador (8-10 dígitos)",
+    "region_select": "Seleccionar Región",
+    "error_playerId_required": "El ID de Jugador es obligatorio.",
+    "error_playerId_numeric": "El ID de Jugador debe contener solo números.",
+    "error_playerId_length": "El ID de Jugador debe tener entre 8 y 10 dígitos.",
+    "step2_title": "Selecciona Cantidad de Diamantes",
+    "bonus_text": "+ ¡{{bonus}} de Bonus!",
+    "diamonds_label": "{{label}} Diamantes",
+    "step3_title": "Elige Método de Pago",
+    "submit_button": "Comprar Ahora ({{price}})",
+    "success_message": "¡Compra exitosa! Tus diamantes están en camino.",
+    "out_of_stock": "Sin Stock",
+    "paymentMethods": {
+      "wise": "Tarjeta Internacional (USD)",
+      "mercadopago": "MercadoPago (Argentina)",
+      "bank_transfer_ars": "Transferencia Bancaria (Argentina)",
+      "crypto": "Crypto"
+    }
+  },
+  "faq": {
+    "title": "Preguntas Frecuentes",
+    "q0": "¿Cuánto tiempo tarda la entrega de diamantes?",
+    "a0": "La entrega de diamantes suele ser instantánea o tarda solo unos minutos tras confirmar el pago. Las demoras son raras pero pueden ocurrir por alto tráfico o problemas técnicos.",
+    "q1": "¿Está segura la información de mi cuenta?",
+    "a1": "Absolutamente. Solo requerimos tu ID de Jugador para recargar. Nunca pedimos tu contraseña o datos de acceso. Nuestro proceso de pago también es seguro.",
+    "q2": "¿Qué métodos de pago aceptan?",
+    "a2": "Aceptamos varios métodos como MercadoPago, Transferencia Bancaria (ARS), Wise y Criptomonedas (como Bitcoin y Ethereum). Podríamos añadir más opciones en el futuro.",
+    "q3": "¿Qué pasa si ingreso un ID de Jugador incorrecto?",
+    "a3": "Por favor, verifica bien tu ID antes de confirmar. Los diamantes enviados a un ID incorrecto por error del usuario no pueden ser reembolsados ni transferidos. Asegúrate de que el ID sea correcto.",
+    "q4": "¿Puedo obtener un reembolso?",
+    "a4": "Debido a la naturaleza de los bienes digitales, todas las ventas son finales una vez entregados los diamantes. Los reembolsos solo son posibles si la entrega falla por un error nuestro.",
+    "q5": "¿Están afiliados con Garena Free Fire?",
+    "a5": "No, FF Diamond Zone es un servicio independiente de terceros. No estamos afiliados, respaldados ni patrocinados por Garena o Free Fire."
+  },
+  "footer": {
+    "quick_links": "Enlaces Rápidos",
+    "contact_us": "Contáctanos",
+    "privacy_policy": "Política de Privacidad",
+    "terms_service": "Términos de Servicio",
+    "contact_info": "¿Necesitas ayuda? Contáctanos por WhatsApp o Email para soporte.",
+    "copyright": "© {{year}} FF Diamond Zone. Todos los Derechos Reservados."
+  }
+}

@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Font */
+  --font-base: 'Rajdhani', sans-serif;
+
+  /* Font Sizes - Ajustados */
+  --font-size-xs: 0.875rem;  /* 14px */
+  --font-size-sm: 1rem;      /* 16px */
+  --font-size-md: 1.125rem;  /* 18px */
+  --font-size-lg: 1.375rem;  /* 22px */
+  --font-size-xl: 1.75rem;   /* 28px */
+  --font-size-xxl: 2.25rem;  /* 36px */
+  --font-size-xxxl: 3rem;    /* 48px */
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.2;
+  --line-height-base: 1.6;
+  --line-height-loose: 1.8;
+
+  /* Colors */
+  --text-color: #e5e5e5;
+  --subtext-color: #aaa;
+  --accent-color: #a951f0;
+  --accent-color-2: #c371f9;
+  --bg-color-dark: #0a051a;
+  --bg-color-medium: rgba(15, 8, 35, 0.5);
+  --border-color-light: rgba(255, 255, 255, 0.2);
+  --border-color-accent: rgba(138, 43, 226, 0.3);
+  --success-color: #2ecc71;
+  --error-color: #ff4d4d;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm); /* Usamos 'sm' como base */
+  color: var(--text-color);
+  background-color: var(--bg-color-dark);
+  line-height: var(--line-height-base);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset básico */
+h1, h2, h3, h4, h5, h6, p, ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Scrollbar Styles (Opcional pero recomendado para consistencia) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-color);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color-2);
+}
+
+/* Limpiar cualquier estilo global anterior */
+#root {
+  /* Asegurar que no haya estilos tipográficos aquí */
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 20px;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.5); /* Violeta */
+}
+
+.glow-border {
+  box-shadow: 0 0 5px rgba(138, 43, 226, 0.7), 0 0 10px rgba(138, 43, 226, 0.3); /* Violeta */
+}
+
+.btn {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 2px solid var(--accent-color);
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  background-color: rgba(138, 43, 226, 0.2); /* Violeta */
+  box-shadow: 0 0 10px rgba(138, 43, 226, 0.7), 0 0 20px rgba(138, 43, 226, 0.3); /* Violeta */
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: #ffffff; /* Cambiado a blanco para mejor contraste con violeta */
+}
+
+.btn-primary:hover {
+  background-color: #9932CC; /* Violeta oscuro */
+  border-color: #9932CC; /* Violeta oscuro */
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.8), 0 0 30px rgba(138, 43, 226, 0.4); /* Violeta */
+}
