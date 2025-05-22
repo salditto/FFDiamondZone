@@ -1,35 +1,47 @@
-const BASE_URL = 'https://api.example.com';
+const BASE_URL = '/api/';
+const ENDPOINT = 'BankTransfers';
 
-export async function getData(endpoint) {
+
+export async function getBankTransferInfo() {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
+    const response = await fetch('/api/BankTransfers', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': 'Bearer token', // si hace falta
       },
     });
 
+    const rawText = await response.text();
+    console.log("Respuesta cruda:", rawText);
+
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    return await response.json();
+    // Intentá parsear solo si sabés que es JSON
+    return JSON.parse(rawText);
   } catch (error) {
-    console.error('GET request failed:', error);
+    console.error("GET request failed:", error);
     throw error;
   }
 }
 
-export async function postData(endpoint, data) {
+
+// ✅ POST request usando FormData
+export async function postBankTransferComprobante({
+  userId,
+  packageId,
+  file,
+}) {
   try {
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // 'Authorization': 'Bearer token',
-      },
-      body: JSON.stringify(data),
+    const formData = new FormData();
+    formData.append("UserId", userId);
+    formData.append("PackageId", packageId);
+    formData.append("ProofFile", file);
+
+    const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
+      method: "POST",
+      body: formData,
     });
 
     if (!response.ok) {
@@ -38,8 +50,7 @@ export async function postData(endpoint, data) {
 
     return await response.json();
   } catch (error) {
-    console.error('POST request failed:', error);
+    console.error("POST request failed:", error);
     throw error;
   }
 }
-
