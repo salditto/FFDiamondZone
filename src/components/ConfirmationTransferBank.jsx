@@ -1,11 +1,17 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { getBankTransferInfo, postBankTransferComprobante } from "../services/BankTransfer.service";
+import {
+  getBankTransferInfo,
+  postBankTransferComprobante,
+} from "../services/BankTransfer.service";
+import { useTranslation } from "react-i18next";
 
 export default function DropPdf() {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const { t } = useTranslation();
 
   const onDrop = useCallback((acceptedFiles, fileRejections) => {
     if (fileRejections.length > 0) {
@@ -32,8 +38,8 @@ export default function DropPdf() {
     setLoading(true);
 
     try {
-      const userId = "c39a1f40-56b5-4e91-b20e-79c0d2de799f"; // reemplazá según tu lógica
-      const packageId = "PACK123"; // idem
+      const userId = "c39a1f40-56b5-4e91-b20e-79c0d2de799f";
+      const packageId = "PACK123";
 
       const response = await postBankTransferComprobante({
         userId,
@@ -68,14 +74,16 @@ export default function DropPdf() {
       <div className="payment-button" {...getRootProps()}>
         <input {...getInputProps()} />
         {isDragActive ? (
-          <p>Soltá el PDF acá...</p>
+          <p>{t("upload.drop_active")}</p>
         ) : (
-          <p>Arrastrá un PDF o hacé click para subir</p>
+          <p>{t("upload.drop_prompt")}</p>
         )}
         {file && (
-          <p>
-            📄 Archivo: <strong>{file.name}</strong>
-          </p>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: t("upload.file_label", { filename: file.name }),
+            }}
+          />
         )}
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
@@ -84,14 +92,6 @@ export default function DropPdf() {
         <button
           className="btn btn-primary"
           onClick={handleUpload}
-          disabled={loading}
-        >
-          {loading ? "Subiendo..." : "Subir comprobante"}
-        </button>
-
-        <button
-          className="btn btn-primary"
-          onClick={getInfo}
           disabled={loading}
         >
           {loading ? "Subiendo..." : "Subir comprobante"}

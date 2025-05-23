@@ -189,7 +189,7 @@ export default function PurchaseForm() {
         <div className="form-step">
           <div className="step-header">
             <span className="step-number">4</span>
-            <h3 className="step-title">Subi tu comprobante</h3>
+            <h3 className="step-title">{t("upload.title")}</h3>
           </div>
           <DropPdf />
         </div>

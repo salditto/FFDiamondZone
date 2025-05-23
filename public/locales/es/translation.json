@@ -47,6 +47,18 @@
     "q5": "¿Están afiliados con Garena Free Fire?",
     "a5": "No, FF Diamond Zone es un servicio independiente de terceros. No estamos afiliados, respaldados ni patrocinados por Garena o Free Fire."
   },
+  "upload": {
+  "drop_prompt": "Arrastrá un PDF o hacé click para subir",
+  "title": "Subí tu comprobante",
+  "drop_active": "Soltá el PDF acá...",
+  "file_label": "📄 Archivo: <strong>{{filename}}</strong>",
+  "error_invalid": "Solo se permiten archivos PDF.",
+  "error_missing": "No hay archivo para subir.",
+  "button_upload": "Subir comprobante",
+  "button_uploading": "Subiendo...",
+  "upload_success": "Comprobante subido con éxito",
+  "upload_error": "Error al subir el comprobante"
+},
   "footer": {
     "quick_links": "Enlaces Rápidos",
     "contact_us": "Contáctanos",

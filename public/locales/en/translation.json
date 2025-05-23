@@ -4,6 +4,7 @@
     "about": "About",
     "buy": "Buy Diamonds",
     "faq": "FAQ",
+    "login": "Login",
     "contact": "Contact"
   },
   "welcome": {
@@ -64,6 +65,18 @@
     "q5": "Are you affiliated with Garena Free Fire?",
     "a5": "No, FF Diamond Zone is an independent third-party service. We are not affiliated, endorsed, or sponsored by Garena or Free Fire."
   },
+  "upload": {
+  "drop_prompt": "Drag a PDF or click to upload",
+   "title": "Upload your receipt",
+  "drop_active": "Drop the PDF here...",
+  "file_label": "📄 File: <strong>{{filename}}</strong>",
+  "error_invalid": "Only PDF files are allowed.",
+  "error_missing": "No file to upload.",
+  "button_upload": "Upload Receipt",
+  "button_uploading": "Uploading...",
+  "upload_success": "Receipt uploaded successfully",
+  "upload_error": "Error uploading receipt"
+},
   "footer": {
     "quick_links": "Quick Links",
     "contact_us": "Contact Us",
