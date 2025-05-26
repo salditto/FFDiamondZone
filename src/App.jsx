@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import MainLayout from "./MainLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import PaymentStatusMp from "./pages/payment-status-mp";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Route path="/" element={<MainLayout />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/payment-status-mp" element={<PaymentStatusMp />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

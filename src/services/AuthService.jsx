@@ -1,11 +1,11 @@
-const BASE_URL = '/api/Auth';
+const BASE_URL = "/api/Auth";
 
 export async function registerUser(credentials) {
   try {
     const response = await fetch(`${BASE_URL}/register`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
@@ -17,7 +17,7 @@ export async function registerUser(credentials) {
 
     return await response.json();
   } catch (error) {
-    console.error('Error al registrar:', error);
+    console.error("Error al registrar:", error);
     throw error;
   }
 }
@@ -25,9 +25,9 @@ export async function registerUser(credentials) {
 export async function loginUser(credentials) {
   try {
     const response = await fetch(`${BASE_URL}/login`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
@@ -41,12 +41,13 @@ export async function loginUser(credentials) {
 
     // Si el token viene en el body
     if (data.token) {
-      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem("auth_token", data.token);
+      localStorage.setItem("userId", data.userId);
     }
 
     return data;
   } catch (error) {
-    console.error('Error al iniciar sesión:', error);
+    console.error("Error al iniciar sesión:", error);
     throw error;
   }
 }

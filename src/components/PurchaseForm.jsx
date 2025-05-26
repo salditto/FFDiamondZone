@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -13,7 +13,10 @@ import {
 import { faBitcoin } from "@fortawesome/free-brands-svg-icons";
 import { EmbeddedCheckout } from "../payments/StripeElementsWrapper";
 import { loadStripe } from "@stripe/stripe-js";
-import DropPdf from "./ConfirmationTransferBank";
+import DropPdf from "../payments/ConfirmationTransferBank";
+import { width } from "@fortawesome/free-brands-svg-icons/fa42Group";
+import { postMpBuy } from "../services/MercadoPago.service";
+import PaymentMercadoPago from "../payments/MercadoPagoConfirmation";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -39,8 +42,18 @@ export default function PurchaseForm() {
   const [quantity, setQuantity] = useState(diamondOptions[2].id);
   const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id);
   const [playerIdError, setPlayerIdError] = useState("");
+  const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    getUserId();
+  }, []);
+
+  function getUserId() {
+    const userId = localStorage.getItem("userId");
+    setPlayerId(userId);
+  }
 
   function validatePlayerId(id) {
     if (!id) return t("form.error_playerId_required");
@@ -58,6 +71,14 @@ export default function PurchaseForm() {
   function getSelectedPrice() {
     const opt = diamondOptions.find((o) => o.id === quantity);
     return opt ? opt.price : "$0.00";
+  }
+
+  function getSelectedPriceForMp() {
+    const opt = diamondOptions.find((o) => o.id === quantity);
+    if (!opt || !opt.price) return 0;
+
+    const numberToPesos = parseFloat(opt.price.replace("$", "")) * 1120;
+    return "$" + numberToPesos.toString();
   }
 
   async function handleBuy() {
@@ -78,6 +99,24 @@ export default function PurchaseForm() {
     } catch (e) {
       console.error(e);
       alert(t("form.error_creating_session"));
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  async function handleBuyMp() {
+    setIsLoading(true);
+
+    try {
+      const userId = playerId;
+      const opt = diamondOptions.find((o) => o.id === quantity);
+      const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
+      console.log(userId, numericAmount);
+      const result = await postMpBuy({ amount: numericAmount, userId });
+
+      console.log("Resultado de postMpBuy:", result);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -183,6 +222,15 @@ export default function PurchaseForm() {
             ? t("form.loading")
             : t("form.submit_button", { price: getSelectedPrice() })}
         </button>
+      )}
+
+      {paymentMethod === "mercadopago" && (
+        <PaymentMercadoPago
+          playerId={playerId}
+          quantity={quantity}
+          isLoading={isLoading}
+          diamondOptions={diamondOptions}
+        />
       )}
 
       {paymentMethod === "bank_transfer_ars" && (

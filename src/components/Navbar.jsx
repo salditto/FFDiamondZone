@@ -32,16 +32,9 @@ const Navbar = ({
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem("auth_token"));
     const handleScroll = () => {
-      console.log("Scroll event detected on document!");
       const scrollTop =
         document.documentElement.scrollTop || document.body.scrollTop;
       const shouldBeScrolled = scrollTop > 30;
-      console.log(
-        "ScrollTop:",
-        scrollTop,
-        "Should be scrolled:",
-        shouldBeScrolled
-      );
       setScrolled((prevState) => {
         if (prevState !== shouldBeScrolled) {
           return shouldBeScrolled;
@@ -49,12 +42,9 @@ const Navbar = ({
         return prevState;
       });
     };
-
-    console.log("Adding scroll listener to document...");
     document.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      console.log("Removing scroll listener from document...");
       document.removeEventListener("scroll", handleScroll);
     };
   }, []);
@@ -160,7 +150,7 @@ const Navbar = ({
               className="nav-link"
               onClick={() => handleLinkClick(onLoginClick)}
               href="/login"
-            >
+            >a
               <FontAwesomeIcon icon={faEnvelope} className="nav-icon" />
               {t("navbar.login")}
             </a>
