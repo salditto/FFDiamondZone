@@ -103,8 +103,6 @@ const Navbar = ({
     },
   ];
 
-  console.log("Navbar render - Scrolled state:", scrolled);
-
   return (
     <nav
       className={`navbar ${scrolled ? "scrolled" : ""} ${

@@ -3,6 +3,7 @@ import MainLayout from "./MainLayout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import PaymentStatusMp from "./pages/payment-status-mp";
+import { ActivateAccount } from "./pages/ActivateAccount";
 
 function App() {
   return (
@@ -11,6 +12,8 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/payment-status-mp" element={<PaymentStatusMp />} />
+      <Route path="/activate" element={<ActivateAccount />} />
+
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

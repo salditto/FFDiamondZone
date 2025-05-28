@@ -1,6 +1,7 @@
 // pages/Register.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/AuthService";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Register() {
 
     try {
       const result = await registerUser({ email, password });
-      alert("Cuenta creada. Iniciá sesión.");
+      alert("Cuenta creada. Chequea tu mail para activar tu cuenta.");
       navigate("/login");
     } catch (err) {
       console.error(err);

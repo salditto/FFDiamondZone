@@ -14,6 +14,7 @@ export default function PaymentMercadoPago({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const userId = localStorage.getItem("userId");
 
   const getSelectedPriceForMp = () => {
     const opt = diamondOptions.find((o) => o.id === quantity);
@@ -23,14 +24,15 @@ export default function PaymentMercadoPago({
   };
 
   const handleBuyMp = async () => {
-    if (!playerId) return;
+    console.log(userId)
+    if (!userId) return;
     setLoading(true);
     try {
       const opt = diamondOptions.find((o) => o.id === quantity);
       const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
       const result = await postMpBuy({
         amount: numericAmount,
-        userId: playerId,
+        userId: userID,
       });
       if (result.initPoint) {
         navigate("/payment-status-mp", {
@@ -56,7 +58,7 @@ export default function PaymentMercadoPago({
           type="button"
           className="payment-button"
           style={{ width: "100%" }}
-          disabled={!playerId || loading || externalLoading}
+          disabled={!userId || loading || externalLoading}
           onClick={handleBuyMp}
         >
           {loading ? (

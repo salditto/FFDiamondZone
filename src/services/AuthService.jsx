@@ -51,3 +51,28 @@ export async function loginUser(credentials) {
     throw error;
   }
 }
+
+export async function verifyEmailToken(token) {
+  const bodyToEndpoint = {
+    token: token
+  }
+  try {
+    const response = await fetch(`${BASE_URL}/verify-email`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyToEndpoint),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error al vericar la cuenta", error);
+    throw error;
+  }
+}
