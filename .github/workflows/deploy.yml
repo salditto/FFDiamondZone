@@ -1,34 +1,36 @@
-name: Deploy to Hostinger via FTP
+name: Deploy Vite site to Hostinger via FTP
 
 on:
   push:
     branches:
-      - main
+      - main  # o la rama que uses para producción
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: Deploy via FTP
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: ⚙️ Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '18' # o el que uses en tu proyecto
 
-      - name: 📦 Install dependencies
-        run: npm install
+      - name: Install dependencies and build
+        run: |
+          npm ci
+          npm run build
 
-      - name: 🔨 Build project
-        run: npm run build
-
-      - name: 🚀 Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v3
+      - name: Upload via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_TARGET }}/
-          local-dir: dist/
+          protocol: ftp
+          port: 21
+          local-dir: ./dist
+          server-dir: /public_html/
