@@ -3,7 +3,7 @@ name: 🚀 Deploy Vite to Hostinger
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -21,7 +21,7 @@ jobs:
       - name: 📦 Install dependencies
         run: npm install
 
-       - name: Build app
+      - name: 🧱 Build app
         run: |
           echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > .env.production
           npm run build

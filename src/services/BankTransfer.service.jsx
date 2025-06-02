@@ -18,7 +18,6 @@ export async function getBankTransferInfo() {
       throw new Error(`Error HTTP: ${response.status}`);
     }
 
-    // Intentá parsear solo si sabés que es JSON
     return JSON.parse(rawText);
   } catch (error) {
     console.error("GET request failed:", error);
@@ -27,7 +26,6 @@ export async function getBankTransferInfo() {
 }
 
 
-// ✅ POST request usando FormData
 export async function postBankTransferComprobante({
   userId,
   packageId,

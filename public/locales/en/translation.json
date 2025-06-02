@@ -29,6 +29,10 @@
     "feature3_title": "Dedicated Support",
     "feature3_desc": "Our customer support team is ready to assist you with any questions or issues."
   },
+  "purchase_intro": {
+    "title": "Compra tus Diamantes",
+    "subtitle": "Completá los pasos a continuación para recibir tus diamantes al instante y de forma segura."
+  },
   "form": {
     "step1_title": "Enter Player ID & Region",
     "playerId_placeholder": "Enter your 8-10 digit Player ID",
@@ -40,7 +44,8 @@
     "bonus_text": "+ {{bonus}} Bonus!",
     "diamonds_label": "{{label}} Diamonds",
     "step3_title": "Choose Payment Method",
-    "submit_button": "Purchase Now ({{price}})",
+    "step4_title": "Pay with MercadoPago",
+    "submit_button": "Purchase Now {{price}}",
     "success_message": "Purchase successful! Your diamonds are on the way.",
     "out_of_stock": "Out of Stock",
     "paymentMethods": {
@@ -66,17 +71,17 @@
     "a5": "No, FF Diamond Zone is an independent third-party service. We are not affiliated, endorsed, or sponsored by Garena or Free Fire."
   },
   "upload": {
-  "drop_prompt": "Drag a PDF or click to upload",
-   "title": "Upload your receipt",
-  "drop_active": "Drop the PDF here...",
-  "file_label": "📄 File: <strong>{{filename}}</strong>",
-  "error_invalid": "Only PDF files are allowed.",
-  "error_missing": "No file to upload.",
-  "button_upload": "Upload Receipt",
-  "button_uploading": "Uploading...",
-  "upload_success": "Receipt uploaded successfully",
-  "upload_error": "Error uploading receipt"
-},
+    "drop_prompt": "Drag a PDF or click to upload",
+    "title": "Upload your receipt",
+    "drop_active": "Drop the PDF here...",
+    "file_label": "📄 File: <strong>{{filename}}</strong>",
+    "error_invalid": "Only PDF files are allowed.",
+    "error_missing": "No file to upload.",
+    "button_upload": "Upload Receipt",
+    "button_uploading": "Uploading...",
+    "upload_success": "Receipt uploaded successfully",
+    "upload_error": "Error uploading receipt"
+  },
   "footer": {
     "quick_links": "Quick Links",
     "contact_us": "Contact Us",
@@ -85,4 +90,4 @@
     "contact_info": "Need help? Contact us via WhatsApp or Email for support.",
     "copyright": "© {{year}} FF Diamond Zone. All Rights Reserved."
   }
-} 
+}

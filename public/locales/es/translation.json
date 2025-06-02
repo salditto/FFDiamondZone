@@ -11,6 +11,10 @@
     "feature3_title": "Soporte Dedicado",
     "feature3_desc": "Nuestro equipo de soporte está listo para ayudarte con cualquier pregunta o problema."
   },
+  "purchase_intro": {
+    "title": "Purchase Your Diamonds",
+    "subtitle": "Complete the steps below to get your diamonds instantly and securely."
+  },
   "form": {
     "step1_title": "Ingresa ID de Jugador y Región",
     "playerId_placeholder": "Ingresa tu ID de Jugador (8-10 dígitos)",
@@ -22,7 +26,8 @@
     "bonus_text": "+ ¡{{bonus}} de Bonus!",
     "diamonds_label": "{{label}} Diamantes",
     "step3_title": "Elige Método de Pago",
-    "submit_button": "Comprar Ahora ({{price}})",
+    "step4_title": "Pagar en MercadoPago",
+    "submit_button": "Comprar Ahora {{price}}",
     "success_message": "¡Compra exitosa! Tus diamantes están en camino.",
     "out_of_stock": "Sin Stock",
     "paymentMethods": {
@@ -48,17 +53,17 @@
     "a5": "No, FF Diamond Zone es un servicio independiente de terceros. No estamos afiliados, respaldados ni patrocinados por Garena o Free Fire."
   },
   "upload": {
-  "drop_prompt": "Arrastrá un PDF o hacé click para subir",
-  "title": "Subí tu comprobante",
-  "drop_active": "Soltá el PDF acá...",
-  "file_label": "📄 Archivo: <strong>{{filename}}</strong>",
-  "error_invalid": "Solo se permiten archivos PDF.",
-  "error_missing": "No hay archivo para subir.",
-  "button_upload": "Subir comprobante",
-  "button_uploading": "Subiendo...",
-  "upload_success": "Comprobante subido con éxito",
-  "upload_error": "Error al subir el comprobante"
-},
+    "drop_prompt": "Arrastrá un PDF o hacé click para subir",
+    "title": "Subí tu comprobante",
+    "drop_active": "Soltá el PDF acá...",
+    "file_label": "📄 Archivo: <strong>{{filename}}</strong>",
+    "error_invalid": "Solo se permiten archivos PDF.",
+    "error_missing": "No hay archivo para subir.",
+    "button_upload": "Subir comprobante",
+    "button_uploading": "Subiendo...",
+    "upload_success": "Comprobante subido con éxito",
+    "upload_error": "Error al subir el comprobante"
+  },
   "footer": {
     "quick_links": "Enlaces Rápidos",
     "contact_us": "Contáctanos",

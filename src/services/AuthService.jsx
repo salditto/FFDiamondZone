@@ -39,10 +39,9 @@ export async function loginUser(credentials) {
 
     const data = await response.json();
 
-    // Si el token viene en el body
     if (data.token) {
-      localStorage.setItem("auth_token", data.token);
-      localStorage.setItem("userId", data.userId);
+      sessionStorage.setItem("auth_token", data.token);
+      sessionStorage.setItem("userId", data.userId);
     }
 
     return data;

@@ -38,6 +38,7 @@ const paymentOptions = [
 
 export default function PurchaseForm() {
   const { t } = useTranslation();
+  const [userId, setUserId] = useState("");
   const [playerId, setPlayerId] = useState("");
   const [quantity, setQuantity] = useState(diamondOptions[2].id);
   const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id);
@@ -52,7 +53,7 @@ export default function PurchaseForm() {
 
   function getUserId() {
     const userId = localStorage.getItem("userId");
-    setPlayerId(userId);
+    setUserId(userId);
   }
 
   function validatePlayerId(id) {
@@ -99,24 +100,6 @@ export default function PurchaseForm() {
     } catch (e) {
       console.error(e);
       alert(t("form.error_creating_session"));
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleBuyMp() {
-    setIsLoading(true);
-
-    try {
-      const userId = playerId;
-      const opt = diamondOptions.find((o) => o.id === quantity);
-      const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
-      console.log(userId, numericAmount);
-      const result = await postMpBuy({ amount: numericAmount, userId });
-
-      console.log("Resultado de postMpBuy:", result);
-    } catch (e) {
-      console.error(e);
     } finally {
       setIsLoading(false);
     }
@@ -226,7 +209,7 @@ export default function PurchaseForm() {
 
       {paymentMethod === "mercadopago" && (
         <PaymentMercadoPago
-          playerId={playerId}
+          playerId={userId}
           quantity={quantity}
           isLoading={isLoading}
           diamondOptions={diamondOptions}

@@ -1,13 +1,16 @@
-import { useRef } from 'react';
-import WelcomeScreen from './components/WelcomeScreen';
-import About from './components/About';
-import PurchaseForm from './components/PurchaseForm';
-import Footer from './components/Footer';
-import FAQ from './components/FAQ';
-import Navbar from './components/Navbar';
-import { useNavigate } from 'react-router-dom';
+import { useRef } from "react";
+import WelcomeScreen from "./components/WelcomeScreen";
+import About from "./components/About";
+import PurchaseForm from "./components/PurchaseForm";
+import Footer from "./components/Footer";
+import FAQ from "./components/FAQ";
+import Navbar from "./components/Navbar";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import './app.css';
 
 function MainLayout() {
+  const { t } = useTranslation();
   const formRef = useRef(null);
   const faqRef = useRef(null);
   const homeRef = useRef(null);
@@ -15,13 +18,13 @@ function MainLayout() {
   const navigate = useNavigate();
 
   const handleScrollTo = (ref) => {
-    ref.current?.scrollIntoView({ behavior: 'smooth' });
+    ref.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
     <div className="app">
-      <Navbar 
-        onFAQClick={() => handleScrollTo(faqRef)} 
+      <Navbar
+        onFAQClick={() => handleScrollTo(faqRef)}
         onHomeClick={() => handleScrollTo(homeRef)}
         onBuyClick={() => handleScrollTo(formRef)}
         onContactClick={() => handleScrollTo(footerRef)}
@@ -29,10 +32,14 @@ function MainLayout() {
       />
 
       <div ref={homeRef} className="section hero-section-wrapper">
-        <WelcomeScreen 
+        <WelcomeScreen
           onBuyClick={() => handleScrollTo(formRef)}
           onFAQClick={() => handleScrollTo(faqRef)}
-          onScrollIndicatorClick={() => document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' })}
+          onScrollIndicatorClick={() =>
+            document
+              .getElementById("about-section")
+              ?.scrollIntoView({ behavior: "smooth" })
+          }
         />
         <div className="section-divider"></div>
       </div>
@@ -44,11 +51,11 @@ function MainLayout() {
       </div>
 
       <div ref={formRef} className="section form-section" id="buy-diamonds">
-        <h2 className="section-title">Purchase Your Diamonds</h2>
+        <h2 className="section-title">{t("purchase_intro.title")}</h2>
         <p className="section-subtitle purchase-subtitle">
-          Complete the steps below to get your diamonds instantly and securely.
+          {t("purchase_intro.subtitle")}
         </p>
-        <PurchaseForm /> 
+        <PurchaseForm />
       </div>
 
       <div ref={faqRef} className="section faq-section" id="faq">
