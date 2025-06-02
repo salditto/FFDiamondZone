@@ -12,8 +12,8 @@
     "feature3_desc": "Nuestro equipo de soporte está listo para ayudarte con cualquier pregunta o problema."
   },
   "purchase_intro": {
-    "title": "Purchase Your Diamonds",
-    "subtitle": "Complete the steps below to get your diamonds instantly and securely."
+    "title": "Compra tus Diamantes",
+    "subtitle": "Completá los pasos a continuación para recibir tus diamantes al instante y de forma segura."
   },
   "form": {
     "step1_title": "Ingresa ID de Jugador y Región",
@@ -30,11 +30,11 @@
     "submit_button": "Comprar Ahora {{price}}",
     "success_message": "¡Compra exitosa! Tus diamantes están en camino.",
     "out_of_stock": "Sin Stock",
-    "paymentMethods": {
-      "stripe": "Tarjeta Internacional (USD)",
-      "mercadopago": "MercadoPago (Argentina)",
-      "bank_transfer_ars": "Transferencia Bancaria (Argentina)",
-      "crypto": "Crypto"
+    "payment": {
+      "stripe": "Stripe",
+      "mercadopago": "MercadoPago",
+      "bank_transfer_ars": "Transferencia",
+      "crypto": "Cripto"
     }
   },
   "faq": {

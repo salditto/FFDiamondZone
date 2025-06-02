@@ -29,9 +29,9 @@
     "feature3_title": "Dedicated Support",
     "feature3_desc": "Our customer support team is ready to assist you with any questions or issues."
   },
-  "purchase_intro": {
-    "title": "Compra tus Diamantes",
-    "subtitle": "Completá los pasos a continuación para recibir tus diamantes al instante y de forma segura."
+    "purchase_intro": {
+    "title": "Purchase Your Diamonds",
+    "subtitle": "Complete the steps below to get your diamonds instantly and securely."
   },
   "form": {
     "step1_title": "Enter Player ID & Region",
@@ -48,7 +48,7 @@
     "submit_button": "Purchase Now {{price}}",
     "success_message": "Purchase successful! Your diamonds are on the way.",
     "out_of_stock": "Out of Stock",
-    "paymentMethods": {
+    "payment": {
       "stripe": "International Card (USD)",
       "mercadopago": "MercadoPago (Argentina)",
       "bank_transfer_ars": "Bank Transfer (ARS)",

@@ -30,10 +30,10 @@ const diamondOptions = [
 ];
 
 const paymentOptions = [
-  { id: "stripe", label: "Stripe", icon: faMoneyBillTransfer },
-  { id: "mercadopago", label: "MercadoPago", icon: faCreditCard },
-  { id: "bank_transfer_ars", label: "Transferencia", icon: faLandmark },
-  { id: "crypto", label: "Cripto", icon: faBitcoin },
+  { id: "stripe", icon: faMoneyBillTransfer },
+  { id: "mercadopago", icon: faCreditCard },
+  { id: "bank_transfer_ars", icon: faLandmark },
+  { id: "crypto", icon: faBitcoin },
 ];
 
 export default function PurchaseForm() {
@@ -186,7 +186,7 @@ export default function PurchaseForm() {
               onClick={() => setPaymentMethod(opt.id)}
             >
               <FontAwesomeIcon icon={opt.icon} className="button-icon" />
-              <span>{opt.label}</span>
+              <span>{t(`form.payment.${opt.id}`)}</span>
             </button>
           ))}
         </div>

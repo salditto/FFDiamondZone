@@ -31,7 +31,7 @@ const Navbar = ({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("auth_token"));
+    setIsLoggedIn(!!sessionStorage.getItem("auth_token"));
     const handleScroll = () => {
       const scrollTop =
         document.documentElement.scrollTop || document.body.scrollTop;
@@ -50,13 +50,12 @@ const Navbar = ({
     };
   }, []);
 
-  
-    const logout = () => {
-      localStorage.removeItem("auth_token");
-      setIsLoggedIn(false);
-      window.location.href = "/";
-    };
-
+  const logout = () => {
+    sessionStorage.removeItem("auth_token");
+    sessionStorage.removeItem("userId");
+    setIsLoggedIn(false);
+    window.location.href = "/";
+  };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
