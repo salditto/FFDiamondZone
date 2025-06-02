@@ -7,7 +7,7 @@ import FAQ from "./components/FAQ";
 import Navbar from "./components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import './app.css';
+import './App.css';
 
 function MainLayout() {
   const { t } = useTranslation();
