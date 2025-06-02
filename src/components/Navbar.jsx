@@ -10,6 +10,7 @@ import {
   faBars,
   faTimes,
   faGlobe,
+  faRightToBracket,
 } from "@fortawesome/free-solid-svg-icons";
 
 const Navbar = ({
@@ -148,8 +149,8 @@ const Navbar = ({
               className="nav-link"
               onClick={() => handleLinkClick(onLoginClick)}
               href="/login"
-            >a
-              <FontAwesomeIcon icon={faEnvelope} className="nav-icon" />
+            >
+              <FontAwesomeIcon icon={faRightToBracket} className="nav-icon" />
               {t("navbar.login")}
             </a>
           )}

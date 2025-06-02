@@ -2,20 +2,23 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/AuthService";
+import { useSnackbar } from "../context/SnackBarContext";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const { showSnackbar } = useSnackbar();
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const result = await loginUser({ email, password });
-      alert("Sesión iniciada");
+      showSnackbar("Sesión iniciada", "success");
       navigate("/");
     } catch (err) {
-      alert("Credenciales inválidas");
+      showSnackbar("Credenciales inválidas", "error");
     }
   };
 

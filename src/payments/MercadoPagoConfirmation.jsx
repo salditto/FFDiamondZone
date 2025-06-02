@@ -14,7 +14,7 @@ export default function PaymentMercadoPago({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const userId = localStorage.getItem("userId");
+  const userId = sessionStorage.getItem("userId");
 
   const getSelectedPriceForMp = () => {
     const opt = diamondOptions.find((o) => o.id === quantity);
@@ -52,7 +52,7 @@ export default function PaymentMercadoPago({
       <div className="form-step">
         <div className="step-header">
           <span className="step-number">4</span>
-          <h3 className="step-title">Pagar en mercadopago</h3>
+          <h3 className="step-title">{t('form.step4_title')}</h3>
         </div>
         <button
           type="button"
@@ -79,6 +79,7 @@ export default function PaymentMercadoPago({
           flex-direction: column;
           align-items: center;
           justify-content: center;
+          font-size: 16px;
           gap: 5px;
           text-align: center;
           border-radius: 8px;
