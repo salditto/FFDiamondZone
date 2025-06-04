@@ -1,13 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ENDPOINT = 'BankTransfers';
 
-
 export async function getBankTransferInfo() {
   try {
-    const response = await fetch('/api/BankTransfers', {
-      method: 'GET',
+    const response = await fetch("/api/BankTransfers", {
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
     });
 
@@ -25,21 +24,30 @@ export async function getBankTransferInfo() {
   }
 }
 
-
 export async function postBankTransferComprobante({
   userId,
+  FFUser,
+  FFRegion,
   packageId,
   file,
 }) {
+  const token = sessionStorage.getItem("auth_token");
   try {
-    const formData = new FormData();
-    formData.append("UserId", userId);
-    formData.append("PackageId", packageId);
-    formData.append("ProofFile", file);
+    const bodyToEndpoint = {
+      UserId: userId,
+      FFUser: FFUser,
+      FFRegion: FFRegion,
+      PackageId: packageId,
+      ProofFile: file,
+    };
 
     const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(bodyToEndpoint),
     });
 
     if (!response.ok) {

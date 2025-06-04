@@ -29,7 +29,7 @@
     "feature3_title": "Dedicated Support",
     "feature3_desc": "Our customer support team is ready to assist you with any questions or issues."
   },
-    "purchase_intro": {
+  "purchase_intro": {
     "title": "Purchase Your Diamonds",
     "subtitle": "Complete the steps below to get your diamonds instantly and securely."
   },
@@ -46,6 +46,7 @@
     "step3_title": "Choose Payment Method",
     "step4_title": "Pay with MercadoPago",
     "submit_button": "Purchase Now {{price}}",
+    "error_complete_previous_step": "Complete the previous step to continue with the payment",
     "success_message": "Purchase successful! Your diamonds are on the way.",
     "out_of_stock": "Out of Stock",
     "payment": {

@@ -2,7 +2,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 const ENDPOINT = "mercadopago";
 
 export async function getStatusPaymentMp(PAYMENTID) {
-  const token = localStorage.getItem("auth_token");
+  const token = sessionStorage.getItem("auth_token");
   try {
     const response = await fetch(
       `${BASE_URL}${ENDPOINT}${"/status/"}${PAYMENTID}`,

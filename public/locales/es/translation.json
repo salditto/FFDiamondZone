@@ -29,6 +29,7 @@
     "step4_title": "Pagar en MercadoPago",
     "submit_button": "Comprar Ahora {{price}}",
     "success_message": "¡Compra exitosa! Tus diamantes están en camino.",
+    "error_complete_previous_step": "Completá el paso anterior para continuar con el pago",
     "out_of_stock": "Sin Stock",
     "payment": {
       "stripe": "Stripe",

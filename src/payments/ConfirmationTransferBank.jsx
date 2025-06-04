@@ -6,7 +6,7 @@ import {
 } from "../services/BankTransfer.service";
 import { useTranslation } from "react-i18next";
 
-export default function DropPdf() {
+export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -35,14 +35,18 @@ export default function DropPdf() {
       return;
     }
 
+    if (!userId || !FFUser || !FFRegion) {
+      setError("Faltan datos obligatorios para subir el comprobante.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const userId = "c39a1f40-56b5-4e91-b20e-79c0d2de799f";
-      const packageId = "PACK123";
-
       const response = await postBankTransferComprobante({
         userId,
+        FFUser,
+        FFRegion,
         packageId,
         file,
       });

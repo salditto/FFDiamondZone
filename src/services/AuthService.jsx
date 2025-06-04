@@ -2,7 +2,7 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export async function registerUser(credentials) {
   try {
-    const response = await fetch(`${BASE_URL}/Auth/register`, {
+    const response = await fetch(`${BASE_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,6 +39,7 @@ export async function loginUser(credentials) {
 
     const data = await response.json();
 
+    // Si el token viene en el body
     if (data.token) {
       sessionStorage.setItem("auth_token", data.token);
       sessionStorage.setItem("userId", data.userId);
@@ -53,8 +54,8 @@ export async function loginUser(credentials) {
 
 export async function verifyEmailToken(token) {
   const bodyToEndpoint = {
-    token: token
-  }
+    token: token,
+  };
   try {
     const response = await fetch(`${BASE_URL}/Auth/verify-email`, {
       method: "POST",

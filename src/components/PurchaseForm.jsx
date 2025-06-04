@@ -39,6 +39,7 @@ const paymentOptions = [
 export default function PurchaseForm() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState("");
+  const [region, setRegion] = useState("ar");
   const [playerId, setPlayerId] = useState("");
   const [quantity, setQuantity] = useState(diamondOptions[2].id);
   const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id);
@@ -46,6 +47,14 @@ export default function PurchaseForm() {
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const ffRegions = [
+    { code: "ar", label: "Sudamérica (AR)" },
+    { code: "br", label: "Brasil (BR)" },
+    { code: "us", label: "Norteamérica (US)" },
+    { code: "sg", label: "Sudoeste Asiático (SG)" },
+    { code: "in", label: "India (IN)" },
+  ];
 
   useEffect(() => {
     getUserId();
@@ -129,6 +138,18 @@ export default function PurchaseForm() {
           {playerIdError && !isSuccess && (
             <p className="error-message">{playerIdError}</p>
           )}
+          <select
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            className="region-select"
+            disabled={isSuccess}
+          >
+            {ffRegions.map((r) => (
+              <option key={r.code} value={r.code}>
+                {r.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -146,7 +167,9 @@ export default function PurchaseForm() {
               className={`quantity-button ${
                 quantity === opt.id ? "selected" : ""
               } ${opt.outOfStock ? "out-of-stock" : ""}`}
-              disabled={isSuccess || opt.outOfStock}
+              disabled={
+                isSuccess || opt.outOfStock || !playerId || playerIdError
+              }
               onClick={() => setQuantity(opt.id)}
             >
               <div className="button-main-content">
@@ -166,6 +189,11 @@ export default function PurchaseForm() {
             </button>
           ))}
         </div>
+        {(!playerId || playerIdError) && (
+          <p className="error-message">
+            {playerIdError || t("form.error_playerId_required")}
+          </p>
+        )}
       </div>
 
       {/* Step 3 */}
@@ -182,7 +210,7 @@ export default function PurchaseForm() {
               className={`payment-button ${
                 paymentMethod === opt.id ? "selected" : ""
               }`}
-              disabled={isSuccess}
+              disabled={isSuccess || !quantity || !playerId || !!playerIdError}
               onClick={() => setPaymentMethod(opt.id)}
             >
               <FontAwesomeIcon icon={opt.icon} className="button-icon" />
@@ -190,6 +218,12 @@ export default function PurchaseForm() {
             </button>
           ))}
         </div>
+        
+        {(!quantity || !playerId || playerIdError) && (
+          <p className="error-message">
+            {t("form.error_complete_previous_step")}
+          </p>
+        )}
       </div>
 
       {/* Buy button for Stripe */}
@@ -222,7 +256,12 @@ export default function PurchaseForm() {
             <span className="step-number">4</span>
             <h3 className="step-title">{t("upload.title")}</h3>
           </div>
-          <DropPdf />
+          <DropPdf
+            userId={userId}
+            FFUser={playerId}
+            FFRegion={region}
+            packageId="2"
+          />
         </div>
       )}
 
