@@ -42,7 +42,7 @@ export default function PurchaseForm() {
   const [region, setRegion] = useState("ar");
   const [playerId, setPlayerId] = useState("");
   const [quantity, setQuantity] = useState(diamondOptions[2].id);
-  const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id);
+  const [paymentMethod, setPaymentMethod] = useState("");
   const [playerIdError, setPlayerIdError] = useState("");
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -203,22 +203,32 @@ export default function PurchaseForm() {
           <h3 className="step-title">{t("form.step3_title")}</h3>
         </div>
         <div className="form-group payment-options">
-          {paymentOptions.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              className={`payment-button ${
-                paymentMethod === opt.id ? "selected" : ""
-              }`}
-              disabled={isSuccess || !quantity || !playerId || !!playerIdError}
-              onClick={() => setPaymentMethod(opt.id)}
-            >
-              <FontAwesomeIcon icon={opt.icon} className="button-icon" />
-              <span>{t(`form.payment.${opt.id}`)}</span>
-            </button>
-          ))}
+          {paymentOptions.map((opt) => {
+            const isDisabled =
+              opt.id === "stripe" ||
+              opt.id === "crypto" ||
+              isSuccess ||
+              !quantity ||
+              !playerId ||
+              !!playerIdError;
+
+            return (
+              <button
+                key={opt.id}
+                type="button"
+                className={`payment-button ${
+                  paymentMethod === opt.id ? "selected" : ""
+                }`}
+                disabled={isDisabled}
+                onClick={() => !isDisabled && setPaymentMethod(opt.id)}
+              >
+                <FontAwesomeIcon icon={opt.icon} className="button-icon" />
+                <span>{t(`form.payment.${opt.id}`)}</span>
+              </button>
+            );
+          })}
         </div>
-        
+
         {(!quantity || !playerId || playerIdError) && (
           <p className="error-message">
             {t("form.error_complete_previous_step")}
@@ -247,6 +257,7 @@ export default function PurchaseForm() {
           quantity={quantity}
           isLoading={isLoading}
           diamondOptions={diamondOptions}
+          playerIdError={playerIdError}
         />
       )}
 
@@ -261,6 +272,7 @@ export default function PurchaseForm() {
             FFUser={playerId}
             FFRegion={region}
             packageId="2"
+            playerIdError={playerIdError}
           />
         </div>
       )}

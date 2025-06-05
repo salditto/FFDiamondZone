@@ -5,17 +5,24 @@ import {
   postBankTransferComprobante,
 } from "../services/BankTransfer.service";
 import { useTranslation } from "react-i18next";
+import { useSnackbar } from "../context/SnackBarContext";
 
-export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
+export default function DropPdf({
+  userId,
+  FFUser,
+  FFRegion,
+  packageId,
+  playerIdError,
+}) {
   const [file, setFile] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const { showSnackbar } = useSnackbar();
   const { t } = useTranslation();
 
   const onDrop = useCallback((acceptedFiles, fileRejections) => {
     if (fileRejections.length > 0) {
-      setError("Solo se permiten archivos PDF.");
+      setError("Formato no válido. Solo se aceptan archivos PDF o imágenes.");
       setFile(null);
     } else {
       setFile(acceptedFiles[0]);
@@ -25,7 +32,12 @@ export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "application/pdf": [".pdf"] },
+    accept: {
+      "application/pdf": [".pdf"],
+      "image/jpeg": [".jpg", ".jpeg"],
+      "image/png": [".png"],
+      "image/webp": [".webp"],
+    },
     multiple: false,
   });
 
@@ -51,23 +63,10 @@ export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
         file,
       });
 
-      console.log("Comprobante subido:", response);
-      alert("Comprobante subido con éxito");
+      showSnackbar("Comprobante subido con exito", "success");
     } catch (err) {
       console.error(err);
-      alert("Error al subir el comprobante");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getInfo = async () => {
-    try {
-      const response = await getBankTransferInfo();
-      console.log("Comprobante subido:", response);
-    } catch (err) {
-      console.error(err);
-      alert("Error al subir el comprobante");
+      showSnackbar("Error al subir el comprobante", "error");
     } finally {
       setLoading(false);
     }
@@ -76,7 +75,7 @@ export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
   return (
     <div>
       <div className="payment-button" {...getRootProps()}>
-        <input {...getInputProps()} />
+        <input {...getInputProps()} disabled={playerIdError} />
         {isDragActive ? (
           <p>{t("upload.drop_active")}</p>
         ) : (
@@ -96,7 +95,7 @@ export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
         <button
           className="btn btn-primary"
           onClick={handleUpload}
-          disabled={loading}
+          disabled={loading || playerIdError}
         >
           {loading ? "Subiendo..." : "Subir comprobante"}
         </button>
@@ -122,6 +121,15 @@ export default function DropPdf({ userId, FFUser, FFRegion, packageId }) {
           display: flex;
           justify-content: center;
           margin-top: 30px;
+        }
+        
+        .btn:disabled,
+        .btn[disabled] {
+          opacity: 0.6;
+          cursor: not-allowed;
+          background-color: #555;
+          border-color: #555;
+          color: #ccc;
         }
       `}</style>
     </div>

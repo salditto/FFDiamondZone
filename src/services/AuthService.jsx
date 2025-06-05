@@ -1,8 +1,8 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = "/api/Auth";
 
 export async function registerUser(credentials) {
   try {
-    const response = await fetch(`${BASE_URL}/Auth/register`, {
+    const response = await fetch(`${BASE_URL}/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,7 +24,7 @@ export async function registerUser(credentials) {
 
 export async function loginUser(credentials) {
   try {
-    const response = await fetch(`${BASE_URL}/Auth/login`, {
+    const response = await fetch(`${BASE_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -57,7 +57,7 @@ export async function verifyEmailToken(token) {
     token: token,
   };
   try {
-    const response = await fetch(`${BASE_URL}/Auth/verify-email`, {
+    const response = await fetch(`${BASE_URL}/verify-email`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
