@@ -61,7 +61,7 @@ export default function PurchaseForm() {
   }, []);
 
   function getUserId() {
-    const userId = localStorage.getItem("userId");
+    const userId = sessionStorage.getItem("userId");
     setUserId(userId);
   }
 
