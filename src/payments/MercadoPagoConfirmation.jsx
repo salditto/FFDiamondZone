@@ -62,7 +62,7 @@ export default function PaymentMercadoPago({
           type="button"
           className="payment-button"
           style={{ width: "100%" }}
-          disabled={!userId || loading || externalLoading}
+          disabled={!userId || loading || externalLoading || playerIdError}
           onClick={handleBuyMp}
         >
           {loading ? (
