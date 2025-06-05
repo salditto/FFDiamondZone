@@ -27,7 +27,7 @@ export async function getStatusPaymentMp(PAYMENTID) {
 }
 
 export async function postMpBuy({ amount, userId }) {
-    const token = localStorage.getItem("auth_token");
+    const token = sessionStorage.getItem("auth_token");
   try {
     const bodyToEndpoint = {
       amount: 1000,
