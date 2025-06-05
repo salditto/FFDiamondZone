@@ -33,25 +33,24 @@ export async function postBankTransferComprobante({
 }) {
   const token = sessionStorage.getItem("auth_token");
   try {
-    const bodyToEndpoint = {
-      UserId: userId,
-      FFUser: FFUser,
-      FFRegion: FFRegion,
-      PackageId: packageId,
-      ProofFile: file,
-    };
+    const formData = new FormData();
+    formData.append("UserId", userId);
+    formData.append("FFUser", FFUser);
+    formData.append("FFRegion", FFRegion);
+    formData.append("PackageId", packageId);
+    formData.append("ProofFile", file); // acá file debería ser un File, no un string con el path
 
-    const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
+    const response = await fetch(` ${BASE_URL}${ENDPOINT}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        // NO pongas Content-Type, el navegador lo pone solo para FormData
+        Authorization: ` Bearer ${token}`,
       },
-      body: JSON.stringify(bodyToEndpoint),
+      body: formData,
     });
 
     if (!response.ok) {
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(` Error: ${response.status}`);
     }
 
     return await response.json();
