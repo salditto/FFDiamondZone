@@ -10,7 +10,9 @@ export default function PaymentMercadoPago({
   quantity,
   isLoading: externalLoading,
   diamondOptions,
-  playerIdError
+  playerIdError,
+  ffUser,
+  ffRegion
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -33,6 +35,8 @@ export default function PaymentMercadoPago({
       const result = await postMpBuy({
         amount: numericAmount,
         userId: userId,
+        ffUser: ffUser,
+        ffRegion: ffRegion
       });
       if (result.initPoint) {
         navigate("/payment-status-mp", {
@@ -58,7 +62,7 @@ export default function PaymentMercadoPago({
           type="button"
           className="payment-button"
           style={{ width: "100%" }}
-          disabled={!userId || loading || externalLoading || playerIdError}
+          disabled={!userId || loading || externalLoading}
           onClick={handleBuyMp}
         >
           {loading ? (

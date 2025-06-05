@@ -26,13 +26,15 @@ export async function getStatusPaymentMp(PAYMENTID) {
   }
 }
 
-export async function postMpBuy({ amount, userId }) {
-    const token = localStorage.getItem("auth_token");
+export async function postMpBuy({ amount, userId, ffUser, ffRegion }) {
+    const token = sessionStorage.getItem("auth_token");
   try {
     const bodyToEndpoint = {
       amount: 1000,
       currency: "ARS",
       userId,
+      ffUser,
+      ffRegion
     };
 
     const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
