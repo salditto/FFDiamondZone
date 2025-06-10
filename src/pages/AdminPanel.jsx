@@ -1,7 +1,11 @@
 // pages/AdminPanel.jsx
 import { useEffect, useState } from "react";
 import { useSnackbar } from "../context/SnackBarContext";
-import { getAllReceipts, updateReceiptStatus } from "../services/AdminPanelService";
+import {
+  getAllReceipts,
+  updateReceiptStatus,
+} from "../services/AdminPanelService";
+import { getPdfFile } from "../services/BankTransfer.service";
 
 export default function AdminPanel() {
   const [receipts, setReceipts] = useState([]);
@@ -15,8 +19,11 @@ export default function AdminPanel() {
   // Estados posibles para los comprobantes
   const statusOptions = {
     0: { label: "Pendiente", color: "#ff9500", bgColor: "#ff950020" },
-    1: { label: "Aprobado", color: "#00ff88", bgColor: "#00ff8820" },
-    2: { label: "Rechazado", color: "#ff4757", bgColor: "#ff475720" }
+    1: { label: "Procesando", color: "#00aaff", bgColor: "#00aaff20" },
+    2: { label: "Aprobado", color: "#00ff88", bgColor: "#00ff8820" },
+    3: { label: "Diamantes Cargados", color: "#b86bff", bgColor: "#b86bff20" },
+    4: { label: "Fallido", color: "#ff4757", bgColor: "#ff475720" },
+    5: { label: "Cancelado", color: "#999", bgColor: "#99999920" },
   };
 
   // Cargar datos desde la API
@@ -25,7 +32,7 @@ export default function AdminPanel() {
       try {
         setLoading(true);
         const response = await getAllReceipts();
-        console.log(response)
+        console.log(response);
         setReceipts(response);
       } catch (error) {
         showSnackbar("Error al cargar los comprobantes", "error");
@@ -38,23 +45,31 @@ export default function AdminPanel() {
     fetchReceipts();
   }, []);
 
-  const filteredReceipts = receipts.filter(receipt => {
+  const filteredReceipts = receipts.filter((receipt) => {
     if (filter === "all") return true;
     return receipt.status.toString() === filter;
   });
 
-  const handleStatusChange = async (receiptId, newStatus) => {
+  const handleStatusChange = async (transferId, receiptId, newStatus) => {
     try {
-      await updateReceiptStatus({ id: receiptId, status: newStatus });
-      
-      setReceipts(prev => 
-        prev.map(receipt => 
-          receipt.id === receiptId 
-            ? { ...receipt, status: newStatus, updatedAt: new Date().toISOString() }
+      await updateReceiptStatus({
+        transferId: transferId,
+        status: newStatus,
+        id: receiptId,
+      });
+
+      setReceipts((prev) =>
+        prev.map((receipt) =>
+          receipt.id === receiptId
+            ? {
+                ...receipt,
+                status: newStatus,
+                updatedAt: new Date().toISOString(),
+              }
             : receipt
         )
       );
-      
+
       showSnackbar("Estado actualizado correctamente", "success");
       setShowModal(false);
     } catch (error) {
@@ -68,8 +83,23 @@ export default function AdminPanel() {
     setShowModal(true);
   };
 
+  const openFile = async (receipt) => {
+    console.log(receipt);
+    try {
+      setLoading(true);
+      const response = await getPdfFile({ idFile: receipt });
+      console.log(response);
+      setReceipts(response);
+    } catch (error) {
+      showSnackbar("Error al cargar los comprobantes", "error");
+      console.error("Error fetching receipts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString('es-AR');
+    return new Date(dateString).toLocaleString("es-AR");
   };
 
   const getPackageName = (packageId) => {
@@ -79,7 +109,7 @@ export default function AdminPanel() {
       "520_diamonds": "520 Diamantes",
       "1060_diamonds": "1060 Diamantes",
       "2180_diamonds": "2180 Diamantes",
-      "5600_diamonds": "5600 Diamantes"
+      "5600_diamonds": "5600 Diamantes",
     };
     return packages[packageId] || packageId;
   };
@@ -98,7 +128,7 @@ export default function AdminPanel() {
             min-height: 100vh;
             padding: 2rem;
           }
-          
+
           .loading-container {
             display: flex;
             flex-direction: column;
@@ -106,7 +136,7 @@ export default function AdminPanel() {
             justify-content: center;
             height: 50vh;
           }
-          
+
           .loading-spinner {
             width: 40px;
             height: 40px;
@@ -116,10 +146,14 @@ export default function AdminPanel() {
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
           }
-          
+
           @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+              transform: rotate(0deg);
+            }
+            100% {
+              transform: rotate(360deg);
+            }
           }
         `}</style>
       </div>
@@ -136,29 +170,44 @@ export default function AdminPanel() {
 
         <div className="filters-section">
           <div className="filter-buttons">
-            <button 
-              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}
+            <button
+              className={`filter-btn ${filter === "all" ? "active" : ""}`}
+              onClick={() => setFilter("all")}
             >
               Todos ({receipts.length})
             </button>
-            <button 
-              className={`filter-btn ${filter === '0' ? 'active' : ''}`}
-              onClick={() => setFilter('0')}
+            <button
+              className={`filter-btn ${filter === "0" ? "active" : ""}`}
+              onClick={() => setFilter("0")}
             >
-              Pendientes ({receipts.filter(r => r.status === 0).length})
+              Pendientes ({receipts.filter((r) => r.status === 0).length})
             </button>
-            <button 
-              className={`filter-btn ${filter === '1' ? 'active' : ''}`}
-              onClick={() => setFilter('1')}
+            <button
+              className={`filter-btn ${filter === "1" ? "active" : ""}`}
+              onClick={() => setFilter("1")}
             >
-              Aprobados ({receipts.filter(r => r.status === 1).length})
+              Procesando ({receipts.filter((r) => r.status === 1).length})
             </button>
-            <button 
-              className={`filter-btn ${filter === '2' ? 'active' : ''}`}
-              onClick={() => setFilter('2')}
+            <button
+              className={`filter-btn ${filter === "2" ? "active" : ""}`}
+              onClick={() => setFilter("2")}
             >
-              Rechazados ({receipts.filter(r => r.status === 2).length})
+              Aprobados ({receipts.filter((r) => r.status === 2).length})
+            </button>
+            <button
+              className={`filter-btn ${filter === "3" ? "active" : ""}`}
+              onClick={() => setFilter("3")}
+            >
+              Diamantes Cargados (
+              {receipts.filter((r) => r.status === 3).length})
+            </button>
+            <button
+              className={`filter-btn ${
+                filter === "4" || filter === "5" ? "active" : ""
+              }`}
+              onClick={() => setFilter("4")}
+            >
+              Rechazados ({receipts.filter((r) => r.status === 4).length})
             </button>
           </div>
         </div>
@@ -181,7 +230,9 @@ export default function AdminPanel() {
                   <td className="user-cell">
                     <div className="user-info">
                       <span className="ff-user">{receipt.ffUser}</span>
-                      <span className="user-id">ID: {receipt.userId.slice(0, 8)}...</span>
+                      <span className="user-id">
+                        ID: {receipt.userId.slice(0, 8)}...
+                      </span>
                     </div>
                   </td>
                   <td>{receipt.ffRegion}</td>
@@ -189,36 +240,59 @@ export default function AdminPanel() {
                     {getPackageName(receipt.packageId)}
                   </td>
                   <td>
-                    <span 
+                    <span
                       className="status-badge"
                       style={{
                         color: statusOptions[receipt.status].color,
-                        backgroundColor: statusOptions[receipt.status].bgColor
+                        backgroundColor: statusOptions[receipt.status].bgColor,
                       }}
                     >
                       {statusOptions[receipt.status].label}
                     </span>
                   </td>
-                  <td className="date-cell">
-                    {formatDate(receipt.createdAt)}
-                  </td>
+                  <td className="date-cell">{formatDate(receipt.createdAt)}</td>
                   <td>
                     <div className="action-buttons">
-                      <button 
+                      <button
                         className="view-btn"
                         onClick={() => openModal(receipt)}
                       >
                         Ver Detalles
                       </button>
                       {receipt.proofUrl && (
-                        <a 
-                          href={receipt.proofUrl} 
-                          target="_blank" 
+                        <a
+                          onClick={() => openFile(receipt.proofUrl)}
+                          target="_blank"
                           rel="noopener noreferrer"
                           className="proof-btn"
                         >
                           Ver Comprobante
                         </a>
+                      )}
+                      {selectedReceipt.status === 2 && (
+                        <div style={{ marginTop: "1rem" }}>
+                          <button
+                            onClick={() =>
+                              handleStatusChange(
+                                receipt.transferId,
+                                selectedReceipt.id,
+                                3
+                              )
+                            }
+                            style={{
+                              padding: "0.75rem 1.5rem",
+                              backgroundColor: "#b86bff",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "0.5rem",
+                              fontWeight: "600",
+                              cursor: "pointer",
+                              transition: "all 0.3s ease",
+                            }}
+                          >
+                            Confirmar diamantes cargados
+                          </button>
+                        </div>
                       )}
                     </div>
                   </td>
@@ -241,14 +315,11 @@ export default function AdminPanel() {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Gestionar Comprobante</h3>
-              <button 
-                className="close-btn"
-                onClick={() => setShowModal(false)}
-              >
+              <button className="close-btn" onClick={() => setShowModal(false)}>
                 ×
               </button>
             </div>
-            
+
             <div className="modal-body">
               <div className="receipt-details">
                 <div className="detail-row">
@@ -257,19 +328,24 @@ export default function AdminPanel() {
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Región:</span>
-                  <span className="detail-value">{selectedReceipt.ffRegion}</span>
+                  <span className="detail-value">
+                    {selectedReceipt.ffRegion}
+                  </span>
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Paquete:</span>
-                  <span className="detail-value">{getPackageName(selectedReceipt.packageId)}</span>
+                  <span className="detail-value">
+                    {getPackageName(selectedReceipt.packageId)}
+                  </span>
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Estado Actual:</span>
-                  <span 
+                  <span
                     className="status-badge"
                     style={{
                       color: statusOptions[selectedReceipt.status].color,
-                      backgroundColor: statusOptions[selectedReceipt.status].bgColor
+                      backgroundColor:
+                        statusOptions[selectedReceipt.status].bgColor,
                     }}
                   >
                     {statusOptions[selectedReceipt.status].label}
@@ -277,11 +353,15 @@ export default function AdminPanel() {
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Creado:</span>
-                  <span className="detail-value">{formatDate(selectedReceipt.createdAt)}</span>
+                  <span className="detail-value">
+                    {formatDate(selectedReceipt.createdAt)}
+                  </span>
                 </div>
                 <div className="detail-row">
                   <span className="detail-label">Actualizado:</span>
-                  <span className="detail-value">{formatDate(selectedReceipt.updatedAt)}</span>
+                  <span className="detail-value">
+                    {formatDate(selectedReceipt.updatedAt)}
+                  </span>
                 </div>
               </div>
 
@@ -291,12 +371,21 @@ export default function AdminPanel() {
                   {Object.entries(statusOptions).map(([status, config]) => (
                     <button
                       key={status}
-                      className={`status-action-btn ${selectedReceipt.status.toString() === status ? 'current' : ''}`}
+                      className={`status-action-btn ${
+                        selectedReceipt.status.toString() === status
+                          ? "current"
+                          : ""
+                      }`}
                       style={{
                         borderColor: config.color,
-                        backgroundColor: selectedReceipt.status.toString() === status ? config.bgColor : 'transparent'
+                        backgroundColor:
+                          selectedReceipt.status.toString() === status
+                            ? config.bgColor
+                            : "transparent",
                       }}
-                      onClick={() => handleStatusChange(selectedReceipt.id, parseInt(status))}
+                      onClick={() =>
+                        handleStatusChange(selectedReceipt.id, parseInt(status))
+                      }
                       disabled={selectedReceipt.status.toString() === status}
                     >
                       {config.label}
@@ -447,7 +536,8 @@ export default function AdminPanel() {
           flex-wrap: wrap;
         }
 
-        .view-btn, .proof-btn {
+        .view-btn,
+        .proof-btn {
           padding: 0.5rem 1rem;
           border-radius: 0.375rem;
           font-size: 0.85rem;
@@ -601,37 +691,37 @@ export default function AdminPanel() {
           .admin-wrapper {
             padding: 1rem;
           }
-          
+
           .admin-title {
             font-size: 2rem;
           }
-          
+
           .filter-buttons {
             justify-content: center;
           }
-          
+
           .filter-btn {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
           }
-          
+
           .receipts-table {
             font-size: 0.9rem;
           }
-          
+
           .receipts-table th,
           .receipts-table td {
             padding: 0.75rem 0.5rem;
           }
-          
+
           .action-buttons {
             flex-direction: column;
           }
-          
+
           .modal-content {
             margin: 1rem;
           }
-          
+
           .status-buttons {
             flex-direction: column;
           }

@@ -59,3 +59,26 @@ export async function postBankTransferComprobante({
     throw error;
   }
 }
+
+export async function getPdfFile({ idFile }) {
+  const token = sessionStorage.getItem("auth_token");
+  console.log(idFile)
+  try {
+    const response = await fetch(` ${BASE_URL}${ENDPOINT}${'/'}${idFile}${'/proof'}`, {
+      method: "GET",
+      headers: {
+        // NO pongas Content-Type, el navegador lo pone solo para FormData
+        Authorization: ` Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(` Error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("POST request failed:", error);
+    throw error;
+  }
+}

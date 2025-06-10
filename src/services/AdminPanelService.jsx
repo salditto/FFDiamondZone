@@ -57,7 +57,7 @@ export async function getReceiptById(id) {
   }
 }
 
-export async function updateReceiptStatus({ id, status }) {
+export async function updateReceiptStatus({ transferId, status, id }) {
   const token = sessionStorage.getItem("auth_token");
 
   try {
@@ -69,8 +69,9 @@ export async function updateReceiptStatus({ id, status }) {
         "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({
-        id: id,
+        transferId: transferId,
         status: status,
+        id: id,
       }),
     });
 
