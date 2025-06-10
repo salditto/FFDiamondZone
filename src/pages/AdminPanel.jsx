@@ -51,24 +51,35 @@ export default function AdminPanel() {
   });
 
   const handleStatusChange = async (transferId, receiptId, newStatus) => {
+    console.log(transferId);
+    console.log(receiptId);
+    console.log(newStatus);
+
     try {
-      await updateReceiptStatus({
+      const response = await updateReceiptStatus({
         transferId: transferId,
         status: newStatus,
         id: receiptId,
       });
-
-      setReceipts((prev) =>
-        prev.map((receipt) =>
-          receipt.id === receiptId
-            ? {
-                ...receipt,
-                status: newStatus,
-                updatedAt: new Date().toISOString(),
-              }
-            : receipt
-        )
-      );
+      console.log(response);
+      // Si la API responde con 204, recargar desde el servidor
+      if (response?.status === 204 || response === undefined) {
+        const updatedReceipts = await getAllReceipts();
+        setReceipts(updatedReceipts);
+      } else {
+        // Caso alternativo: actualizar localmente (si se devuelve algo útil)
+        setReceipts((prev) =>
+          prev.map((receipt) =>
+            receipt.id === receiptId
+              ? {
+                  ...receipt,
+                  status: newStatus,
+                  updatedAt: new Date().toISOString(),
+                }
+              : receipt
+          )
+        );
+      }
 
       showSnackbar("Estado actualizado correctamente", "success");
       setShowModal(false);
@@ -165,7 +176,6 @@ export default function AdminPanel() {
       <div className="admin-container">
         <div className="admin-header">
           <h1 className="admin-title">Panel de Administración</h1>
-          <p className="admin-subtitle">Gestión de Comprobantes de Pago</p>
         </div>
 
         <div className="filters-section">
@@ -218,7 +228,6 @@ export default function AdminPanel() {
               <tr>
                 <th>Usuario FF</th>
                 <th>Región</th>
-                <th>Paquete</th>
                 <th>Estado</th>
                 <th>Fecha Creación</th>
                 <th>Acciones</th>
@@ -230,15 +239,10 @@ export default function AdminPanel() {
                   <td className="user-cell">
                     <div className="user-info">
                       <span className="ff-user">{receipt.ffUser}</span>
-                      <span className="user-id">
-                        ID: {receipt.userId.slice(0, 8)}...
-                      </span>
+
                     </div>
                   </td>
                   <td>{receipt.ffRegion}</td>
-                  <td className="package-cell">
-                    {getPackageName(receipt.packageId)}
-                  </td>
                   <td>
                     <span
                       className="status-badge"
@@ -269,30 +273,17 @@ export default function AdminPanel() {
                           Ver Comprobante
                         </a>
                       )}
-                      {selectedReceipt.status === 2 && (
-                        <div style={{ marginTop: "1rem" }}>
+                      {receipt.status === 2 && (
+                        <a>
                           <button
                             onClick={() =>
-                              handleStatusChange(
-                                receipt.transferId,
-                                selectedReceipt.id,
-                                3
-                              )
+                              handleStatusChange(receipt.id, receipt.userId, 3)
                             }
-                            style={{
-                              padding: "0.75rem 1.5rem",
-                              backgroundColor: "#b86bff",
-                              color: "white",
-                              border: "none",
-                              borderRadius: "0.5rem",
-                              fontWeight: "600",
-                              cursor: "pointer",
-                              transition: "all 0.3s ease",
-                            }}
+                            className="confirm-btn"
                           >
                             Confirmar diamantes cargados
                           </button>
-                        </div>
+                        </a>
                       )}
                     </div>
                   </td>
@@ -330,12 +321,6 @@ export default function AdminPanel() {
                   <span className="detail-label">Región:</span>
                   <span className="detail-value">
                     {selectedReceipt.ffRegion}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="detail-label">Paquete:</span>
-                  <span className="detail-value">
-                    {getPackageName(selectedReceipt.packageId)}
                   </span>
                 </div>
                 <div className="detail-row">
@@ -384,7 +369,11 @@ export default function AdminPanel() {
                             : "transparent",
                       }}
                       onClick={() =>
-                        handleStatusChange(selectedReceipt.id, parseInt(status))
+                        handleStatusChange(
+                          selectedReceipt.id,
+                          selectedReceipt.userId,
+                          parseInt(status)
+                        )
                       }
                       disabled={selectedReceipt.status.toString() === status}
                     >
@@ -421,6 +410,26 @@ export default function AdminPanel() {
           color: #d4bfff;
           margin-bottom: 0.5rem;
           text-shadow: 0 0 10px #9b4dff88;
+        }
+
+        .confirm-btn {
+          padding: 0.5rem 1rem;
+          border-radius: 0.375rem;
+          font-size: 0.85rem;
+          font-weight: 500;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border: none;
+          background: #b86bff20;
+          border-color: rgb(184, 107, 255);
+          border: 2px solid;
+          color: #b86bff;
+        }
+
+        .confirm-btn:hover {
+          opacity: 0.7
+          transform: translateY(-1px);
         }
 
         .admin-subtitle {
@@ -534,8 +543,8 @@ export default function AdminPanel() {
           display: flex;
           gap: 0.5rem;
           flex-wrap: wrap;
+          align-items: center;
         }
-
         .view-btn,
         .proof-btn {
           padding: 0.5rem 1rem;

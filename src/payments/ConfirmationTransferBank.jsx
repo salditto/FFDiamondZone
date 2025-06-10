@@ -48,6 +48,9 @@ export default function DropPdf({
     }
 
     if (!userId || !FFUser || !FFRegion) {
+      console.log(userId);
+      console.log(FFUser);
+      console.log(FFRegion);
       setError("Faltan datos obligatorios para subir el comprobante.");
       return;
     }
@@ -122,7 +125,7 @@ export default function DropPdf({
           justify-content: center;
           margin-top: 30px;
         }
-        
+
         .btn:disabled,
         .btn[disabled] {
           opacity: 0.6;

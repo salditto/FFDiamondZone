@@ -75,11 +75,16 @@ export async function updateReceiptStatus({ transferId, status, id }) {
       }),
     });
 
+    if (response.status === 204) {
+      return { success: true, status: 204 }; // evita intentar parsear json
+    }
+
     if (!response.ok) {
       throw new Error(`Error: ${response.status}`);
     }
 
-    return await response.json();
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error("PUT update status failed:", error);
     throw error;
