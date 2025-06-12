@@ -82,7 +82,7 @@ export async function isAdmin() {
   const token = sessionStorage.getItem("auth_token");
 
   try {
-    const response = await fetch(`${BASE_URL}/isAdmin?id=${id}`, {
+    const response = await fetch(`${BASE_URL}/Auth/isAdmin?id=${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
