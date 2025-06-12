@@ -17,18 +17,9 @@ import DropPdf from "../payments/ConfirmationTransferBank";
 import { width } from "@fortawesome/free-brands-svg-icons/fa42Group";
 import { postMpBuy } from "../services/MercadoPago.service";
 import PaymentMercadoPago from "../payments/MercadoPagoConfirmation";
+import { getPackageInfo } from "../services/BankTransfer.service";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
-
-const diamondOptions = [
-  { id: "100", label: "100", price: "$1.00", bonus: 10, outOfStock: true },
-  { id: "310", label: "310", price: "$3.00", bonus: 35 },
-  { id: "520", label: "520", price: "$5.00", bonus: 60 },
-  { id: "1060", label: "1060", price: "$10.00", bonus: 130 },
-  { id: "2180", label: "2180", price: "$20.00", bonus: 300 },
-  { id: "5600", label: "5600", price: "$50.00", bonus: 800 },
-];
-
 const paymentOptions = [
   { id: "stripe", icon: faMoneyBillTransfer },
   { id: "mercadopago", icon: faCreditCard },
@@ -40,8 +31,9 @@ export default function PurchaseForm() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState("");
   const [region, setRegion] = useState("ar");
+  const [diamondOptions, setDiamondOptions] = useState([])
   const [playerId, setPlayerId] = useState("");
-  const [quantity, setQuantity] = useState(diamondOptions[2].id);
+  const [quantity, setQuantity] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [playerIdError, setPlayerIdError] = useState("");
   const [amount, setAmount] = useState("");
@@ -58,10 +50,11 @@ export default function PurchaseForm() {
 
   useEffect(() => {
     getUserId();
+    fetchPackages();
   }, []);
 
   function getUserId() {
-    const userId = localStorage.getItem("userId");
+    const userId = sessionStorage.getItem("userId");
     setUserId(userId);
   }
 
@@ -80,15 +73,26 @@ export default function PurchaseForm() {
 
   function getSelectedPrice() {
     const opt = diamondOptions.find((o) => o.id === quantity);
+    console.log(opt)
     return opt ? opt.price : "$0.00";
   }
 
-  function getSelectedPriceForMp() {
-    const opt = diamondOptions.find((o) => o.id === quantity);
-    if (!opt || !opt.price) return 0;
-
-    const numberToPesos = parseFloat(opt.price.replace("$", "")) * 1120;
-    return "$" + numberToPesos.toString();
+  async function fetchPackages() {
+    try {
+      const data = await getPackageInfo();
+      const mapped = data.map((pkg) => ({
+        id: pkg.id.toString(),
+        label: pkg.diamonds.toString(),
+        price: `$${(pkg.priceARS / 1120).toFixed(2)}`,
+        bonus: 0,
+        origin: pkg.origin,
+      }));
+      setDiamondOptions(mapped);
+      console.log(diamondOptions)
+      if (mapped.length > 0) setQuantity(mapped[0].id);
+    } catch (e) {
+      console.error("Error loading packages", e);
+    }
   }
 
   async function handleBuy() {
@@ -273,7 +277,7 @@ export default function PurchaseForm() {
             userId={userId}
             FFUser={playerId}
             FFRegion={region}
-            packageId="2"
+            packageId={quantity}
             playerIdError={playerIdError}
           />
         </div>

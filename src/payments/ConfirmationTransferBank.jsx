@@ -1,11 +1,9 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import {
-  getBankTransferInfo,
-  postBankTransferComprobante,
-} from "../services/BankTransfer.service";
+import { postBankTransferComprobante } from "../services/BankTransfer.service";
 import { useTranslation } from "react-i18next";
 import { useSnackbar } from "../context/SnackBarContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function DropPdf({
   userId,
@@ -19,6 +17,7 @@ export default function DropPdf({
   const [loading, setLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
   const { t } = useTranslation();
+  const { isAuthenticated } = useAuth();
 
   const onDrop = useCallback((acceptedFiles, fileRejections) => {
     if (fileRejections.length > 0) {
@@ -39,6 +38,7 @@ export default function DropPdf({
       "image/webp": [".webp"],
     },
     multiple: false,
+    disabled: !isAuthenticated || !!playerIdError,
   });
 
   const handleUpload = async () => {
@@ -55,15 +55,14 @@ export default function DropPdf({
     setLoading(true);
 
     try {
-      const response = await postBankTransferComprobante({
+      await postBankTransferComprobante({
         userId,
         FFUser,
         FFRegion,
         packageId,
         file,
       });
-
-      showSnackbar("Comprobante subido con exito", "success");
+      showSnackbar("Comprobante subido con éxito", "success");
     } catch (err) {
       console.error(err);
       showSnackbar("Error al subir el comprobante", "error");
@@ -75,7 +74,10 @@ export default function DropPdf({
   return (
     <div>
       <div className="payment-button" {...getRootProps()}>
-        <input {...getInputProps()} disabled={playerIdError} />
+        <input
+          {...getInputProps()}
+          disabled={!isAuthenticated || playerIdError}
+        />
         {isDragActive ? (
           <p>{t("upload.drop_active")}</p>
         ) : (
@@ -95,11 +97,17 @@ export default function DropPdf({
         <button
           className="btn btn-primary"
           onClick={handleUpload}
-          disabled={loading || playerIdError}
+          disabled={!isAuthenticated || loading || playerIdError}
         >
           {loading ? "Subiendo..." : "Subir comprobante"}
         </button>
       </div>
+
+      {!isAuthenticated && (
+        <p style={{ color: "#ff4d4d", fontWeight: "bold", marginTop: "20px", textAlign: "center" }}>
+          Necesitás estar logueado para comprar diamantes
+        </p>
+      )}
 
       <style jsx>{`
         .payment-button {
@@ -117,12 +125,13 @@ export default function DropPdf({
           transition: all 0.3s ease;
           display: flex;
         }
+
         .button-center {
           display: flex;
           justify-content: center;
           margin-top: 30px;
         }
-        
+
         .btn:disabled,
         .btn[disabled] {
           opacity: 0.6;
