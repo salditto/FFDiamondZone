@@ -10,9 +10,12 @@ export async function getBankTransferInfo() {
       },
     });
 
-    const rawText = await response.text();
-    console.log("Respuesta cruda:", rawText);
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
 
+    const rawText = await response.text();
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
     }
@@ -38,16 +41,20 @@ export async function postBankTransferComprobante({
     formData.append("FFUser", FFUser);
     formData.append("FFRegion", FFRegion);
     formData.append("PackageId", packageId);
-    formData.append("ProofFile", file); // acá file debería ser un File, no un string con el path
+    formData.append("ProofFile", file);
 
     const response = await fetch(` ${BASE_URL}${ENDPOINT}`, {
       method: "POST",
       headers: {
-        // NO pongas Content-Type, el navegador lo pone solo para FormData
         Authorization: ` Bearer ${token}`,
       },
       body: formData,
     });
+
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
 
     if (!response.ok) {
       throw new Error(` Error: ${response.status}`);
@@ -60,25 +67,55 @@ export async function postBankTransferComprobante({
   }
 }
 
-export async function getPdfFile({ idFile }) {
-  const token = sessionStorage.getItem("auth_token");
-  console.log(idFile)
+export async function getPackageInfo() {
   try {
-    const response = await fetch(` ${BASE_URL}${ENDPOINT}${'/'}${idFile}${'/proof'}`, {
+    const response = await fetch(`${BASE_URL}${ENDPOINT}/packages`, {
       method: "GET",
-      headers: {
-        // NO pongas Content-Type, el navegador lo pone solo para FormData
-        Authorization: ` Bearer ${token}`,
-      },
     });
 
     if (!response.ok) {
-      throw new Error(` Error: ${response.status}`);
+      throw new Error(`Error: ${response.status}`);
     }
 
-    return await response.json();
+    // Usar blob para archivos binarios (como PDFs)
+    const data = await response.json();
+
+    return data;
   } catch (error) {
-    console.error("POST request failed:", error);
+    console.error("GET Package request failed:", error);
+    throw error;
+  }
+}
+
+export async function getPdfFile({ idFile }) {
+  const token = sessionStorage.getItem("auth_token");
+
+  try {
+    const response = await fetch(`${BASE_URL}${ENDPOINT}/${idFile}/proof`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status}`);
+    }
+
+    // Usar blob para archivos binarios (como PDFs)
+    const blob = await response.blob();
+
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, "_blank");
+
+    return blob;
+  } catch (error) {
+    console.error("GET PDF request failed:", error);
     throw error;
   }
 }

@@ -4,6 +4,7 @@ import { faShoppingCart, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { useTranslation } from "react-i18next";
 import { postMpBuy } from "../services/MercadoPago.service";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function PaymentMercadoPago({
   playerId,
@@ -12,18 +13,19 @@ export default function PaymentMercadoPago({
   diamondOptions,
   playerIdError,
   ffUser,
-  ffRegion
+  ffRegion,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const userId = sessionStorage.getItem("userId");
+  const { isAuthenticated, logout } = useAuth();
 
   const getSelectedPriceForMp = () => {
     const opt = diamondOptions.find((o) => o.id === quantity);
     if (!opt || !opt.price) return "$0.00";
     const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
-    return "$" + numericAmount.toString();
+    return "$" + Math.round(numericAmount).toString();
   };
 
   const handleBuyMp = async () => {
@@ -36,7 +38,7 @@ export default function PaymentMercadoPago({
         amount: numericAmount,
         userId: userId,
         ffUser: ffUser,
-        ffRegion: ffRegion
+        ffRegion: ffRegion,
       });
       if (result.initPoint) {
         navigate("/payment-status-mp", {
@@ -56,13 +58,19 @@ export default function PaymentMercadoPago({
       <div className="form-step">
         <div className="step-header">
           <span className="step-number">4</span>
-          <h3 className="step-title">{t('form.step4_title')}</h3>
+          <h3 className="step-title">{t("form.step4_title")}</h3>
         </div>
         <button
           type="button"
           className="payment-button"
           style={{ width: "100%" }}
-          disabled={!userId || loading || externalLoading || playerIdError}
+          disabled={
+            !userId ||
+            loading ||
+            externalLoading ||
+            playerIdError ||
+            isAuthenticated
+          }
           onClick={handleBuyMp}
         >
           {loading ? (
@@ -76,6 +84,19 @@ export default function PaymentMercadoPago({
             </>
           )}
         </button>
+
+        {!isAuthenticated && (
+          <p
+            style={{
+              color: "#ff4d4d",
+              fontWeight: "bold",
+              marginTop: "20px",
+              textAlign: "center",
+            }}
+          >
+            Necesitás estar logueado para comprar diamantes
+          </p>
+        )}
       </div>
       <style jsx>{`
         .payment-button {

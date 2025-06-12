@@ -6,25 +6,42 @@ import {
   updateReceiptStatus,
 } from "../services/AdminPanelService";
 import { getPdfFile } from "../services/BankTransfer.service";
+import { isAdmin } from "../services/AuthService";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminPanel() {
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(null);
   const [filter, setFilter] = useState("all");
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
+  const navigate = useNavigate();
   const { showSnackbar } = useSnackbar();
 
   // Estados posibles para los comprobantes
   const statusOptions = {
-    0: { label: "Pendiente", color: "#ff9500", bgColor: "#ff950020" },
-    1: { label: "Procesando", color: "#00aaff", bgColor: "#00aaff20" },
-    2: { label: "Aprobado", color: "#00ff88", bgColor: "#00ff8820" },
-    3: { label: "Diamantes Cargados", color: "#b86bff", bgColor: "#b86bff20" },
-    4: { label: "Fallido", color: "#ff4757", bgColor: "#ff475720" },
-    5: { label: "Cancelado", color: "#999", bgColor: "#99999920" },
+    1: { label: "Pendiente", color: "#ff9500", bgColor: "#ff950020" },
+    2: { label: "Procesando", color: "#00aaff", bgColor: "#00aaff20" },
+    3: { label: "Aprobado", color: "#00ff88", bgColor: "#00ff8820" },
+    4: { label: "Diamantes Cargados", color: "#b86bff", bgColor: "#b86bff20" },
+    5: { label: "Fallido", color: "#ff4757", bgColor: "#ff475720" },
+    6: { label: "Cancelado", color: "#999", bgColor: "#99999920" },
   };
+
+  useEffect(() => {
+    const checkAccess = async () => {
+      const allowed = await isAdmin();
+      console.log(allowed);
+      setAuthorized(allowed);
+      if (!allowed) {
+        console.log("asdsa");
+        showSnackbar("No tenés acceso al panel", "error");
+        navigate("/");
+      }
+    };
+    checkAccess();
+  }, []);
 
   // Cargar datos desde la API
   useEffect(() => {
@@ -32,7 +49,6 @@ export default function AdminPanel() {
       try {
         setLoading(true);
         const response = await getAllReceipts();
-        console.log(response);
         setReceipts(response);
       } catch (error) {
         showSnackbar("Error al cargar los comprobantes", "error");
@@ -47,27 +63,23 @@ export default function AdminPanel() {
 
   const filteredReceipts = receipts.filter((receipt) => {
     if (filter === "all") return true;
+    if (filter === "1") {
+      return receipt.method === 4 && receipt.status === 1;
+    }
     return receipt.status.toString() === filter;
   });
 
   const handleStatusChange = async (transferId, receiptId, newStatus) => {
-    console.log(transferId);
-    console.log(receiptId);
-    console.log(newStatus);
-
     try {
       const response = await updateReceiptStatus({
         transferId: transferId,
         status: newStatus,
         id: receiptId,
       });
-      console.log(response);
-      // Si la API responde con 204, recargar desde el servidor
       if (response?.status === 204 || response === undefined) {
         const updatedReceipts = await getAllReceipts();
         setReceipts(updatedReceipts);
       } else {
-        // Caso alternativo: actualizar localmente (si se devuelve algo útil)
         setReceipts((prev) =>
           prev.map((receipt) =>
             receipt.id === receiptId
@@ -95,12 +107,11 @@ export default function AdminPanel() {
   };
 
   const openFile = async (receipt) => {
-    console.log(receipt);
     try {
       setLoading(true);
       const response = await getPdfFile({ idFile: receipt });
-      console.log(response);
-      setReceipts(response);
+      const url = window.URL.createObjectURL(response);
+      window.open(url, "_blank");
     } catch (error) {
       showSnackbar("Error al cargar los comprobantes", "error");
       console.error("Error fetching receipts:", error);
@@ -187,37 +198,38 @@ export default function AdminPanel() {
               Todos ({receipts.length})
             </button>
             <button
-              className={`filter-btn ${filter === "0" ? "active" : ""}`}
-              onClick={() => setFilter("0")}
-            >
-              Pendientes ({receipts.filter((r) => r.status === 0).length})
-            </button>
-            <button
               className={`filter-btn ${filter === "1" ? "active" : ""}`}
               onClick={() => setFilter("1")}
             >
-              Procesando ({receipts.filter((r) => r.status === 1).length})
+              Pendientes (
+              {receipts.filter((r) => r.method === 4 && r.status === 1).length})
             </button>
             <button
               className={`filter-btn ${filter === "2" ? "active" : ""}`}
               onClick={() => setFilter("2")}
             >
-              Aprobados ({receipts.filter((r) => r.status === 2).length})
+              Procesando ({receipts.filter((r) => r.status === 2).length})
             </button>
             <button
               className={`filter-btn ${filter === "3" ? "active" : ""}`}
               onClick={() => setFilter("3")}
             >
+              Aprobados ({receipts.filter((r) => r.status === 3).length})
+            </button>
+            <button
+              className={`filter-btn ${filter === "4" ? "active" : ""}`}
+              onClick={() => setFilter("4")}
+            >
               Diamantes Cargados (
-              {receipts.filter((r) => r.status === 3).length})
+              {receipts.filter((r) => r.status === 4).length})
             </button>
             <button
               className={`filter-btn ${
-                filter === "4" || filter === "5" ? "active" : ""
+                filter === "5" || filter === "6" ? "active" : ""
               }`}
-              onClick={() => setFilter("4")}
+              onClick={() => setFilter("5")}
             >
-              Rechazados ({receipts.filter((r) => r.status === 4).length})
+              Rechazados ({receipts.filter((r) => r.status === 5).length})
             </button>
           </div>
         </div>
@@ -228,6 +240,8 @@ export default function AdminPanel() {
               <tr>
                 <th>Usuario FF</th>
                 <th>Región</th>
+                <th>Cantidad</th>
+                <th>Diamantes</th>
                 <th>Estado</th>
                 <th>Fecha Creación</th>
                 <th>Acciones</th>
@@ -239,10 +253,19 @@ export default function AdminPanel() {
                   <td className="user-cell">
                     <div className="user-info">
                       <span className="ff-user">{receipt.ffUser}</span>
-
                     </div>
                   </td>
                   <td>{receipt.ffRegion}</td>
+                  <td className="user-cell">
+                    <div className="user-info">
+                      <span className="ff-user">{receipt.amount}</span>
+                    </div>
+                  </td>
+                  <td className="user-cell">
+                    <div className="user-info">
+                      <span className="ff-user">{receipt.diamonds}</span>
+                    </div>
+                  </td>
                   <td>
                     <span
                       className="status-badge"
@@ -263,9 +286,9 @@ export default function AdminPanel() {
                       >
                         Ver Detalles
                       </button>
-                      {receipt.proofUrl && (
+                      {receipt.id && receipt.method === 4 && (
                         <a
-                          onClick={() => openFile(receipt.proofUrl)}
+                          onClick={() => openFile(receipt.id)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="proof-btn"
@@ -273,7 +296,7 @@ export default function AdminPanel() {
                           Ver Comprobante
                         </a>
                       )}
-                      {receipt.status === 2 && (
+                      {receipt.status === 3 && (
                         <a>
                           <button
                             onClick={() =>

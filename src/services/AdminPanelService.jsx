@@ -16,8 +16,12 @@ export async function getAllReceipts() {
       },
     });
 
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
     const rawText = await response.text();
-    console.log("Respuesta cruda:", rawText);
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -43,8 +47,12 @@ export async function getReceiptById(id) {
       },
     });
 
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
     const rawText = await response.text();
-    console.log("Respuesta cruda:", rawText);
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);
@@ -75,8 +83,13 @@ export async function updateReceiptStatus({ transferId, status, id }) {
       }),
     });
 
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
     if (response.status === 204) {
-      return { success: true, status: 204 }; // evita intentar parsear json
+      return { success: true, status: 204 };
     }
 
     if (!response.ok) {
@@ -104,8 +117,12 @@ export async function getReceiptsByStatus(status) {
       },
     });
 
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
     const rawText = await response.text();
-    console.log("Respuesta cruda:", rawText);
 
     if (!response.ok) {
       throw new Error(`Error HTTP: ${response.status}`);

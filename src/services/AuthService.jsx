@@ -76,3 +76,36 @@ export async function verifyEmailToken(token) {
     throw error;
   }
 }
+
+export async function isAdmin() {
+  const id = sessionStorage.getItem("userId");
+  const token = sessionStorage.getItem("auth_token");
+
+  try {
+    const response = await fetch(`${BASE_URL}/isAdmin?id=${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error al verificar la cuenta", error);
+    return false;
+  }
+}

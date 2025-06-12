@@ -16,8 +16,6 @@ const Summary = ({ formData, prevStep }) => {
 
   const handleConfirm = () => {
     setIsConfirmed(true);
-    // TODO: Implement payment processing / server data submission
-    console.log("Order Confirmed:", formData);
   };
 
   if (isConfirmed) {

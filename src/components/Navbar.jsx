@@ -72,7 +72,7 @@ const Navbar = ({
     i18n.changeLanguage(langCode);
     setCurrentLanguage(langLabel);
     setIsLangDropdownOpen(false);
-    console.log(`Language changed to: ${langCode}`);
+
   };
 
   const navLinks = [
