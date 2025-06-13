@@ -31,7 +31,7 @@ export default function PurchaseForm() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState("");
   const [region, setRegion] = useState("ar");
-  const [diamondOptions, setDiamondOptions] = useState([])
+  const [diamondOptions, setDiamondOptions] = useState([]);
   const [playerId, setPlayerId] = useState("");
   const [quantity, setQuantity] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -39,6 +39,8 @@ export default function PurchaseForm() {
   const [amount, setAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  const [isPackagesLoading, setIsPackagesLoading] = useState(false);
 
   const ffRegions = [
     { code: "ar", label: "Sudamérica (AR)" },
@@ -73,25 +75,41 @@ export default function PurchaseForm() {
 
   function getSelectedPrice() {
     const opt = diamondOptions.find((o) => o.id === quantity);
-    console.log(opt)
+    console.log(opt);
     return opt ? opt.price : "$0.00";
   }
 
-  async function fetchPackages() {
+  async function fetchPackages(method = paymentMethod) {
+    setIsPackagesLoading(true);
     try {
       const data = await getPackageInfo();
-      const mapped = data.map((pkg) => ({
+
+      const filtered = data.filter((pkg) => {
+        if (method === "mercadopago")
+          return pkg.origin === "MercadoPagoPackage";
+        if (method === "bank_transfer_ars")
+          return pkg.origin === "TransferPackage";
+        return true;
+      });
+
+      const mapped = filtered.map((pkg) => ({
         id: pkg.id.toString(),
         label: pkg.diamonds.toString(),
         price: `$${(pkg.priceARS / 1120).toFixed(2)}`,
         bonus: 0,
         origin: pkg.origin,
       }));
+
       setDiamondOptions(mapped);
-      console.log(diamondOptions)
-      if (mapped.length > 0) setQuantity(mapped[0].id);
+      if (mapped.length > 0) {
+        setQuantity(mapped[0].id);
+      } else {
+        setQuantity("");
+      }
     } catch (e) {
       console.error("Error loading packages", e);
+    } finally {
+      setIsPackagesLoading(false);
     }
   }
 
@@ -157,53 +175,10 @@ export default function PurchaseForm() {
         </div>
       </div>
 
-      {/* Step 2 */}
-      <div className="form-step">
-        <div className="step-header">
-          <span className="step-number">2</span>
-          <h3 className="step-title">{t("form.step2_title")}</h3>
-        </div>
-        <div className="form-group quantity-options">
-          {diamondOptions.map((opt) => (
-            <button
-              key={opt.id}
-              type="button"
-              className={`quantity-button ${
-                quantity === opt.id ? "selected" : ""
-              } ${opt.outOfStock ? "out-of-stock" : ""}`}
-              disabled={
-                isSuccess || opt.outOfStock || !playerId || playerIdError
-              }
-              onClick={() => setQuantity(opt.id)}
-            >
-              <div className="button-main-content">
-                <FontAwesomeIcon icon={faGem} className="button-icon" />
-                <span>{t("form.diamonds_label", { label: opt.label })}</span>
-              </div>
-              {!opt.outOfStock && (
-                <>
-                  {opt.bonus > 0 && (
-                    <span className="bonus-text">
-                      {t("form.bonus_text", { bonus: opt.bonus })}
-                    </span>
-                  )}
-                  <span className="price">{opt.price}</span>
-                </>
-              )}
-            </button>
-          ))}
-        </div>
-        {(!playerId || playerIdError) && (
-          <p className="error-message">
-            {playerIdError || t("form.error_playerId_required")}
-          </p>
-        )}
-      </div>
-
       {/* Step 3 */}
       <div className="form-step">
         <div className="step-header">
-          <span className="step-number">3</span>
+          <span className="step-number">2</span>
           <h3 className="step-title">{t("form.step3_title")}</h3>
         </div>
         <div className="form-group payment-options">
@@ -224,7 +199,13 @@ export default function PurchaseForm() {
                   paymentMethod === opt.id ? "selected" : ""
                 }`}
                 disabled={isDisabled}
-                onClick={() => !isDisabled && setPaymentMethod(opt.id)}
+                onClick={() => {
+                  if (!isDisabled) {
+                    setPaymentMethod(opt.id);
+                    fetchPackages(opt.id);
+                    setQuantity("");
+                  }
+                }}
               >
                 <FontAwesomeIcon icon={opt.icon} className="button-icon" />
                 <span>{t(`form.payment.${opt.id}`)}</span>
@@ -237,6 +218,62 @@ export default function PurchaseForm() {
           <p className="error-message">
             {t("form.error_complete_previous_step")}
           </p>
+        )}
+      </div>
+
+      {/* Step 2 */}
+      <div className="form-step">
+        <div className="step-header">
+          <span className="step-number">3</span>
+          <h3 className="step-title">{t("form.step2_title")}</h3>
+        </div>
+
+        <div className="form-group quantity-options">
+          {isPackagesLoading ? (
+            <div className="loading-spinner"></div>
+          ) : (
+            diamondOptions.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                className={`quantity-button ${
+                  quantity === opt.id ? "selected" : ""
+                } ${opt.outOfStock ? "out-of-stock" : ""}`}
+                disabled={
+                  isSuccess ||
+                  opt.outOfStock ||
+                  !playerId ||
+                  playerIdError ||
+                  !paymentMethod
+                }
+                onClick={() => setQuantity(opt.id)}
+              >
+                <div className="button-main-content">
+                  <FontAwesomeIcon icon={faGem} className="button-icon" />
+                  <span>{t("form.diamonds_label", { label: opt.label })}</span>
+                </div>
+                {!opt.outOfStock && (
+                  <>
+                    {opt.bonus > 0 && (
+                      <span className="bonus-text">
+                        {t("form.bonus_text", { bonus: opt.bonus })}
+                      </span>
+                    )}
+                    <span className="price">{opt.price}</span>
+                  </>
+                )}
+              </button>
+            ))
+          )}
+        </div>
+
+        {(!playerId || playerIdError) && (
+          <p className="error-message">
+            {playerIdError || t("form.error_playerId_required")}
+          </p>
+        )}
+        {!paymentMethod && (
+          <p className="error-message">Seleccioná un método de pago primero</p>
         )}
       </div>
 
@@ -305,7 +342,21 @@ export default function PurchaseForm() {
           box-shadow: none;
           box-sizing: border-box;
         }
+        .loading-spinner {
+          width: 40px;
+          height: 40px;
+          margin: 20px auto;
+          border: 4px solid rgba(255, 255, 255, 0.2);
+          border-top: 4px solid var(--accent-color);
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
 
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
         .form-step {
           padding: 30px;
           border: 1px solid var(--border-color-accent);
