@@ -46,6 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = () => {
     const expired = isTokenExpired();
+    console.log(isAuthenticated)
     setIsAuthenticated(!expired);
   };
   
