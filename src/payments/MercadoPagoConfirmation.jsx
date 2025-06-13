@@ -19,7 +19,7 @@ export default function PaymentMercadoPago({
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const userId = sessionStorage.getItem("userId");
-  const { isAuthenticated, logout } = useAuth();
+  const isLoggedIn = !!sessionStorage.getItem("auth_token");
 
   const getSelectedPriceForMp = () => {
     const opt = diamondOptions.find((o) => o.id === quantity);
@@ -31,6 +31,7 @@ export default function PaymentMercadoPago({
   const handleBuyMp = async () => {
     if (!userId) return;
     setLoading(true);
+
     try {
       const opt = diamondOptions.find((o) => o.id === quantity);
       const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
@@ -69,7 +70,7 @@ export default function PaymentMercadoPago({
             loading ||
             externalLoading ||
             playerIdError ||
-            isAuthenticated
+            !isLoggedIn
           }
           onClick={handleBuyMp}
         >
@@ -85,7 +86,7 @@ export default function PaymentMercadoPago({
           )}
         </button>
 
-        {!isAuthenticated && (
+        {!isLoggedIn && (
           <p
             style={{
               color: "#ff4d4d",
@@ -97,7 +98,7 @@ export default function PaymentMercadoPago({
             Necesitás estar logueado para comprar diamantes
           </p>
         )}
-      </div>
+      </div>  
       <style jsx>{`
         .payment-button {
           padding: 15px;

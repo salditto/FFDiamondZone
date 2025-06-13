@@ -30,22 +30,16 @@ export async function getStatusPaymentMp(PAYMENTID) {
     throw error;
   }
 }
-
 export async function postMpBuy({ amount, userId, ffUser, ffRegion }) {
   const token = sessionStorage.getItem("auth_token");
   try {
     const bodyToEndpoint = {
-      amount: amount,
+      amount,
       currency: "ARS",
       userId,
       ffUser,
       ffRegion,
     };
-
-    if (response.status === 401) {
-      window.dispatchEvent(new Event("forceLogout"));
-      throw new Error("Sesión expirada");
-    }
 
     const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
       method: "POST",
@@ -56,12 +50,19 @@ export async function postMpBuy({ amount, userId, ffUser, ffRegion }) {
       body: JSON.stringify(bodyToEndpoint),
     });
 
+    if (response.status === 401) {
+      window.dispatchEvent(new Event("forceLogout"));
+      throw new Error("Sesión expirada");
+    }
+
     if (!response.ok) {
       throw new Error(`Error HTTP ${response.status}`);
     }
+
     return await response.json();
   } catch (error) {
     console.error("POST request failed:", error);
     throw error;
   }
 }
+
