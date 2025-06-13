@@ -1,7 +1,7 @@
 // services/AdminDashboardService.js
 
-const BASE_URL = "/api/";
-const ENDPOINT = "AdminDashboard";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const ENDPOINT = "/AdminDashboard";
 
 export async function getAllReceipts() {
   const token = sessionStorage.getItem("auth_token");
