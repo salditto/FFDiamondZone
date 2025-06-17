@@ -72,7 +72,6 @@ const Navbar = ({
     i18n.changeLanguage(langCode);
     setCurrentLanguage(langLabel);
     setIsLangDropdownOpen(false);
-
   };
 
   const navLinks = [
@@ -101,6 +100,19 @@ const Navbar = ({
       handler: onContactClick,
       href: "#contact",
     },
+    isLoggedIn
+      ? {
+          label: "Logout",
+          icon: faTimes,
+          handler: logout,
+          href: "#logout",
+        }
+      : {
+          label: t("navbar.login"),
+          icon: faRightToBracket,
+          handler: onLoginClick,
+          href: "/login",
+        },
   ];
 
   return (
@@ -138,21 +150,7 @@ const Navbar = ({
               {link.label}
             </a>
           ))}
-          {isLoggedIn ? (
-            <a className="nav-link" onClick={() => logout()}>
-              <FontAwesomeIcon icon={faTimes} className="nav-icon" />
-              Logout
-            </a>
-          ) : (
-            <a
-              className="nav-link"
-              onClick={() => handleLinkClick(onLoginClick)}
-              href="/login"
-            >
-              <FontAwesomeIcon icon={faRightToBracket} className="nav-icon" />
-              {t("navbar.login")}
-            </a>
-          )}
+         
         </div>
 
         <div className="language-selector desktop-lang">
