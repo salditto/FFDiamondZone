@@ -299,8 +299,9 @@ export default function PurchaseForm() {
           isLoading={isLoading}
           diamondOptions={diamondOptions}
           playerIdError={playerIdError}
-          ffUser={playerId}
+          ffUser={playerId} 
           ffRegion={region}
+          packageId={quantity}
         />
       )}
 

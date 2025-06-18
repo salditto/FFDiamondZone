@@ -102,7 +102,7 @@ const Navbar = ({
     },
     isLoggedIn
       ? {
-          label: "Logout",
+          label: t("navbar.logout"),
           icon: faTimes,
           handler: logout,
           href: "#logout",

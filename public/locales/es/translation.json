@@ -1,5 +1,26 @@
 {
   "cta_button": "Comprar Diamantes Ahora",
+  "navbar": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "buy": "Comprar Diamantes",
+    "faq": "FAQ",
+    "login": "Iniciar Sesión",
+    "contact": "Contacto",
+    "logout": "Cerrar Sesión"
+  },
+  "welcome": {
+    "title": "FF DIAMOND ZONE",
+    "subtitle": "Recargas Instantáneas para Free Fire",
+    "feature1_title": "Entrega Instantánea",
+    "feature1_desc": "Recarga inmediata de diamantes.",
+    "feature2_title": "Pago Seguro",
+    "feature2_desc": "Transacciones seguras y confiables.",
+    "feature3_title": "Mejores Precios",
+    "feature3_desc": "Tarifas competitivas de diamantes.",
+    "cta_button": "Comprar Diamantes Ahora",
+    "scroll_down": "Desliza hacia abajo"
+  },
   "about": {
     "title": "¿Por Qué Elegirnos?",
     "description": "Nos dedicamos a brindar la mejor experiencia a los jugadores de Free Fire. Nuestra plataforma ofrece recargas de diamantes instantáneas y transacciones seguras. Aceptamos una amplia gama de métodos de pago, incluyendo <strong>Tarjeta Internacional (USD)</strong>, <strong>MercadoPago (Argentina)</strong>, <strong>Transferencias Bancarias (ARS)</strong> y <strong>Criptomonedas</strong>. ¡Elige FF Diamond Zone para un proceso de recarga flexible y sin interrupciones!",

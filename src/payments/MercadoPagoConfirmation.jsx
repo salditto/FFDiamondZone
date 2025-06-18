@@ -14,6 +14,7 @@ export default function PaymentMercadoPago({
   playerIdError,
   ffUser,
   ffRegion,
+  packageId,
 }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -35,11 +36,13 @@ export default function PaymentMercadoPago({
     try {
       const opt = diamondOptions.find((o) => o.id === quantity);
       const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
+      console.log(packageId);
       const result = await postMpBuy({
         amount: numericAmount,
         userId: userId,
         ffUser: ffUser,
         ffRegion: ffRegion,
+        packageId: opt.id,
       });
       if (result.initPoint) {
         navigate("/payment-status-mp", {
