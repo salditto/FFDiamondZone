@@ -80,7 +80,7 @@ const WelcomeScreen = ({ onBuyClick, onFAQClick, onScrollIndicatorClick }) => {
         className="scroll-down-indicator"
         onClick={onScrollIndicatorClick}
       >
-        <span>Scroll Down</span>
+        <span>{t('welcome.scroll_down')}</span>
         <FontAwesomeIcon icon={faChevronDown} className="scroll-icon" />
       </div>
 

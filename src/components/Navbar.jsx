@@ -102,7 +102,11 @@ const Navbar = ({
     },
     isLoggedIn
       ? {
+<<<<<<< HEAD
           label: "Logout",
+=======
+          label: t("navbar.logout"),
+>>>>>>> testing
           icon: faTimes,
           handler: logout,
           href: "#logout",

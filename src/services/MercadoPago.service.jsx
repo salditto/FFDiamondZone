@@ -30,7 +30,7 @@ export async function getStatusPaymentMp(PAYMENTID) {
     throw error;
   }
 }
-export async function postMpBuy({ amount, userId, ffUser, ffRegion }) {
+export async function postMpBuy({ amount, userId, ffUser, ffRegion, packageId }) {
   const token = sessionStorage.getItem("auth_token");
   try {
     const bodyToEndpoint = {
@@ -39,6 +39,7 @@ export async function postMpBuy({ amount, userId, ffUser, ffRegion }) {
       userId,
       ffUser,
       ffRegion,
+      packageId,
     };
 
     const response = await fetch(`${BASE_URL}${ENDPOINT}`, {
