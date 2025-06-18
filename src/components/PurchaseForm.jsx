@@ -27,6 +27,14 @@ const paymentOptions = [
   { id: "crypto", icon: faBitcoin },
 ];
 
+const ffRegions = [
+  { code: "ar", label: "regions.ar" },
+  { code: "br", label: "regions.br" },
+  { code: "us", label: "regions.us" },
+  { code: "sg", label: "regions.sg" },
+  { code: "in", label: "regions.in" }
+];
+
 export default function PurchaseForm() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState("");
@@ -41,14 +49,6 @@ export default function PurchaseForm() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   const [isPackagesLoading, setIsPackagesLoading] = useState(false);
-
-  const ffRegions = [
-    { code: "ar", label: "Sudamérica (AR)" },
-    { code: "br", label: "Brasil (BR)" },
-    { code: "us", label: "Norteamérica (US)" },
-    { code: "sg", label: "Sudoeste Asiático (SG)" },
-    { code: "in", label: "India (IN)" },
-  ];
 
   useEffect(() => {
     getUserId();
@@ -77,6 +77,13 @@ export default function PurchaseForm() {
     const opt = diamondOptions.find((o) => o.id === quantity);
     console.log(opt);
     return opt ? opt.price : "$0.00";
+  }
+
+  function getSelectedPriceInPesos() {
+    const opt = diamondOptions.find((o) => o.id === quantity);
+    if (!opt || !opt.price) return "$0.00";
+    const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
+    return "$" + Math.round(numericAmount).toString();
   }
 
   async function fetchPackages(method = paymentMethod) {
@@ -168,7 +175,7 @@ export default function PurchaseForm() {
           >
             {ffRegions.map((r) => (
               <option key={r.code} value={r.code}>
-                {r.label}
+                {t(`purchase.regions.${r.code}`)}
               </option>
             ))}
           </select>
@@ -262,6 +269,9 @@ export default function PurchaseForm() {
                     <span className="price">{opt.price}</span>
                   </>
                 )}
+                {opt.outOfStock && (
+                  <span className="out-of-stock-text">{t("purchase.out_of_stock")}</span>
+                )}
               </button>
             ))
           )}
@@ -273,7 +283,7 @@ export default function PurchaseForm() {
           </p>
         )}
         {!paymentMethod && (
-          <p className="error-message">Seleccioná un método de pago primero</p>
+          <p className="error-message">{t("purchase.select_payment_first")}</p>
         )}
       </div>
 
@@ -287,7 +297,7 @@ export default function PurchaseForm() {
         >
           <FontAwesomeIcon icon={faShoppingCart} />{" "}
           {isLoading
-            ? t("form.loading")
+            ? t("purchase.loading")
             : t("form.submit_button", { price: getSelectedPrice() })}
         </button>
       )}
@@ -299,29 +309,55 @@ export default function PurchaseForm() {
           isLoading={isLoading}
           diamondOptions={diamondOptions}
           playerIdError={playerIdError}
-          ffUser={playerId} 
+          ffUser={playerId}
           ffRegion={region}
           packageId={quantity}
         />
       )}
 
       {paymentMethod === "bank_transfer_ars" && (
-        <div className="form-step">
-          <div className="step-header">
-            <span className="step-number">4</span>
-            <h3 className="step-title">{t("upload.title")}</h3>
+        <>
+          <div className="form-step">
+            <div className="step-header">
+              <span className="step-number">4</span>
+              <h3 className="step-title">{t("purchase.transfer_data.title")}</h3>
+            </div>
+            <div className="form-group">
+              <p>
+                <strong>{t("purchase.transfer_data.amount")}</strong>{" "}
+                {getSelectedPriceInPesos()}
+              </p>
+              <p>
+                <strong>{t("purchase.transfer_data.alias")}</strong>{" "}
+                <span className="alias-copy">ffdiamondzone</span>
+              </p>
+              <p>
+                <strong>{t("purchase.transfer_data.cbu")}</strong>{" "}
+                <span className="alias-copy">0000003100055519928336</span>
+              </p>
+              <p>
+                <em>{t("purchase.transfer_data.reminder")}</em>
+              </p>
+            </div>
           </div>
-          <DropPdf
-            userId={userId}
-            FFUser={playerId}
-            FFRegion={region}
-            packageId={quantity}
-            playerIdError={playerIdError}
-          />
-        </div>
+
+          <div className="form-step">
+            <div className="step-header">
+              <span className="step-number">5</span>
+              <h3 className="step-title">{t("upload.title")}</h3>
+            </div>
+            <DropPdf
+              userId={userId}
+              FFUser={playerId}
+              FFRegion={region}
+              packageId={quantity}
+              playerIdError={playerIdError}
+            />
+          </div>
+        </>
       )}
 
-      {/* --- Mensaje de Éxito Condicional (usando ternario) --- */}
+      {/* Success Message */}
       {isSuccess ? (
         <div className="success-message">
           <FontAwesomeIcon icon={faCheckCircle} />

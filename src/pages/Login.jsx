@@ -3,11 +3,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../services/AuthService";
 import { useSnackbar } from "../context/SnackBarContext";
+import { useTranslation } from "react-i18next";
 
 export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { t } = useTranslation();
 
   const { showSnackbar } = useSnackbar();
 
@@ -15,38 +17,38 @@ export default function Login() {
     e.preventDefault();
     try {
       const result = await loginUser({ email, password });
-      showSnackbar("Sesión iniciada", "success");
+      showSnackbar(t("auth.login_success"), "success");
       navigate("/");
     } catch (err) {
-      showSnackbar("Credenciales inválidas", "error");
+      showSnackbar(t("auth.invalid_credentials"), "error");
     }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-box">
-        <h2 className="auth-title">Iniciar sesión</h2>
+        <h2 className="auth-title">{t("auth.login_title")}</h2>
         <form onSubmit={handleLogin}>
           <input
             className="auth-input"
             type="email"
-            placeholder="Email"
+            placeholder={t("auth.email_placeholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
           <input
             className="auth-input"
             type="password"
-            placeholder="Contraseña"
+            placeholder={t("auth.password_placeholder")}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <button className="auth-button" type="submit">
-            Ingresar
+            {t("auth.login_button")}
           </button>
         </form>
         <p className="switch-link">
-          ¿No tenés cuenta? <a href="/register">Registrate</a>
+          {t("auth.no_account")} <a href="/register">{t("auth.register_link")}</a>
         </p>
       </div>
 

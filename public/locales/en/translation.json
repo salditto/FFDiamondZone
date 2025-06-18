@@ -17,7 +17,8 @@
     "feature2_desc": "Safe and reliable transactions.",
     "feature3_title": "Best Prices",
     "feature3_desc": "Competitive diamond rates.",
-    "cta_button": "Buy Diamonds Now"
+    "cta_button": "Buy Diamonds Now",
+    "scroll_down": "Scroll down"
   },
   "about": {
     "title": "Why Choose Us?",
@@ -91,5 +92,44 @@
     "terms_service": "Terms of Service",
     "contact_info": "Need help? Contact us via WhatsApp or Email for support.",
     "copyright": "© {{year}} FF Diamond Zone. All Rights Reserved."
+  },
+  "auth": {
+    "login_title": "Login",
+    "register_title": "Register",
+    "email_placeholder": "Email",
+    "password_placeholder": "Password",
+    "login_button": "Login",
+    "register_button": "Register",
+    "no_account": "Don't have an account?",
+    "have_account": "Already have an account?",
+    "register_link": "Register",
+    "login_link": "Login",
+    "login_success": "Session started",
+    "invalid_credentials": "Invalid credentials"
+  },
+  "session": {
+    "expired_title": "⚠️ Session Expired",
+    "expired_message": "Your session has expired. Please login to continue.",
+    "login_button": "Login",
+    "close_button": "Close"
+  },
+  "purchase": {
+    "select_payment_first": "Select a payment method first",
+    "transfer_data": {
+      "title": "Transfer Information",
+      "amount": "Amount to transfer:",
+      "alias": "Alias:",
+      "cbu": "CBU:",
+      "reminder": "Remember to upload your receipt in the next step to confirm your purchase."
+    },
+    "regions": {
+      "ar": "South America (AR)",
+      "br": "Brazil (BR)",
+      "us": "North America (US)",
+      "sg": "Southeast Asia (SG)",
+      "in": "India (IN)"
+    },
+    "loading": "Loading...",
+    "out_of_stock": "Out of Stock"
   }
 }

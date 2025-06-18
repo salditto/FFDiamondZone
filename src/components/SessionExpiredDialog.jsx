@@ -1,19 +1,22 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function SessionExpiredDialog({ open, onClose, onLogin }) {
+  const { t } = useTranslation();
+  
   if (!open) return null;
 
   return (
     <div className="dialog-overlay">
       <div className="dialog-box">
-        <h3>⚠️ Sesión expirada</h3>
-        <p>Tu sesión caducó. Por favor, iniciá sesión para continuar.</p>
+        <h3>{t("session.expired_title")}</h3>
+        <p>{t("session.expired_message")}</p>
         <div className="dialog-buttons">
           <button className="neon-btn" onClick={onLogin}>
-            Iniciar sesión
+            {t("session.login_button")}
           </button>
           <button className="neon-btn outline" onClick={onClose}>
-            Cerrar
+            {t("session.close_button")}
           </button>
         </div>
       </div>
