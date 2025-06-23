@@ -300,7 +300,7 @@ export default function AdminPanel() {
                         <a>
                           <button
                             onClick={() =>
-                              handleStatusChange(receipt.id, receipt.userId, 3)
+                              handleStatusChange(receipt.id, receipt.userId, 4)
                             }
                             className="confirm-btn"
                           >
