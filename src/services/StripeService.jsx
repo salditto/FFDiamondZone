@@ -19,8 +19,9 @@ class StripeService {
   // Handle API response
   async handleResponse (response) {
     if (response.status === 401) {
-      this.handleSessionExpired()
-      throw new Error('Session expired')
+      // Instead of immediately redirecting, throw a specific error
+      // that can be caught and handled by the UI components
+      throw new Error('AUTHENTICATION_REQUIRED')
     }
 
     if (!response.ok) {
@@ -169,11 +170,12 @@ class StripeService {
     }
   }
 
-  // Handle session expired error
+  // Handle session expired error - updated to dispatch event instead of redirect
   handleSessionExpired () {
     sessionStorage.removeItem('auth_token')
     sessionStorage.removeItem('userId')
-    window.location.href = '/login'
+    // Dispatch event to trigger the session expired dialog
+    window.dispatchEvent(new Event('forceLogout'))
   }
 
   // Retry API call with error handling

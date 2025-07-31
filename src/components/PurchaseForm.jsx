@@ -153,6 +153,14 @@ export default function PurchaseForm () {
     try {
       const token = sessionStorage.getItem('auth_token')
 
+      // Check if user is authenticated
+      if (!token) {
+        setStripeError(
+          t('form.please_login_first', 'Please log in first to make a payment')
+        )
+        return
+      }
+
       // Find the selected package to get the correct price
       const selectedPackage = diamondOptions.find(opt => opt.id === quantity)
 
@@ -187,6 +195,20 @@ export default function PurchaseForm () {
       if (!response.ok) {
         const errorData = await response.text()
         console.error('Stripe API error:', errorData)
+
+        // Handle 401 specifically
+        if (response.status === 401) {
+          setStripeError(
+            t(
+              'form.session_expired',
+              'Your session has expired. Please log in again to continue.'
+            )
+          )
+          // Trigger the session expired dialog
+          window.dispatchEvent(new Event('forceLogout'))
+          return
+        }
+
         throw new Error(`HTTP ${response.status}: ${errorData}`)
       }
 
@@ -227,7 +249,39 @@ export default function PurchaseForm () {
       }
     } catch (error) {
       console.error('Stripe checkout error:', error)
-      setStripeError(error.message || t('form.error_creating_session'))
+
+      // Handle specific authentication error
+      if (error.message === 'AUTHENTICATION_REQUIRED') {
+        setStripeError(
+          t(
+            'form.session_expired',
+            'Your session has expired. Please log in again to continue.'
+          )
+        )
+        window.dispatchEvent(new Event('forceLogout'))
+        return
+      }
+
+      // Handle other errors
+      if (
+        error.message.includes('Network') ||
+        error.message.includes('fetch')
+      ) {
+        setStripeError(
+          t(
+            'form.network_error',
+            'Network error. Please check your connection and try again.'
+          )
+        )
+      } else {
+        setStripeError(
+          error.message ||
+            t(
+              'form.error_creating_session',
+              'Error creating payment session. Please try again.'
+            )
+        )
+      }
     } finally {
       setIsLoading(false)
     }

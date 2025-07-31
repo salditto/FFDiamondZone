@@ -70,7 +70,14 @@ function CheckoutForm ({ clientSecret, packageDetails }) {
       })
 
     if (confirmError) {
-      setError(confirmError.message)
+      // Handle specific error types
+      if (confirmError.code === 'authentication_required') {
+        setError('Your session has expired. Please log in again to continue.')
+        // Trigger session expired dialog
+        window.dispatchEvent(new Event('forceLogout'))
+      } else {
+        setError(confirmError.message)
+      }
       setIsLoading(false)
     } else {
       setSucceeded(true)

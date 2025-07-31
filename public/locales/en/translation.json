@@ -56,7 +56,11 @@
       "mercadopago": "MercadoPago (Argentina)",
       "bank_transfer_ars": "Bank Transfer (ARS)",
       "crypto": "Crypto"
-    }
+    },
+    "please_login_first": "Please log in first to make a payment",
+    "session_expired": "Your session has expired. Please log in again to continue.",
+    "network_error": "Network error. Please check your connection and try again.",
+    "error_creating_session": "Error creating payment session. Please try again."
   },
   "faq": {
     "title": "Frequently Asked Questions",
