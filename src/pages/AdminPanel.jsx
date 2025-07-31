@@ -1,147 +1,185 @@
 // pages/AdminPanel.jsx
-import { useEffect, useState } from "react";
-import { useSnackbar } from "../context/SnackBarContext";
+import { useEffect, useState } from 'react'
+import { useSnackbar } from '../context/SnackBarContext'
 import {
   getAllReceipts,
-  updateReceiptStatus,
-} from "../services/AdminPanelService";
-import { getPdfFile } from "../services/BankTransfer.service";
-import { isAdmin } from "../services/AuthService";
-import { useNavigate } from "react-router-dom";
+  updateReceiptStatus
+} from '../services/AdminPanelService'
+import { getPdfFile } from '../services/BankTransfer.service'
+import { isAdmin } from '../services/AuthService'
+import { useNavigate } from 'react-router-dom'
 
-export default function AdminPanel() {
-  const [receipts, setReceipts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(null);
-  const [filter, setFilter] = useState("all");
-  const [selectedReceipt, setSelectedReceipt] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
-  const { showSnackbar } = useSnackbar();
+export default function AdminPanel () {
+  const [receipts, setReceipts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [authorized, setAuthorized] = useState(null)
+  const [filter, setFilter] = useState('all')
+  const [selectedReceipt, setSelectedReceipt] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
+  const { showSnackbar } = useSnackbar()
 
   // Estados posibles para los comprobantes
   const statusOptions = {
-    1: { label: "Pendiente", color: "#ff9500", bgColor: "#ff950020" },
-    2: { label: "Procesando", color: "#00aaff", bgColor: "#00aaff20" },
-    3: { label: "Aprobado", color: "#00ff88", bgColor: "#00ff8820" },
-    4: { label: "Diamantes Cargados", color: "#b86bff", bgColor: "#b86bff20" },
-    5: { label: "Fallido", color: "#ff4757", bgColor: "#ff475720" },
-    6: { label: "Cancelado", color: "#999", bgColor: "#99999920" },
-  };
+    1: { label: 'Pendiente', color: '#ff9500', bgColor: '#ff950020' },
+    2: { label: 'Procesando', color: '#00aaff', bgColor: '#00aaff20' },
+    3: { label: 'Aprobado', color: '#00ff88', bgColor: '#00ff8820' },
+    4: { label: 'Diamantes Cargados', color: '#b86bff', bgColor: '#b86bff20' },
+    5: { label: 'Fallido', color: '#ff4757', bgColor: '#ff475720' },
+    6: { label: 'Cancelado', color: '#999', bgColor: '#99999920' }
+  }
+
+  // Payment method types
+  const paymentMethods = {
+    1: { label: 'Stripe', color: '#635bff', icon: '💳' },
+    2: { label: 'MercadoPago', color: '#00b1ea', icon: '💰' },
+    3: { label: 'Crypto', color: '#f7931a', icon: '₿' },
+    4: { label: 'Transferencia Bancaria', color: '#28a745', icon: '🏦' }
+  }
 
   useEffect(() => {
     const checkAccess = async () => {
-      const allowed = await isAdmin();
-      console.log(allowed);
-      setAuthorized(allowed);
+      const allowed = await isAdmin()
+      console.log(allowed)
+      setAuthorized(allowed)
       if (!allowed) {
-        console.log("asdsa");
-        showSnackbar("No tenés acceso al panel", "error");
-        navigate("/");
+        console.log('Access denied')
+        showSnackbar('No tenés acceso al panel', 'error')
+        navigate('/')
       }
-    };
-    checkAccess();
-  }, []);
+    }
+    checkAccess()
+  }, [])
 
   // Cargar datos desde la API
   useEffect(() => {
     const fetchReceipts = async () => {
       try {
-        setLoading(true);
-        const response = await getAllReceipts();
-        setReceipts(response);
+        setLoading(true)
+        const response = await getAllReceipts()
+        setReceipts(response)
       } catch (error) {
-        showSnackbar("Error al cargar los comprobantes", "error");
-        console.error("Error fetching receipts:", error);
+        showSnackbar('Error al cargar los pagos', 'error')
+        console.error('Error fetching receipts:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
-
-    fetchReceipts();
-  }, []);
-
-  const filteredReceipts = receipts.filter((receipt) => {
-    if (filter === "all") return true;
-    if (filter === "1") {
-      return receipt.method === 4 && receipt.status === 1;
     }
-    return receipt.status.toString() === filter;
-  });
+
+    if (authorized) {
+      fetchReceipts()
+    }
+  }, [authorized])
+
+  const filteredReceipts = receipts.filter(receipt => {
+    if (filter === 'all') return true
+    if (filter === 'pending_bank') {
+      return receipt.method === 4 && receipt.status === 1
+    }
+    if (filter.startsWith('method_')) {
+      const methodId = Number.parseInt(filter.split('_')[1])
+      return receipt.method === methodId
+    }
+    return receipt.status.toString() === filter
+  })
 
   const handleStatusChange = async (transferId, receiptId, newStatus) => {
     try {
       const response = await updateReceiptStatus({
-        transferId: transferId,
+        transferId: transferId, // This should be the payment ID
         status: newStatus,
-        id: receiptId,
-      });
+        id: receiptId // This should be the user ID
+      })
       if (response?.status === 204 || response === undefined) {
-        const updatedReceipts = await getAllReceipts();
-        setReceipts(updatedReceipts);
+        const updatedReceipts = await getAllReceipts()
+        setReceipts(updatedReceipts)
       } else {
-        setReceipts((prev) =>
-          prev.map((receipt) =>
+        setReceipts(prev =>
+          prev.map(receipt =>
             receipt.id === receiptId
               ? {
                   ...receipt,
                   status: newStatus,
-                  updatedAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
                 }
               : receipt
           )
-        );
+        )
       }
 
-      showSnackbar("Estado actualizado correctamente", "success");
-      setShowModal(false);
+      showSnackbar('Estado actualizado correctamente', 'success')
+      setShowModal(false)
     } catch (error) {
-      showSnackbar("Error al actualizar el estado", "error");
-      console.error("Error updating status:", error);
+      showSnackbar('Error al actualizar el estado', 'error')
+      console.error('Error updating status:', error)
     }
-  };
+  }
 
-  const openModal = (receipt) => {
-    setSelectedReceipt(receipt);
-    setShowModal(true);
-  };
+  const openModal = receipt => {
+    setSelectedReceipt(receipt)
+    setShowModal(true)
+  }
 
-  const openFile = async (receipt) => {
+  const openFile = async receipt => {
     try {
-      setLoading(true);
-      const response = await getPdfFile({ idFile: receipt });
-      const url = window.URL.createObjectURL(response);
-      window.open(url, "_blank");
+      setLoading(true)
+      const response = await getPdfFile({ idFile: receipt })
+      const url = window.URL.createObjectURL(response)
+      window.open(url, '_blank')
     } catch (error) {
-      showSnackbar("Error al cargar los comprobantes", "error");
-      console.error("Error fetching receipts:", error);
+      showSnackbar('Error al cargar el comprobante', 'error')
+      console.error('Error fetching file:', error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString("es-AR");
-  };
+  const formatDate = dateString => {
+    return new Date(dateString).toLocaleString('es-AR')
+  }
 
-  const getPackageName = (packageId) => {
-    const packages = {
-      "100_diamonds": "100 Diamantes",
-      "310_diamonds": "310 Diamantes",
-      "520_diamonds": "520 Diamantes",
-      "1060_diamonds": "1060 Diamantes",
-      "2180_diamonds": "2180 Diamantes",
-      "5600_diamonds": "5600 Diamantes",
-    };
-    return packages[packageId] || packageId;
-  };
+  const formatCurrency = amount => {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS'
+    }).format(amount)
+  }
 
-  if (loading) {
+  const getPaymentMethodInfo = methodId => {
     return (
-      <div className="admin-wrapper">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Cargando comprobantes...</p>
+      paymentMethods[methodId] || {
+        label: 'Desconocido',
+        color: '#666',
+        icon: '❓'
+      }
+    )
+  }
+
+  // Calculate statistics
+  const stats = {
+    total: receipts.length,
+    pending: receipts.filter(r => r.status === 1).length,
+    processing: receipts.filter(r => r.status === 2).length,
+    approved: receipts.filter(r => r.status === 3).length,
+    completed: receipts.filter(r => r.status === 4).length,
+    failed: receipts.filter(r => r.status === 5 || r.status === 6).length,
+    totalRevenue: receipts
+      .filter(r => r.status === 4)
+      .reduce((sum, r) => sum + (r.amount || 0), 0),
+    byMethod: Object.keys(paymentMethods).reduce((acc, methodId) => {
+      acc[methodId] = receipts.filter(
+        r => r.method === Number.parseInt(methodId)
+      ).length
+      return acc
+    }, {})
+  }
+
+  if (loading && !authorized) {
+    return (
+      <div className='admin-wrapper'>
+        <div className='loading-container'>
+          <div className='loading-spinner'></div>
+          <p>Verificando permisos...</p>
         </div>
         <style jsx>{`
           .admin-wrapper {
@@ -179,68 +217,125 @@ export default function AdminPanel() {
           }
         `}</style>
       </div>
-    );
+    )
+  }
+
+  if (!authorized) {
+    return null
   }
 
   return (
-    <div className="admin-wrapper">
-      <div className="admin-container">
-        <div className="admin-header">
-          <h1 className="admin-title">Panel de Administración</h1>
+    <div className='admin-wrapper'>
+      <div className='admin-container'>
+        <div className='admin-header'>
+          <h1 className='admin-title'>Panel de Administración</h1>
+          <p className='admin-subtitle'>Gestión de Pagos y Transacciones</p>
         </div>
 
-        <div className="filters-section">
-          <div className="filter-buttons">
-            <button
-              className={`filter-btn ${filter === "all" ? "active" : ""}`}
-              onClick={() => setFilter("all")}
-            >
-              Todos ({receipts.length})
-            </button>
-            <button
-              className={`filter-btn ${filter === "1" ? "active" : ""}`}
-              onClick={() => setFilter("1")}
-            >
-              Pendientes (
-              {receipts.filter((r) => r.method === 4 && r.status === 1).length})
-            </button>
-            <button
-              className={`filter-btn ${filter === "2" ? "active" : ""}`}
-              onClick={() => setFilter("2")}
-            >
-              Procesando ({receipts.filter((r) => r.status === 2).length})
-            </button>
-            <button
-              className={`filter-btn ${filter === "3" ? "active" : ""}`}
-              onClick={() => setFilter("3")}
-            >
-              Aprobados ({receipts.filter((r) => r.status === 3).length})
-            </button>
-            <button
-              className={`filter-btn ${filter === "4" ? "active" : ""}`}
-              onClick={() => setFilter("4")}
-            >
-              Diamantes Cargados (
-              {receipts.filter((r) => r.status === 4).length})
-            </button>
-            <button
-              className={`filter-btn ${
-                filter === "5" || filter === "6" ? "active" : ""
-              }`}
-              onClick={() => setFilter("5")}
-            >
-              Rechazados ({receipts.filter((r) => r.status === 5).length})
-            </button>
+        {/* Statistics Cards */}
+        <div className='stats-grid'>
+          <div className='stat-card'>
+            <div className='stat-icon'>📊</div>
+            <div className='stat-content'>
+              <h3>Total Transacciones</h3>
+              <p className='stat-number'>{stats.total}</p>
+            </div>
+          </div>
+          <div className='stat-card'>
+            <div className='stat-icon'>⏳</div>
+            <div className='stat-content'>
+              <h3>Pendientes</h3>
+              <p className='stat-number'>{stats.pending}</p>
+            </div>
+          </div>
+          <div className='stat-card'>
+            <div className='stat-icon'>✅</div>
+            <div className='stat-content'>
+              <h3>Completadas</h3>
+              <p className='stat-number'>{stats.completed}</p>
+            </div>
+          </div>
+          <div className='stat-card'>
+            <div className='stat-icon'>💰</div>
+            <div className='stat-content'>
+              <h3>Ingresos Totales</h3>
+              <p className='stat-number'>
+                {formatCurrency(stats.totalRevenue)}
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="table-container">
-          <table className="receipts-table">
+        <div className='filters-section'>
+          <div className='filter-buttons'>
+            <button
+              className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+              onClick={() => setFilter('all')}
+            >
+              Todos ({stats.total})
+            </button>
+            <button
+              className={`filter-btn ${
+                filter === 'pending_bank' ? 'active' : ''
+              }`}
+              onClick={() => setFilter('pending_bank')}
+            >
+              🏦 Transferencias Pendientes (
+              {receipts.filter(r => r.method === 4 && r.status === 1).length})
+            </button>
+            <button
+              className={`filter-btn ${filter === '1' ? 'active' : ''}`}
+              onClick={() => setFilter('1')}
+            >
+              ⏳ Pendientes ({stats.pending})
+            </button>
+            <button
+              className={`filter-btn ${filter === '2' ? 'active' : ''}`}
+              onClick={() => setFilter('2')}
+            >
+              🔄 Procesando ({stats.processing})
+            </button>
+            <button
+              className={`filter-btn ${filter === '3' ? 'active' : ''}`}
+              onClick={() => setFilter('3')}
+            >
+              ✅ Aprobados ({stats.approved})
+            </button>
+            <button
+              className={`filter-btn ${filter === '4' ? 'active' : ''}`}
+              onClick={() => setFilter('4')}
+            >
+              💎 Completados ({stats.completed})
+            </button>
+          </div>
+
+          <div className='method-filters'>
+            <h4>Filtrar por Método de Pago:</h4>
+            <div className='method-buttons'>
+              {Object.entries(paymentMethods).map(([methodId, method]) => (
+                <button
+                  key={methodId}
+                  className={`method-btn ${
+                    filter === `method_${methodId}` ? 'active' : ''
+                  }`}
+                  onClick={() => setFilter(`method_${methodId}`)}
+                  style={{ borderColor: method.color }}
+                >
+                  {method.icon} {method.label} ({stats.byMethod[methodId] || 0})
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className='table-container'>
+          <table className='receipts-table'>
             <thead>
               <tr>
                 <th>Usuario FF</th>
                 <th>Región</th>
-                <th>Cantidad</th>
+                <th>Método de Pago</th>
+                <th>Monto</th>
                 <th>Diamantes</th>
                 <th>Estado</th>
                 <th>Fecha Creación</th>
@@ -248,76 +343,89 @@ export default function AdminPanel() {
               </tr>
             </thead>
             <tbody>
-              {filteredReceipts.map((receipt) => (
-                <tr key={receipt.id}>
-                  <td className="user-cell">
-                    <div className="user-info">
-                      <span className="ff-user">{receipt.ffUser}</span>
-                    </div>
-                  </td>
-                  <td>{receipt.ffRegion}</td>
-                  <td className="user-cell">
-                    <div className="user-info">
-                      <span className="ff-user">{receipt.amount}</span>
-                    </div>
-                  </td>
-                  <td className="user-cell">
-                    <div className="user-info">
-                      <span className="ff-user">{receipt.diamonds}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span
-                      className="status-badge"
-                      style={{
-                        color: statusOptions[receipt.status].color,
-                        backgroundColor: statusOptions[receipt.status].bgColor,
-                      }}
-                    >
-                      {statusOptions[receipt.status].label}
-                    </span>
-                  </td>
-                  <td className="date-cell">{formatDate(receipt.createdAt)}</td>
-                  <td>
-                    <div className="action-buttons">
-                      <button
-                        className="view-btn"
-                        onClick={() => openModal(receipt)}
+              {filteredReceipts.map(receipt => {
+                const paymentMethod = getPaymentMethodInfo(receipt.method)
+                return (
+                  <tr key={receipt.id}>
+                    <td className='user-cell'>
+                      <div className='user-info'>
+                        <span className='ff-user'>{receipt.ffUser}</span>
+                      </div>
+                    </td>
+                    <td>{receipt.ffRegion}</td>
+                    <td>
+                      <div
+                        className='payment-method'
+                        style={{ color: paymentMethod.color }}
                       >
-                        Ver Detalles
-                      </button>
-                      {receipt.id && receipt.method === 4 && (
-                        <a
-                          onClick={() => openFile(receipt.id)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="proof-btn"
+                        <span className='method-icon'>
+                          {paymentMethod.icon}
+                        </span>
+                        <span className='method-label'>
+                          {paymentMethod.label}
+                        </span>
+                      </div>
+                    </td>
+                    <td className='amount-cell'>
+                      {receipt.amount ? formatCurrency(receipt.amount) : 'N/A'}
+                    </td>
+                    <td className='diamonds-cell'>
+                      <span className='diamonds-count'>
+                        💎 {receipt.diamonds}
+                      </span>
+                    </td>
+                    <td>
+                      <span
+                        className='status-badge'
+                        style={{
+                          color: statusOptions[receipt.status].color,
+                          backgroundColor: statusOptions[receipt.status].bgColor
+                        }}
+                      >
+                        {statusOptions[receipt.status].label}
+                      </span>
+                    </td>
+                    <td className='date-cell'>
+                      {formatDate(receipt.createdAt)}
+                    </td>
+                    <td>
+                      <div className='action-buttons'>
+                        <button
+                          className='view-btn'
+                          onClick={() => openModal(receipt)}
                         >
-                          Ver Comprobante
-                        </a>
-                      )}
-                      {receipt.status === 3 && (
-                        <a>
+                          Ver Detalles
+                        </button>
+                        {receipt.id && receipt.method === 4 && (
                           <button
-                            onClick={() =>
-                              handleStatusChange(receipt.id, receipt.userId, 4)
-                            }
-                            className="confirm-btn"
+                            onClick={() => openFile(receipt.id)}
+                            className='proof-btn'
                           >
-                            Confirmar diamantes cargados
+                            Ver Comprobante
                           </button>
-                        </a>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                        )}
+                        {receipt.status === 3 && (
+                          <button
+                            onClick={
+                              () =>
+                                handleStatusChange(receipt.id, receipt.id, 4) // Use receipt.id for both parameters
+                            }
+                            className='confirm-btn'
+                          >
+                            Confirmar Carga
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
 
           {filteredReceipts.length === 0 && (
-            <div className="no-data">
-              <p>No hay comprobantes para mostrar</p>
+            <div className='no-data'>
+              <p>No hay transacciones para mostrar</p>
             </div>
           )}
         </div>
@@ -325,77 +433,107 @@ export default function AdminPanel() {
 
       {/* Modal para gestionar comprobante */}
       {showModal && selectedReceipt && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Gestionar Comprobante</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>
+        <div className='modal-overlay' onClick={() => setShowModal(false)}>
+          <div className='modal-content' onClick={e => e.stopPropagation()}>
+            <div className='modal-header'>
+              <h3>Gestionar Transacción</h3>
+              <button className='close-btn' onClick={() => setShowModal(false)}>
                 ×
               </button>
             </div>
 
-            <div className="modal-body">
-              <div className="receipt-details">
-                <div className="detail-row">
-                  <span className="detail-label">Usuario FF:</span>
-                  <span className="detail-value">{selectedReceipt.ffUser}</span>
+            <div className='modal-body'>
+              <div className='receipt-details'>
+                <div className='detail-row'>
+                  <span className='detail-label'>Usuario FF:</span>
+                  <span className='detail-value'>{selectedReceipt.ffUser}</span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Región:</span>
-                  <span className="detail-value">
+                <div className='detail-row'>
+                  <span className='detail-label'>Región:</span>
+                  <span className='detail-value'>
                     {selectedReceipt.ffRegion}
                   </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Estado Actual:</span>
+                <div className='detail-row'>
+                  <span className='detail-label'>Método de Pago:</span>
+                  <div
+                    className='payment-method'
+                    style={{
+                      color: getPaymentMethodInfo(selectedReceipt.method).color
+                    }}
+                  >
+                    <span className='method-icon'>
+                      {getPaymentMethodInfo(selectedReceipt.method).icon}
+                    </span>
+                    <span className='method-label'>
+                      {getPaymentMethodInfo(selectedReceipt.method).label}
+                    </span>
+                  </div>
+                </div>
+                <div className='detail-row'>
+                  <span className='detail-label'>Monto:</span>
+                  <span className='detail-value'>
+                    {selectedReceipt.amount
+                      ? formatCurrency(selectedReceipt.amount)
+                      : 'N/A'}
+                  </span>
+                </div>
+                <div className='detail-row'>
+                  <span className='detail-label'>Diamantes:</span>
+                  <span className='detail-value'>
+                    💎 {selectedReceipt.diamonds}
+                  </span>
+                </div>
+                <div className='detail-row'>
+                  <span className='detail-label'>Estado Actual:</span>
                   <span
-                    className="status-badge"
+                    className='status-badge'
                     style={{
                       color: statusOptions[selectedReceipt.status].color,
                       backgroundColor:
-                        statusOptions[selectedReceipt.status].bgColor,
+                        statusOptions[selectedReceipt.status].bgColor
                     }}
                   >
                     {statusOptions[selectedReceipt.status].label}
                   </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Creado:</span>
-                  <span className="detail-value">
+                <div className='detail-row'>
+                  <span className='detail-label'>Creado:</span>
+                  <span className='detail-value'>
                     {formatDate(selectedReceipt.createdAt)}
                   </span>
                 </div>
-                <div className="detail-row">
-                  <span className="detail-label">Actualizado:</span>
-                  <span className="detail-value">
+                <div className='detail-row'>
+                  <span className='detail-label'>Actualizado:</span>
+                  <span className='detail-value'>
                     {formatDate(selectedReceipt.updatedAt)}
                   </span>
                 </div>
               </div>
 
-              <div className="status-actions">
+              <div className='status-actions'>
                 <h4>Cambiar Estado:</h4>
-                <div className="status-buttons">
+                <div className='status-buttons'>
                   {Object.entries(statusOptions).map(([status, config]) => (
                     <button
                       key={status}
                       className={`status-action-btn ${
                         selectedReceipt.status.toString() === status
-                          ? "current"
-                          : ""
+                          ? 'current'
+                          : ''
                       }`}
                       style={{
                         borderColor: config.color,
                         backgroundColor:
                           selectedReceipt.status.toString() === status
                             ? config.bgColor
-                            : "transparent",
+                            : 'transparent'
                       }}
                       onClick={() =>
                         handleStatusChange(
                           selectedReceipt.id,
                           selectedReceipt.userId,
-                          parseInt(status)
+                          Number.parseInt(status)
                         )
                       }
                       disabled={selectedReceipt.status.toString() === status}
@@ -435,29 +573,49 @@ export default function AdminPanel() {
           text-shadow: 0 0 10px #9b4dff88;
         }
 
-        .confirm-btn {
-          padding: 0.5rem 1rem;
-          border-radius: 0.375rem;
-          font-size: 0.85rem;
-          font-weight: 500;
-          text-decoration: none;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border: none;
-          background: #b86bff20;
-          border-color: rgb(184, 107, 255);
-          border: 2px solid;
-          color: #b86bff;
-        }
-
-        .confirm-btn:hover {
-          opacity: 0.7
-          transform: translateY(-1px);
-        }
-
         .admin-subtitle {
           color: #9b4dff;
           font-size: 1.1rem;
+          margin-bottom: 2rem;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .stat-card {
+          background: #1c1534;
+          border: 2px solid #9b4dff;
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          box-shadow: 0 0 15px #9b4dff44;
+        }
+
+        .stat-icon {
+          font-size: 2rem;
+          background: #9b4dff22;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+        }
+
+        .stat-content h3 {
+          margin: 0 0 0.5rem 0;
+          color: #d4bfff;
+          font-size: 0.9rem;
+          font-weight: 500;
+        }
+
+        .stat-number {
+          margin: 0;
+          font-size: 1.8rem;
+          font-weight: 700;
+          color: #9b4dff;
         }
 
         .filters-section {
@@ -469,9 +627,28 @@ export default function AdminPanel() {
           gap: 1rem;
           flex-wrap: wrap;
           justify-content: center;
+          margin-bottom: 1.5rem;
         }
 
-        .filter-btn {
+        .method-filters {
+          text-align: center;
+        }
+
+        .method-filters h4 {
+          color: #d4bfff;
+          margin-bottom: 1rem;
+          font-size: 1rem;
+        }
+
+        .method-buttons {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .filter-btn,
+        .method-btn {
           padding: 0.75rem 1.5rem;
           background: #2b2145;
           border: 2px solid #9b4dff;
@@ -480,14 +657,21 @@ export default function AdminPanel() {
           cursor: pointer;
           transition: all 0.3s ease;
           font-weight: 500;
+          font-size: 0.9rem;
         }
 
-        .filter-btn:hover {
+        .method-btn {
+          border-color: #666;
+        }
+
+        .filter-btn:hover,
+        .method-btn:hover {
           background: #9b4dff22;
           transform: translateY(-2px);
         }
 
-        .filter-btn.active {
+        .filter-btn.active,
+        .method-btn.active {
           background: #9b4dff;
           box-shadow: 0 0 15px #9b4dff88;
         }
@@ -525,7 +709,7 @@ export default function AdminPanel() {
         }
 
         .user-cell {
-          min-width: 180px;
+          min-width: 150px;
         }
 
         .user-info {
@@ -539,13 +723,24 @@ export default function AdminPanel() {
           color: #d4bfff;
         }
 
-        .user-id {
-          font-size: 0.85rem;
-          color: #9b4dff;
+        .payment-method {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 500;
         }
 
-        .package-cell {
-          font-weight: 500;
+        .method-icon {
+          font-size: 1.2rem;
+        }
+
+        .amount-cell {
+          font-weight: 600;
+          color: #00ff88;
+        }
+
+        .diamonds-cell {
+          font-weight: 600;
           color: #c77dff;
         }
 
@@ -568,8 +763,10 @@ export default function AdminPanel() {
           flex-wrap: wrap;
           align-items: center;
         }
+
         .view-btn,
-        .proof-btn {
+        .proof-btn,
+        .confirm-btn {
           padding: 0.5rem 1rem;
           border-radius: 0.375rem;
           font-size: 0.85rem;
@@ -597,6 +794,17 @@ export default function AdminPanel() {
 
         .proof-btn:hover {
           background: #33ff99;
+          transform: translateY(-1px);
+        }
+
+        .confirm-btn {
+          background: #b86bff20;
+          border: 2px solid #b86bff;
+          color: #b86bff;
+        }
+
+        .confirm-btn:hover {
+          opacity: 0.7;
           transform: translateY(-1px);
         }
 
@@ -728,11 +936,17 @@ export default function AdminPanel() {
             font-size: 2rem;
           }
 
-          .filter-buttons {
+          .stats-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .filter-buttons,
+          .method-buttons {
             justify-content: center;
           }
 
-          .filter-btn {
+          .filter-btn,
+          .method-btn {
             padding: 0.5rem 1rem;
             font-size: 0.9rem;
           }
@@ -760,5 +974,5 @@ export default function AdminPanel() {
         }
       `}</style>
     </div>
-  );
+  )
 }

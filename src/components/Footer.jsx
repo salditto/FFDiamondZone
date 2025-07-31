@@ -1,68 +1,101 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookF, faTwitter, faInstagram, faDiscord } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons';
+import React from 'react'
+import { useTranslation } from 'react-i18next'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faFacebookF,
+  faTwitter,
+  faInstagram,
+  faDiscord
+} from '@fortawesome/free-brands-svg-icons'
+import { faEnvelope, faClock } from '@fortawesome/free-solid-svg-icons'
 
 const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
-  const { t } = useTranslation();
-  const currentYear = new Date().getFullYear();
+  const { t } = useTranslation()
+  const currentYear = new Date().getFullYear()
 
   const quickLinks = [
     { labelKey: 'navbar.home', handler: onHomeClick },
     { labelKey: 'navbar.about', handler: onAboutClick },
     { labelKey: 'navbar.buy', handler: onBuyClick },
-    { labelKey: 'navbar.faq', handler: onFAQClick },
-  ];
+    { labelKey: 'navbar.faq', handler: onFAQClick }
+  ]
 
   return (
-    <footer className="footer" id="contact">
-      <div className="footer-content">
-        
+    <footer className='footer' id='contact'>
+      <div className='footer-content'>
         {/* Section 1: About */}
-        <div className="footer-section about">
-          <img src="/ffdiamond-logo.svg" alt="FF Diamond Zone Logo" className="footer-logo-svg" onClick={onHomeClick} />
-          <p className="footer-description">
-             The premier destination for Free Fire diamonds. Fast, secure, and reliable service for gamers.
+        <div className='footer-section about'>
+          <img
+            src='/ffdiamond-logo.svg'
+            alt='FF Diamond Zone Logo'
+            className='footer-logo-svg'
+            onClick={onHomeClick}
+          />
+          <p className='footer-description'>
+            The premier destination for Free Fire diamonds. Fast, secure, and
+            reliable service for gamers.
           </p>
-           <div className="social-links">
-             <a href="#" aria-label="Facebook" className="social-link"><FontAwesomeIcon icon={faFacebookF} /></a>
-             <a href="#" aria-label="Twitter" className="social-link"><FontAwesomeIcon icon={faTwitter} /></a>
-             <a href="#" aria-label="Instagram" className="social-link"><FontAwesomeIcon icon={faInstagram} /></a>
-             <a href="#" aria-label="Discord" className="social-link"><FontAwesomeIcon icon={faDiscord} /></a>
-           </div>
+          <div className='social-links'>
+            <a href='#' aria-label='Facebook' className='social-link'>
+              <FontAwesomeIcon icon={faFacebookF} />
+            </a>
+            <a href='#' aria-label='Twitter' className='social-link'>
+              <FontAwesomeIcon icon={faTwitter} />
+            </a>
+            <a
+              href='https://www.instagram.com/ffdiamondzone'
+              aria-label='Instagram'
+              className='social-link'
+            >
+              <FontAwesomeIcon icon={faInstagram} />
+            </a>
+            <a href='#' aria-label='Discord' className='social-link'>
+              <FontAwesomeIcon icon={faDiscord} />
+            </a>
+          </div>
         </div>
-        
+
         {/* Section 2: Quick Links */}
-        <div className="footer-section links">
-          <h3 className="footer-heading">{t('footer.quick_links')}</h3>
-          <ul className="footer-links">
+        <div className='footer-section links'>
+          <h3 className='footer-heading'>{t('footer.quick_links')}</h3>
+          <ul className='footer-links'>
             {quickLinks.map(link => (
               <li key={link.labelKey}>
-                <a href="#" onClick={(e) => { e.preventDefault(); link.handler ? link.handler() : void(0); }}>
+                <a
+                  href='#'
+                  onClick={e => {
+                    e.preventDefault()
+                    link.handler ? link.handler() : void 0
+                  }}
+                >
                   {t(link.labelKey)}
                 </a>
               </li>
             ))}
           </ul>
         </div>
-        
+
         {/* Section 3: Contact Us */}
-        <div className="footer-section contact">
-          <h3 className="footer-heading">{t('footer.contact_us')}</h3>
-          <ul className="contact-info">
-            <li><FontAwesomeIcon icon={faEnvelope} className="contact-icon" /> support@ffdiamondzone.com</li>
-            <li><FontAwesomeIcon icon={faClock} className="contact-icon" /> 24/7 Customer Support</li>
+        <div className='footer-section contact'>
+          <h3 className='footer-heading'>{t('footer.contact_us')}</h3>
+          <ul className='contact-info'>
+            <li>
+              <FontAwesomeIcon icon={faEnvelope} className='contact-icon' />{' '}
+              support@ffdiamondzone.com
+            </li>
+            <li>
+              <FontAwesomeIcon icon={faClock} className='contact-icon' /> 24/7
+              Customer Support
+            </li>
           </ul>
         </div>
-
       </div>
-      
+
       {/* Bottom Bar */}
-      <div className="footer-bottom">
+      <div className='footer-bottom'>
         <p>{t('footer.copyright', { year: currentYear })}</p>
       </div>
-      
+
       <style jsx>{`
         .footer {
           background-color: var(--bg-color-dark);
@@ -73,20 +106,20 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           width: 100%;
           box-sizing: border-box;
         }
-        
+
         .footer-content {
           display: flex;
           flex-wrap: wrap; /* Permitir que las secciones se envuelvan */
-          justify-content: space-between; 
+          justify-content: space-between;
           gap: 30px; /* Espacio entre secciones */
-          max-width: 1400px; 
-          margin: 0 auto; 
-          width: 100%; 
+          max-width: 1400px;
+          margin: 0 auto;
+          width: 100%;
         }
-        
+
         .footer-section {
-           flex: 1 1 250px; /* Flex-grow, flex-shrink, base width */
-           margin-bottom: 20px; /* Reducir margen inferior */
+          flex: 1 1 250px; /* Flex-grow, flex-shrink, base width */
+          margin-bottom: 20px; /* Reducir margen inferior */
         }
 
         .footer-section.about {
@@ -98,22 +131,22 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           width: auto;
           margin-bottom: 15px; /* Espacio bajo el logo */
         }
-        
+
         .footer-description {
           color: var(--subtext-color);
           margin-bottom: 20px;
           line-height: var(--line-height-base);
           font-size: var(--font-size-sm);
         }
-        
+
         .social-links {
-           display: flex;
-           gap: 15px;
+          display: flex;
+          gap: 15px;
         }
-        
+
         .social-link {
           color: var(--subtext-color);
-          font-size: var(--font-size-lg); 
+          font-size: var(--font-size-lg);
           transition: color 0.3s ease, transform 0.3s ease;
           display: flex; /* Para centrar el icono si tuviera fondo */
           align-items: center;
@@ -123,12 +156,12 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           /* width: 36px; opcional */
           /* height: 36px; opcional */
         }
-        
+
         .social-link:hover {
           color: var(--accent-color);
           transform: scale(1.1);
         }
-        
+
         .footer-heading {
           color: var(--text-color);
           font-size: var(--font-size-lg); /* Más grande */
@@ -137,7 +170,7 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           position: relative;
           padding-bottom: 10px;
         }
-        
+
         .footer-heading::after {
           content: '';
           position: absolute;
@@ -145,35 +178,39 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           bottom: 0;
           width: 50px;
           height: 2px;
-          background: linear-gradient(to right, var(--accent-color), var(--accent-color-2));
+          background: linear-gradient(
+            to right,
+            var(--accent-color),
+            var(--accent-color-2)
+          );
         }
-        
+
         .footer-links {
           list-style: none;
           padding: 0;
         }
-        
+
         .footer-links li {
           margin-bottom: 12px; /* Ajustar espacio */
         }
-        
+
         .footer-links a {
           color: var(--subtext-color);
           transition: all 0.3s;
           font-size: var(--font-size-md);
           display: inline-block;
         }
-        
+
         .footer-links a:hover {
           color: var(--accent-color);
           transform: translateX(5px);
         }
-        
+
         .contact-info {
           list-style: none;
           padding: 0;
         }
-        
+
         .contact-info li {
           display: flex;
           align-items: center;
@@ -181,7 +218,7 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           color: var(--subtext-color);
           font-size: var(--font-size-md);
         }
-        
+
         .contact-icon {
           margin-right: 12px; /* Espacio icono-texto */
           font-size: var(--font-size-md);
@@ -189,7 +226,7 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           width: 20px; /* Ancho fijo para alinear texto */
           text-align: center;
         }
-        
+
         .footer-bottom {
           text-align: center;
           margin-top: 20px; /* Reducir margen superior */
@@ -198,33 +235,33 @@ const Footer = ({ onHomeClick, onAboutClick, onBuyClick, onFAQClick }) => {
           color: var(--subtext-color);
           font-size: var(--font-size-sm);
         }
-        
+
         /* Responsive */
         @media (max-width: 768px) {
-           /* .footer-content ya es wrap, se ajustará solo */
-           .footer-section {
-             flex-basis: 100%; /* Ocupar todo el ancho en móvil */
-             margin-bottom: 40px; /* Más espacio vertical */
-             text-align: center; /* Centrar contenido de secciones */
-           }
-           .footer-logo-svg {
-              margin-left: auto;
-              margin-right: auto;
-           }
-           .social-links {
-             justify-content: center;
-           }
-           .footer-heading::after {
-             left: 50%; /* Centrar línea bajo título */
-             transform: translateX(-50%);
-           }
-           .contact-info li {
-             justify-content: center; /* Centrar items de contacto */
-           }
+          /* .footer-content ya es wrap, se ajustará solo */
+          .footer-section {
+            flex-basis: 100%; /* Ocupar todo el ancho en móvil */
+            margin-bottom: 40px; /* Más espacio vertical */
+            text-align: center; /* Centrar contenido de secciones */
+          }
+          .footer-logo-svg {
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .social-links {
+            justify-content: center;
+          }
+          .footer-heading::after {
+            left: 50%; /* Centrar línea bajo título */
+            transform: translateX(-50%);
+          }
+          .contact-info li {
+            justify-content: center; /* Centrar items de contacto */
+          }
         }
       `}</style>
     </footer>
-  );
-};
+  )
+}
 
-export default Footer; 
+export default Footer

@@ -1,179 +1,272 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
   faUser,
   faGem,
   faShoppingCart,
-  faMoneyBillTransfer, // Para stripe (alternativa)
-  faCreditCard, // Para MercadoPago (fallback)
-  faLandmark, // Para Transferencia Bancaria
-  faCheckCircle, // Añadir icono de éxito
-} from "@fortawesome/free-solid-svg-icons";
-import { faBitcoin } from "@fortawesome/free-brands-svg-icons";
-import { EmbeddedCheckout } from "../payments/StripeElementsWrapper";
-import { loadStripe } from "@stripe/stripe-js";
-import DropPdf from "../payments/ConfirmationTransferBank";
-import { width } from "@fortawesome/free-brands-svg-icons/fa42Group";
-import { postMpBuy } from "../services/MercadoPago.service";
-import PaymentMercadoPago from "../payments/MercadoPagoConfirmation";
-import { getPackageInfo } from "../services/BankTransfer.service";
+  faMoneyBillTransfer,
+  faCreditCard,
+  faLandmark,
+  faCheckCircle
+} from '@fortawesome/free-solid-svg-icons'
+import { faBitcoin } from '@fortawesome/free-brands-svg-icons'
+import { loadStripe } from '@stripe/stripe-js'
+import DropPdf from '../payments/ConfirmationTransferBank'
+import PaymentMercadoPago from '../payments/MercadoPagoConfirmation'
+import { getPackageInfo } from '../services/BankTransfer.service'
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
 const paymentOptions = [
-  { id: "stripe", icon: faMoneyBillTransfer },
-  { id: "mercadopago", icon: faCreditCard },
-  { id: "bank_transfer_ars", icon: faLandmark },
-  { id: "crypto", icon: faBitcoin },
-];
+  { id: 'stripe', icon: faMoneyBillTransfer },
+  { id: 'mercadopago', icon: faCreditCard },
+  { id: 'bank_transfer_ars', icon: faLandmark },
+  { id: 'crypto', icon: faBitcoin }
+]
 
 const ffRegions = [
-  { code: "ar", label: "regions.ar" },
-  { code: "br", label: "regions.br" },
-  { code: "us", label: "regions.us" },
-  { code: "sg", label: "regions.sg" },
-  { code: "in", label: "regions.in" }
-];
+  { code: 'ar', label: 'regions.ar' },
+  { code: 'br', label: 'regions.br' },
+  { code: 'us', label: 'regions.us' },
+  { code: 'sg', label: 'regions.sg' },
+  { code: 'in', label: 'regions.in' }
+]
 
-export default function PurchaseForm() {
-  const { t } = useTranslation();
-  const [userId, setUserId] = useState("");
-  const [region, setRegion] = useState("ar");
-  const [diamondOptions, setDiamondOptions] = useState([]);
-  const [playerId, setPlayerId] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [playerIdError, setPlayerIdError] = useState("");
-  const [amount, setAmount] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+export default function PurchaseForm () {
+  const { t } = useTranslation()
+  const [userId, setUserId] = useState('')
+  const [region, setRegion] = useState('ar')
+  const [diamondOptions, setDiamondOptions] = useState([])
+  const [playerId, setPlayerId] = useState('')
+  const [quantity, setQuantity] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('')
+  const [playerIdError, setPlayerIdError] = useState('')
+  const [amount, setAmount] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [stripeError, setStripeError] = useState('')
 
-  const [isPackagesLoading, setIsPackagesLoading] = useState(false);
+  const [isPackagesLoading, setIsPackagesLoading] = useState(false)
 
   useEffect(() => {
-    getUserId();
-    fetchPackages();
-  }, []);
+    getUserId()
+    fetchPackages()
+  }, [])
 
-  function getUserId() {
-    const userId = sessionStorage.getItem("userId");
-    setUserId(userId);
+  function getUserId () {
+    const userId = sessionStorage.getItem('userId')
+    setUserId(userId)
   }
 
-  function validatePlayerId(id) {
-    if (!id) return t("form.error_playerId_required");
-    if (!/^\d+$/.test(id)) return t("form.error_playerId_numeric");
-    if (id.length < 8 || id.length > 10) return t("form.error_playerId_length");
-    return "";
+  function validatePlayerId (id) {
+    if (!id) return t('form.error_playerId_required')
+    if (!/^\d+$/.test(id)) return t('form.error_playerId_numeric')
+    if (id.length < 8 || id.length > 10) return t('form.error_playerId_length')
+    return ''
   }
 
-  function handlePlayerIdChange(e) {
-    const v = e.target.value;
-    setPlayerId(v);
-    setPlayerIdError(validatePlayerId(v));
+  function handlePlayerIdChange (e) {
+    const v = e.target.value
+    setPlayerId(v)
+    setPlayerIdError(validatePlayerId(v))
   }
 
-  function getSelectedPrice() {
-    const opt = diamondOptions.find((o) => o.id === quantity);
-    console.log(opt);
-    return opt ? opt.price : "$0.00";
+  function getSelectedPrice () {
+    const opt = diamondOptions.find(o => o.id === quantity)
+    return opt ? opt.price : '$0.00'
   }
 
-  function getSelectedPriceInPesos() {
-    const opt = diamondOptions.find((o) => o.id === quantity);
-    if (!opt || !opt.price) return "$0.00";
-    const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
-    return "$" + Math.round(numericAmount).toString();
+  function getSelectedPriceInPesos () {
+    const opt = diamondOptions.find(o => o.id === quantity)
+    if (!opt || !opt.price) return '$0.00'
+    const numericAmount = Number.parseFloat(opt.price.replace('$', '')) * 1120
+    return '$' + Math.round(numericAmount).toString()
   }
 
-  async function fetchPackages(method = paymentMethod) {
-    setIsPackagesLoading(true);
+  async function fetchPackages (method = paymentMethod) {
+    setIsPackagesLoading(true)
     try {
-      const data = await getPackageInfo();
+      const data = await getPackageInfo()
+      console.log('Raw package data:', data) // Debug log
 
-      const filtered = data.filter((pkg) => {
-        if (method === "mercadopago")
-          return pkg.origin === "MercadoPagoPackage";
-        if (method === "bank_transfer_ars")
-          return pkg.origin === "TransferPackage";
-        return true;
-      });
+      let filtered = []
 
-      const mapped = filtered.map((pkg) => ({
+      if (method === 'mercadopago') {
+        filtered = data.filter(pkg => pkg.origin === 'MercadoPagoPackage')
+      } else if (method === 'bank_transfer_ars') {
+        filtered = data.filter(pkg => pkg.origin === 'TransferPackage')
+      } else if (method === 'stripe') {
+        // For Stripe, use TransferPackage since they have priceUSD values
+        // This makes sense because Stripe processes international payments in USD
+        filtered = data.filter(
+          pkg => pkg.origin === 'TransferPackage' && pkg.priceUSD > 0
+        )
+
+        if (filtered.length === 0) {
+          // Fallback: use all packages that have priceUSD
+          filtered = data.filter(pkg => pkg.priceUSD && pkg.priceUSD > 0)
+        }
+      } else {
+        // Default: show all packages
+        filtered = data
+      }
+
+      console.log(`Filtered packages for ${method}:`, filtered) // Debug log
+
+      const mapped = filtered.map(pkg => ({
         id: pkg.id.toString(),
         label: pkg.diamonds.toString(),
-        price: `$${(pkg.priceARS / 1120).toFixed(2)}`,
+        // For Stripe, use USD price; for others use ARS converted to USD
+        price:
+          method === 'stripe' && pkg.priceUSD > 0
+            ? `$${pkg.priceUSD.toFixed(2)}`
+            : `$${(pkg.priceARS / 1120).toFixed(2)}`,
         bonus: 0,
         origin: pkg.origin,
-      }));
+        priceUSD: pkg.priceUSD, // Keep original USD price for Stripe
+        priceARS: pkg.priceARS // Keep original ARS price
+      }))
 
-      setDiamondOptions(mapped);
+      console.log('Mapped packages:', mapped) // Debug log
+
+      setDiamondOptions(mapped)
       if (mapped.length > 0) {
-        setQuantity(mapped[0].id);
+        setQuantity(mapped[0].id)
       } else {
-        setQuantity("");
+        setQuantity('')
       }
     } catch (e) {
-      console.error("Error loading packages", e);
+      console.error('Error loading packages', e)
     } finally {
-      setIsPackagesLoading(false);
+      setIsPackagesLoading(false)
     }
   }
 
-  async function handleBuy() {
-    const err = validatePlayerId(playerId);
-    setPlayerIdError(err);
-    if (err) return;
+  async function handleStripeCheckout () {
+    const err = validatePlayerId(playerId)
+    setPlayerIdError(err)
+    if (err) return
 
-    setIsLoading(true);
+    setIsLoading(true)
+    setStripeError('')
+
     try {
-      const res = await fetch("/api/payments/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ packageId: quantity, playerId }),
-      });
-      const { sessionId } = await res.json();
-      const stripe = await stripePromise;
-      await stripe.redirectToCheckout({ sessionId });
-    } catch (e) {
-      console.error(e);
-      alert(t("form.error_creating_session"));
+      const token = sessionStorage.getItem('auth_token')
+
+      // Find the selected package to get the correct price
+      const selectedPackage = diamondOptions.find(opt => opt.id === quantity)
+
+      console.log('Selected package for Stripe:', selectedPackage)
+
+      // Use Stripe Checkout - this creates a session and redirects to Stripe
+      const requestBody = {
+        amount: selectedPackage.priceUSD, // Amount in dollars (backend will convert to cents)
+        currency: 'USD',
+        productName: `${selectedPackage.label} Free Fire Diamonds`,
+        ffUser: playerId, // FF Player ID
+        ffRegion: region, // FF Region
+        packageId: Number.parseInt(quantity), // Package ID
+        successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/stripe-cancel`
+      }
+
+      console.log('Stripe checkout request:', requestBody)
+
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/StripePayments/checkout`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(requestBody)
+        }
+      )
+
+      if (!response.ok) {
+        const errorData = await response.text()
+        console.error('Stripe API error:', errorData)
+        throw new Error(`HTTP ${response.status}: ${errorData}`)
+      }
+
+      const responseData = await response.json()
+      console.log('Stripe checkout response:', responseData)
+
+      // Get the session ID and redirect to Stripe
+      const { sessionId, paymentId } = responseData
+
+      if (!sessionId) {
+        throw new Error('No session ID received from server')
+      }
+
+      // Store session info for later verification
+      sessionStorage.setItem('stripe_session_id', sessionId)
+      sessionStorage.setItem('stripe_payment_id', paymentId)
+      sessionStorage.setItem(
+        'stripe_package_details',
+        JSON.stringify({
+          packageId: quantity,
+          ffPlayerId: playerId,
+          region: region,
+          userId: userId,
+          amount: selectedPackage.priceUSD.toString(),
+          diamonds: selectedPackage.label,
+          packageOrigin: selectedPackage.origin
+        })
+      )
+
+      // Redirect to Stripe Checkout
+      const stripe = await stripePromise
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: sessionId
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+    } catch (error) {
+      console.error('Stripe checkout error:', error)
+      setStripeError(error.message || t('form.error_creating_session'))
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
   }
+
+  // Check if player ID step is complete
+  const isPlayerIdValid = playerId && !playerIdError
 
   return (
-    <form className="purchase-form" onSubmit={(e) => e.preventDefault()}>
-      {/* Step 1 */}
-      <div className="form-step">
-        <div className="step-header">
-          <span className="step-number">1</span>
-          <h3 className="step-title">{t("form.step1_title")}</h3>
+    <form className='purchase-form' onSubmit={e => e.preventDefault()}>
+      {/* Step 1 - Player ID */}
+      <div className='form-step'>
+        <div className='step-header'>
+          <span className='step-number'>1</span>
+          <h3 className='step-title'>{t('form.step1_title')}</h3>
         </div>
-        <div className="form-group">
-          <div className="input-with-icon player-id-input-wrapper">
-            <FontAwesomeIcon icon={faUser} className="input-icon" />
+        <div className='form-group'>
+          <div className='input-with-icon player-id-input-wrapper'>
+            <FontAwesomeIcon icon={faUser} className='input-icon' />
             <input
-              type="text"
+              type='text'
               value={playerId}
               onChange={handlePlayerIdChange}
-              placeholder={t("form.playerId_placeholder")}
-              className={playerIdError ? "input-error" : ""}
+              placeholder={t('form.playerId_placeholder')}
+              className={playerIdError ? 'input-error' : ''}
               maxLength={10}
               disabled={isSuccess}
             />
           </div>
           {playerIdError && !isSuccess && (
-            <p className="error-message">{playerIdError}</p>
+            <p className='error-message'>{playerIdError}</p>
           )}
           <select
             value={region}
-            onChange={(e) => setRegion(e.target.value)}
-            className="region-select"
+            onChange={e => setRegion(e.target.value)}
+            className='region-select'
             disabled={isSuccess}
           >
-            {ffRegions.map((r) => (
+            {ffRegions.map(r => (
               <option key={r.code} value={r.code}>
                 {t(`purchase.regions.${r.code}`)}
               </option>
@@ -182,127 +275,159 @@ export default function PurchaseForm() {
         </div>
       </div>
 
-      {/* Step 3 */}
-      <div className="form-step">
-        <div className="step-header">
-          <span className="step-number">2</span>
-          <h3 className="step-title">{t("form.step3_title")}</h3>
+      {/* Step 2 - Payment Method Selection */}
+      <div className='form-step'>
+        <div className='step-header'>
+          <span className='step-number'>2</span>
+          <h3 className='step-title'>{t('form.step3_title')}</h3>
         </div>
-        <div className="form-group payment-options">
-          {paymentOptions.map((opt) => {
+        <div className='form-group payment-options'>
+          {paymentOptions.map(opt => {
             const isDisabled =
-              opt.id === "stripe" ||
-              opt.id === "crypto" ||
+              opt.id === 'crypto' || // Keep crypto disabled
               isSuccess ||
-              !quantity ||
-              !playerId ||
-              !!playerIdError;
+              !isPlayerIdValid // Only disable if player ID is not valid
 
             return (
               <button
                 key={opt.id}
-                type="button"
+                type='button'
                 className={`payment-button ${
-                  paymentMethod === opt.id ? "selected" : ""
+                  paymentMethod === opt.id ? 'selected' : ''
                 }`}
                 disabled={isDisabled}
                 onClick={() => {
                   if (!isDisabled) {
-                    setPaymentMethod(opt.id);
-                    fetchPackages(opt.id);
-                    setQuantity("");
+                    setPaymentMethod(opt.id)
+                    fetchPackages(opt.id)
+                    setQuantity('') // Reset quantity when changing payment method
+                    setStripeError('') // Clear any previous Stripe errors
                   }
                 }}
               >
-                <FontAwesomeIcon icon={opt.icon} className="button-icon" />
+                <FontAwesomeIcon icon={opt.icon} className='button-icon' />
                 <span>{t(`form.payment.${opt.id}`)}</span>
               </button>
-            );
+            )
           })}
         </div>
 
-        {(!quantity || !playerId || playerIdError) && (
-          <p className="error-message">
-            {t("form.error_complete_previous_step")}
+        {!isPlayerIdValid && (
+          <p className='error-message'>
+            {playerIdError || t('form.error_playerId_required')}
           </p>
         )}
       </div>
 
-      {/* Step 2 */}
-      <div className="form-step">
-        <div className="step-header">
-          <span className="step-number">3</span>
-          <h3 className="step-title">{t("form.step2_title")}</h3>
+      {/* Step 3 - Package Selection */}
+      <div className='form-step'>
+        <div className='step-header'>
+          <span className='step-number'>3</span>
+          <h3 className='step-title'>{t('form.step2_title')}</h3>
         </div>
 
-        <div className="form-group quantity-options">
+        <div className='form-group quantity-options'>
           {isPackagesLoading ? (
-            <div className="loading-spinner"></div>
+            <div className='loading-spinner'></div>
+          ) : diamondOptions.length === 0 ? (
+            <div className='no-packages-message'>
+              <p>
+                No packages available for{' '}
+                {paymentMethod || 'this payment method'}.
+              </p>
+              <p>Please try a different payment method or contact support.</p>
+            </div>
           ) : (
-            diamondOptions.map((opt) => (
+            diamondOptions.map(opt => (
               <button
                 key={opt.id}
-                type="button"
+                type='button'
                 className={`quantity-button ${
-                  quantity === opt.id ? "selected" : ""
-                } ${opt.outOfStock ? "out-of-stock" : ""}`}
+                  quantity === opt.id ? 'selected' : ''
+                } ${opt.outOfStock ? 'out-of-stock' : ''}`}
                 disabled={
                   isSuccess ||
                   opt.outOfStock ||
-                  !playerId ||
-                  playerIdError ||
+                  !isPlayerIdValid ||
                   !paymentMethod
                 }
                 onClick={() => setQuantity(opt.id)}
               >
-                <div className="button-main-content">
-                  <FontAwesomeIcon icon={faGem} className="button-icon" />
-                  <span>{t("form.diamonds_label", { label: opt.label })}</span>
+                <div className='button-main-content'>
+                  <FontAwesomeIcon icon={faGem} className='button-icon' />
+                  <span>{t('form.diamonds_label', { label: opt.label })}</span>
                 </div>
                 {!opt.outOfStock && (
                   <>
                     {opt.bonus > 0 && (
-                      <span className="bonus-text">
-                        {t("form.bonus_text", { bonus: opt.bonus })}
+                      <span className='bonus-text'>
+                        {t('form.bonus_text', { bonus: opt.bonus })}
                       </span>
                     )}
-                    <span className="price">{opt.price}</span>
+                    <span className='price'>{opt.price}</span>
+                    {paymentMethod === 'stripe' && (
+                      <span className='currency-note'>USD</span>
+                    )}
                   </>
                 )}
                 {opt.outOfStock && (
-                  <span className="out-of-stock-text">{t("purchase.out_of_stock")}</span>
+                  <span className='out-of-stock-text'>
+                    {t('purchase.out_of_stock')}
+                  </span>
                 )}
               </button>
             ))
           )}
         </div>
 
-        {(!playerId || playerIdError) && (
-          <p className="error-message">
-            {playerIdError || t("form.error_playerId_required")}
+        {!isPlayerIdValid && (
+          <p className='error-message'>
+            {playerIdError || t('form.error_playerId_required')}
           </p>
         )}
-        {!paymentMethod && (
-          <p className="error-message">{t("purchase.select_payment_first")}</p>
+        {!paymentMethod && isPlayerIdValid && (
+          <p className='error-message'>{t('purchase.select_payment_first')}</p>
         )}
       </div>
 
-      {/* Buy button for Stripe */}
-      {paymentMethod === "stripe" && (
-        <button
-          type="button"
-          className="purchase-button"
-          disabled={!!playerIdError || !playerId || isLoading}
-          onClick={handleBuy}
-        >
-          <FontAwesomeIcon icon={faShoppingCart} />{" "}
-          {isLoading
-            ? t("purchase.loading")
-            : t("form.submit_button", { price: getSelectedPrice() })}
-        </button>
+      {/* Stripe Payment Button */}
+      {paymentMethod === 'stripe' && (
+        <div className='form-step'>
+          <div className='step-header'>
+            <span className='step-number'>4</span>
+            <h3 className='step-title'>Complete Payment</h3>
+          </div>
+
+          {stripeError && (
+            <div className='error-message stripe-error'>
+              <strong>Payment Error:</strong> {stripeError}
+            </div>
+          )}
+
+          <button
+            type='button'
+            className='purchase-button stripe-button'
+            disabled={!isPlayerIdValid || !quantity || isLoading}
+            onClick={handleStripeCheckout}
+          >
+            <FontAwesomeIcon icon={faShoppingCart} />
+            {isLoading
+              ? t('purchase.loading')
+              : `Pay ${getSelectedPrice()} USD with Stripe`}
+          </button>
+
+          <div className='stripe-info'>
+            <p>✅ Secure payment powered by Stripe</p>
+            <p>💳 Accepts all major credit cards</p>
+            <p>🔒 Your payment information is encrypted and secure</p>
+            <p>🌍 International payments in USD</p>
+            <p>🚀 Redirects to Stripe's secure checkout page</p>
+          </div>
+        </div>
       )}
 
-      {paymentMethod === "mercadopago" && (
+      {/* MercadoPago Payment */}
+      {paymentMethod === 'mercadopago' && (
         <PaymentMercadoPago
           playerId={userId}
           quantity={quantity}
@@ -315,36 +440,39 @@ export default function PurchaseForm() {
         />
       )}
 
-      {paymentMethod === "bank_transfer_ars" && (
+      {/* Bank Transfer Payment */}
+      {paymentMethod === 'bank_transfer_ars' && (
         <>
-          <div className="form-step">
-            <div className="step-header">
-              <span className="step-number">4</span>
-              <h3 className="step-title">{t("purchase.transfer_data.title")}</h3>
+          <div className='form-step'>
+            <div className='step-header'>
+              <span className='step-number'>4</span>
+              <h3 className='step-title'>
+                {t('purchase.transfer_data.title')}
+              </h3>
             </div>
-            <div className="form-group">
+            <div className='form-group'>
               <p>
-                <strong>{t("purchase.transfer_data.amount")}</strong>{" "}
+                <strong>{t('purchase.transfer_data.amount')}</strong>{' '}
                 {getSelectedPriceInPesos()}
               </p>
               <p>
-                <strong>{t("purchase.transfer_data.alias")}</strong>{" "}
-                <span className="alias-copy">ffdiamondzone</span>
+                <strong>{t('purchase.transfer_data.alias')}</strong>{' '}
+                <span className='alias-copy'>ffdiamondzone</span>
               </p>
               <p>
-                <strong>{t("purchase.transfer_data.cbu")}</strong>{" "}
-                <span className="alias-copy">0000003100055519928336</span>
+                <strong>{t('purchase.transfer_data.cbu')}</strong>{' '}
+                <span className='alias-copy'>0000003100055519928336</span>
               </p>
               <p>
-                <em>{t("purchase.transfer_data.reminder")}</em>
+                <em>{t('purchase.transfer_data.reminder')}</em>
               </p>
             </div>
           </div>
 
-          <div className="form-step">
-            <div className="step-header">
-              <span className="step-number">5</span>
-              <h3 className="step-title">{t("upload.title")}</h3>
+          <div className='form-step'>
+            <div className='step-header'>
+              <span className='step-number'>5</span>
+              <h3 className='step-title'>{t('upload.title')}</h3>
             </div>
             <DropPdf
               userId={userId}
@@ -359,9 +487,9 @@ export default function PurchaseForm() {
 
       {/* Success Message */}
       {isSuccess ? (
-        <div className="success-message">
+        <div className='success-message'>
           <FontAwesomeIcon icon={faCheckCircle} />
-          <span>{t("form.success_message")}</span>
+          <span>{t('form.success_message')}</span>
         </div>
       ) : null}
 
@@ -371,7 +499,7 @@ export default function PurchaseForm() {
           flex-direction: column;
           gap: 20px;
           width: 100%;
-          max-width: 1300px; /* <<<--- Aumentar max-width (ej. a 1300px) */
+          max-width: 1300px;
           margin: 0 auto;
           padding: 0 30px;
           background-color: transparent;
@@ -394,6 +522,26 @@ export default function PurchaseForm() {
             transform: rotate(360deg);
           }
         }
+
+        .no-packages-message {
+          text-align: center;
+          padding: 40px 20px;
+          background-color: rgba(255, 193, 7, 0.1);
+          border: 1px solid rgba(255, 193, 7, 0.3);
+          border-radius: 8px;
+          color: var(--text-color);
+        }
+
+        .no-packages-message p {
+          margin: 10px 0;
+          font-size: var(--font-size-md);
+        }
+
+        .no-packages-message p:first-child {
+          font-weight: var(--font-weight-semibold);
+          color: #ffc107;
+        }
+
         .form-step {
           padding: 30px;
           border: 1px solid var(--border-color-accent);
@@ -407,7 +555,7 @@ export default function PurchaseForm() {
           display: flex;
           align-items: center;
           gap: 15px;
-          margin-bottom: 25px; /* Espacio debajo del header */
+          margin-bottom: 25px;
           padding-bottom: 15px;
           border-bottom: 1px solid var(--border-color-accent);
         }
@@ -423,7 +571,7 @@ export default function PurchaseForm() {
           font-weight: var(--font-weight-bold);
           font-size: var(--font-size-md);
           border-radius: 50%;
-          flex-shrink: 0; /* Evitar que se achique */
+          flex-shrink: 0;
         }
 
         .step-title {
@@ -437,7 +585,7 @@ export default function PurchaseForm() {
           display: flex;
           flex-direction: column;
           gap: 10px;
-          align-items: stretch; /* Hacer que los hijos ocupen el ancho */
+          align-items: stretch;
         }
 
         label {
@@ -447,7 +595,7 @@ export default function PurchaseForm() {
           align-items: center;
         }
 
-        input[type="text"] {
+        input[type='text'] {
           padding: 14px 15px 14px 45px;
           border-radius: 8px;
           border: 1px solid var(--border-color-light);
@@ -455,11 +603,11 @@ export default function PurchaseForm() {
           color: #fff;
           font-size: var(--font-size-md);
           transition: border-color 0.3s ease, box-shadow 0.3s ease;
-          width: 100%; /* Hacer que el input llene su contenedor */
-          box-sizing: border-box; /* Incluir padding/border en el ancho */
+          width: 100%;
+          box-sizing: border-box;
         }
 
-        input[type="text"]:focus {
+        input[type='text']:focus {
           outline: none;
           border-color: var(--accent-color);
           box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3);
@@ -476,6 +624,14 @@ export default function PurchaseForm() {
           margin-top: 5px;
         }
 
+        .stripe-error {
+          background-color: rgba(255, 77, 77, 0.1);
+          border: 1px solid rgba(255, 77, 77, 0.3);
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        }
+
         .quantity-options,
         .payment-options {
           display: grid;
@@ -483,17 +639,11 @@ export default function PurchaseForm() {
         }
 
         .quantity-options {
-          grid-template-columns: repeat(
-            auto-fit,
-            minmax(150px, 1fr)
-          ); /* Responsive grid */
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
         }
 
         .payment-options {
-          grid-template-columns: repeat(
-            auto-fit,
-            minmax(180px, 1fr)
-          ); /* Responsive grid */
+          grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         }
 
         .quantity-button,
@@ -502,9 +652,9 @@ export default function PurchaseForm() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 5px; /* Reducir gap para acomodar bonus */
+          gap: 5px;
           text-align: center;
-          position: relative; /* Para posicionar bonus si es necesario */
+          position: relative;
           border-radius: 8px;
           border: 1px solid var(--border-color-light);
           background-color: rgba(255, 255, 255, 0.05);
@@ -519,12 +669,12 @@ export default function PurchaseForm() {
           align-items: center;
           justify-content: center;
           gap: 10px;
-          margin-bottom: 2px; /* Pequeño espacio antes del bonus/precio */
+          margin-bottom: 2px;
         }
 
         .quantity-button .button-icon {
           font-size: var(--font-size-md);
-          width: auto; /* Ancho automático */
+          width: auto;
           margin-right: 0;
         }
 
@@ -541,15 +691,25 @@ export default function PurchaseForm() {
           background-color: rgba(255, 215, 0, 0.1);
           padding: 2px 8px;
           border-radius: 4px;
-          display: inline-block; /* Para que el fondo se ajuste */
-          margin-bottom: 4px; /* Espacio antes del precio */
+          display: inline-block;
+          margin-bottom: 4px;
         }
 
         .quantity-button .price {
           font-size: var(--font-size-md);
           font-weight: var(--font-weight-bold);
           color: var(--subtext-color);
-          margin-top: 0; /* Quitar margen extra */
+          margin-top: 0;
+        }
+
+        .currency-note {
+          font-size: var(--font-size-xs);
+          color: #4f46e5;
+          font-weight: var(--font-weight-semibold);
+          background-color: rgba(79, 70, 229, 0.1);
+          padding: 2px 6px;
+          border-radius: 3px;
+          margin-top: 2px;
         }
 
         .quantity-button:hover {
@@ -568,7 +728,7 @@ export default function PurchaseForm() {
           border-color: var(--accent-color-2);
           color: #fff;
           box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
-          transform: scale(1.03); /* Ligero zoom al seleccionar */
+          transform: scale(1.03);
         }
 
         .quantity-button.selected .button-label {
@@ -577,21 +737,23 @@ export default function PurchaseForm() {
         }
 
         .quantity-button.selected .price {
-          color: #fff; /* Precio blanco al seleccionar */
+          color: #fff;
         }
 
         .quantity-button.selected .bonus-text {
-          color: #1a1a1a; /* Texto oscuro para contraste */
-          background-color: #ffd700; /* Fondo dorado sólido */
+          color: #1a1a1a;
+          background-color: #ffd700;
+        }
+
+        .quantity-button.selected .currency-note {
+          color: #1a1a1a;
+          background-color: rgba(255, 255, 255, 0.9);
         }
 
         .input-with-icon {
           position: relative;
-          /* Quitar o comentar si no se quiere ancho completo */
-          /* width: 100%; */
         }
 
-        /* Nueva clase para forzar ancho completo */
         .full-width-input-container {
           width: 100%;
         }
@@ -618,13 +780,30 @@ export default function PurchaseForm() {
         }
 
         .purchase-button {
-          padding: 15px 30px; /* Asegurar buen tamaño */
+          padding: 18px 35px;
           font-size: var(--font-size-lg);
-          margin-top: 15px; /* Add some space above */
+          font-weight: var(--font-weight-bold);
+          margin-top: 15px;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 12px;
+          background: linear-gradient(
+            135deg,
+            var(--accent-color),
+            var(--accent-color-2)
+          );
+          border: none;
+          border-radius: 10px;
+          color: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .purchase-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(138, 43, 226, 0.4);
         }
 
         .purchase-button:disabled {
@@ -632,48 +811,46 @@ export default function PurchaseForm() {
           cursor: not-allowed;
           background: #555;
           border-color: #555;
+          transform: none;
+          box-shadow: none;
+        }
+
+        .stripe-button {
+          background: linear-gradient(135deg, #635bff, #4f46e5);
+          box-shadow: 0 4px 15px rgba(99, 91, 255, 0.3);
+        }
+
+        .stripe-button:hover {
+          box-shadow: 0 6px 20px rgba(99, 91, 255, 0.4);
+        }
+
+        .stripe-info {
+          margin-top: 15px;
+          padding: 15px;
+          background-color: rgba(99, 91, 255, 0.1);
+          border: 1px solid rgba(99, 91, 255, 0.3);
+          border-radius: 8px;
+          font-size: var(--font-size-sm);
+          color: var(--text-color);
+        }
+
+        .stripe-info p {
+          margin: 5px 0;
+          display: flex;
+          align-items: center;
+          gap: 8px;
         }
 
         @media (max-width: 600px) {
           .form-step {
-            padding: 20px; /* Ajustar padding en móvil */
+            padding: 20px;
           }
           .quantity-options,
           .payment-options {
-            grid-template-columns: 1fr; /* Stack options on small screens */
+            grid-template-columns: 1fr;
           }
         }
 
-        /* Estilos comunes para ambos botones */
-        .quantity-button,
-        .payment-button {
-          /* ... (common styles) ... */
-        }
-
-        /* Estilos específicos quantity */
-        .quantity-button {
-          /* ... */
-        }
-        .button-main-content {
-          /* ... */
-        }
-        .quantity-button .button-icon {
-          /* ... */
-        }
-        .quantity-button .button-label {
-          /* ... */
-        }
-        .bonus-text {
-          /* ... */
-        }
-        .quantity-button .price {
-          /* ... */
-        }
-
-        /* Estilos específicos payment */
-        .payment-button {
-          /* ... (payment layout styles) ... */
-        }
         .payment-button .button-icon {
           font-size: var(--font-size-lg);
           margin-bottom: 5px;
@@ -683,31 +860,10 @@ export default function PurchaseForm() {
           font-size: var(--font-size-md);
         }
 
-        /* Hover y Selected */
-        .quantity-button:hover {
-          /* ... (quantity hover styles) ... */
-        }
-        .quantity-button.selected {
-          /* ... (quantity selected styles) ... */
-        }
-        .quantity-button.selected .button-label {
-          /* ... */
-        }
-        .quantity-button.selected .price {
-          /* ... */
-        }
-        .quantity-button.selected .bonus-text {
-          /* ... */
-        }
-        .quantity-button.selected .button-icon {
-          /* ... */
-        }
-
-        /* AÑADIR ESTILOS HOVER/SELECTED PARA PAYMENT BUTTON */
         .payment-button:hover {
           background-color: rgba(138, 43, 226, 0.1);
           border-color: rgba(138, 43, 226, 0.5);
-          transform: translateY(-2px); /* Sutil hover */
+          transform: translateY(-2px);
         }
 
         .payment-button.selected {
@@ -719,10 +875,9 @@ export default function PurchaseForm() {
         }
 
         .payment-button.selected .button-icon {
-          color: #fff; /* Asegurar icono blanco */
+          color: #fff;
         }
 
-        /* Estilos para botones deshabilitados */
         .quantity-button:disabled,
         .payment-button:disabled {
           opacity: 0.5;
@@ -735,22 +890,19 @@ export default function PurchaseForm() {
 
         .quantity-button:disabled:hover,
         .payment-button:disabled:hover {
-          /* Quitar efectos hover */
           background-color: rgba(255, 255, 255, 0.03);
           border-color: var(--border-color-light);
           transform: none;
           box-shadow: none;
         }
 
-        /* Estilos para Input deshabilitado */
-        input[type="text"]:disabled {
+        input[type='text']:disabled {
           background-color: rgba(255, 255, 255, 0.05);
           opacity: 0.6;
           cursor: not-allowed;
           border-color: var(--border-color-light);
         }
 
-        /* Estilo para el mensaje de éxito */
         .success-message {
           margin-top: 20px;
           padding: 15px 20px;
@@ -776,56 +928,17 @@ export default function PurchaseForm() {
           font-size: var(--font-size-md);
         }
 
-        /* Ocultar error si hay éxito */
-        .error-message {
-          /* ... (estilos existentes) */
-          /* El ocultamiento se hace ahora con renderizado condicional */
-        }
-
-        /* <<<--- Añadir estilos para la fila de Player ID */
-        .player-id-row {
-          display: flex;
-          gap: 15px; /* Espacio entre input y select */
-          align-items: flex-start; /* Alinear arriba por si hay mensaje de error */
-        }
-
         .player-id-input-wrapper {
-          flex-grow: 1; /* Permitir que el input ocupe el espacio disponible */
-          position: relative; /* Para el icono */
-          display: flex; /* Alinear icono e input */
+          flex-grow: 1;
+          position: relative;
+          display: flex;
           align-items: center;
         }
 
         .player-id-input-wrapper input {
-          width: 100%; /* Asegurar que el input llene el wrapper */
-        }
-
-        .input-with-icon {
-          position: relative;
-        }
-
-        .input-icon {
-          position: absolute;
-          left: 15px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--subtext-color);
-          font-size: var(--font-size-sm);
-        }
-
-        input[type="text"] {
           width: 100%;
-          padding: 12px 15px 12px 40px; /* Padding izquierdo para icono */
-          border: 1px solid var(--border-color-light);
-          background-color: rgba(0, 0, 0, 0.2);
-          color: var(--text-color);
-          border-radius: 6px;
-          font-size: var(--font-size-md);
-          transition: border-color 0.3s ease, box-shadow 0.3s ease;
-          box-sizing: border-box;
         }
 
-        /* <<<--- Estilos para el nuevo selector de región */
         .region-select {
           padding: 12px 15px;
           border: 1px solid var(--border-color-light);
@@ -836,52 +949,34 @@ export default function PurchaseForm() {
           font-family: var(--font-base);
           cursor: pointer;
           transition: border-color 0.3s ease, box-shadow 0.3s ease;
-          min-width: 150px; /* Ancho mínimo para que se lea "Select Region" */
-          height: 48.8px; /* Igualar altura con input (puede requerir ajuste) */
-          flex-shrink: 0; /* Evitar que se encoja */
+          min-width: 150px;
+          height: 48.8px;
+          flex-shrink: 0;
         }
 
         .region-select:focus,
-        input[type="text"]:focus {
+        input[type='text']:focus {
           outline: none;
           border-color: var(--accent-color);
           box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.3);
         }
 
         .region-select:disabled,
-        input[type="text"]:disabled {
+        input[type='text']:disabled {
           background-color: rgba(50, 50, 50, 0.3);
           cursor: not-allowed;
           opacity: 0.6;
         }
 
-        /* Estilos para opciones del select (limitado por navegador) */
         .region-select option {
           background-color: var(--bg-color-dark);
           color: var(--text-color);
         }
 
-        input.input-error {
-          border-color: var(--error-color);
-          box-shadow: 0 0 0 3px rgba(255, 77, 77, 0.3);
-        }
-
-        .error-message {
-          color: var(--error-color);
-          font-size: var(--font-size-xs);
-          margin-top: 5px;
-        }
-
-        /* Estilos para el botón sin stock */
         .quantity-button.out-of-stock {
           opacity: 0.5;
           cursor: not-allowed;
-          background-color: rgba(
-            255,
-            255,
-            255,
-            0.03
-          ); /* Un poco más oscuro o diferente */
+          background-color: rgba(255, 255, 255, 0.03);
           border-color: var(--border-color-light);
         }
         .quantity-button.out-of-stock:hover {
@@ -893,10 +988,10 @@ export default function PurchaseForm() {
         .out-of-stock-text {
           font-size: var(--font-size-sm);
           font-weight: var(--font-weight-bold);
-          color: var(--error-color); /* Usar color de error o uno específico */
-          margin-top: 4px; /* Espacio respecto al contenido principal */
+          color: var(--error-color);
+          margin-top: 4px;
         }
       `}</style>
     </form>
-  );
+  )
 }
