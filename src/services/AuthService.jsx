@@ -84,6 +84,7 @@ export async function verifyEmailToken (token) {
 export async function isAdmin () {
   const id = sessionStorage.getItem('userId')
   const token = sessionStorage.getItem('auth_token')
+  if (!id || !token) return false
 
   try {
     const response = await fetch(`${BASE_URL}/Auth/isAdmin?id=${id}`, {
@@ -93,22 +94,14 @@ export async function isAdmin () {
         Authorization: `Bearer ${token}`
       }
     })
-
     if (response.status === 401) {
       window.dispatchEvent(new Event('forceLogout'))
       throw new Error('Sesión expirada')
     }
-
-    if (!response.ok) {
-      const errorText = await response.text()
-      throw new Error(`Error ${response.status}: ${errorText}`)
-    }
-
+    if (!response.ok) return false
     const data = await response.json()
-
-    return data
+    return data === true // or whatever your API returns for admin
   } catch (error) {
-    console.error('Error al verificar la cuenta', error)
     return false
   }
 }
