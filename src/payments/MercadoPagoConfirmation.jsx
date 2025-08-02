@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart, faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { useTranslation } from "react-i18next";
-import { postMpBuy } from "../services/MercadoPago.service";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React, { useState } from 'react'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faShoppingCart, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from 'react-i18next'
+import { postMpBuy } from '../services/MercadoPago.service'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
-export default function PaymentMercadoPago({
+export default function PaymentMercadoPago ({
   playerId,
   quantity,
   isLoading: externalLoading,
@@ -14,60 +14,60 @@ export default function PaymentMercadoPago({
   playerIdError,
   ffUser,
   ffRegion,
-  packageId,
+  packageId
 }) {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const userId = sessionStorage.getItem("userId");
-  const isLoggedIn = !!sessionStorage.getItem("auth_token");
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const userId = sessionStorage.getItem('userId')
+  const isLoggedIn = !!sessionStorage.getItem('auth_token')
 
   const getSelectedPriceForMp = () => {
-    const opt = diamondOptions.find((o) => o.id === quantity);
-    if (!opt || !opt.price) return "$0.00";
-    const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
-    return "$" + Math.round(numericAmount).toString();
-  };
+    const opt = diamondOptions.find(o => o.id === quantity)
+    if (!opt || !opt.price) return '$0.00'
+    const numericAmount = parseFloat(opt.price.replace('$', '')) * 1120
+    return '$' + Math.round(numericAmount).toString()
+  }
 
   const handleBuyMp = async () => {
-    if (!userId) return;
-    setLoading(true);
+    if (!userId) return
+    setLoading(true)
 
     try {
-      const opt = diamondOptions.find((o) => o.id === quantity);
-      const numericAmount = parseFloat(opt.price.replace("$", "")) * 1120;
-      console.log(packageId);
+      const opt = diamondOptions.find(o => o.id === quantity)
+      const numericAmount = parseFloat(opt.price.replace('$', '')) * 1120
+      console.log(packageId)
       const result = await postMpBuy({
         amount: numericAmount,
         userId: userId,
         ffUser: ffUser,
         ffRegion: ffRegion,
-        packageId: opt.id,
-      });
+        packageId: opt.id
+      })
       if (result.initPoint) {
-        navigate("/payment-status-mp", {
-          state: { paymentId: result.paymentId },
-        });
-        window.open(result.initPoint, "_blank");
+        navigate('/payment-status-mp', {
+          state: { paymentId: result.paymentId }
+        })
+        window.open(result.initPoint, '_blank')
       }
     } catch (error) {
-      console.error(error);
+      console.error(error)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div>
-      <div className="form-step">
-        <div className="step-header">
-          <span className="step-number">4</span>
-          <h3 className="step-title">{t("form.step4_title")}</h3>
+      <div className='form-step'>
+        <div className='step-header'>
+          <span className='step-number'>4</span>
+          <h3 className='step-title'>{t('form.step4_title')}</h3>
         </div>
         <button
-          type="button"
-          className="payment-button"
-          style={{ width: "100%" }}
+          type='button'
+          className='payment-button'
+          style={{ width: '100%' }}
           disabled={
             !userId ||
             loading ||
@@ -83,8 +83,8 @@ export default function PaymentMercadoPago({
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={faShoppingCart} />{" "}
-              {t("form.submit_button", { price: getSelectedPriceForMp() })}
+              <FontAwesomeIcon icon={faShoppingCart} />{' '}
+              {t('form.submit_button', { price: getSelectedPriceForMp() })}
             </>
           )}
         </button>
@@ -92,16 +92,16 @@ export default function PaymentMercadoPago({
         {!isLoggedIn && (
           <p
             style={{
-              color: "#ff4d4d",
-              fontWeight: "bold",
-              marginTop: "20px",
-              textAlign: "center",
+              color: '#ff4d4d',
+              fontWeight: 'bold',
+              marginTop: '20px',
+              textAlign: 'center'
             }}
           >
             Necesitás estar logueado para comprar diamantes
           </p>
         )}
-      </div>  
+      </div>
       <style jsx>{`
         .payment-button {
           padding: 15px;
@@ -142,5 +142,5 @@ export default function PaymentMercadoPago({
         }
       `}</style>
     </div>
-  );
+  )
 }

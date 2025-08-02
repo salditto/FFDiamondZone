@@ -138,3 +138,74 @@ export async function getReceiptsByStatus (status) {
     throw error
   }
 }
+
+export async function getAllPackages () {
+  const token = sessionStorage.getItem('auth_token')
+
+  try {
+    const response = await fetch(`${BASE_URL}/BankTransfers/packages`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        'ngrok-skip-browser-warning': 'true'
+      }
+    })
+
+    if (response.status === 401) {
+      window.dispatchEvent(new Event('forceLogout'))
+      throw new Error('Sesión expirada')
+    }
+
+    const rawText = await response.text()
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`)
+    }
+
+    return JSON.parse(rawText)
+  } catch (error) {
+    console.error('GET all packages failed:', error)
+    throw error
+  }
+}
+
+export async function updatePackage (packageData) {
+  const token = sessionStorage.getItem('auth_token')
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/BankTransfers/packages/${packageData.id}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+          'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(packageData)
+      }
+    )
+
+    if (response.status === 401) {
+      window.dispatchEvent(new Event('forceLogout'))
+      throw new Error('Sesión expirada')
+    }
+
+    if (response.status === 204) {
+      return { success: true, status: 204 }
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('Server error response:', errorText)
+      throw new Error(`Error: ${response.status} - ${errorText}`)
+    }
+
+    const data = await response.json()
+    return data
+  } catch (error) {
+    console.error('PUT update package failed:', error)
+    throw error
+  }
+}

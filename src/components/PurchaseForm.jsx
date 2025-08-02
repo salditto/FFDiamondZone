@@ -87,7 +87,6 @@ export default function PurchaseForm () {
     setIsPackagesLoading(true)
     try {
       const data = await getPackageInfo()
-      console.log('Raw package data:', data) // Debug log
 
       let filtered = []
 
@@ -111,8 +110,6 @@ export default function PurchaseForm () {
         filtered = data
       }
 
-      console.log(`Filtered packages for ${method}:`, filtered) // Debug log
-
       const mapped = filtered.map(pkg => ({
         id: pkg.id.toString(),
         label: pkg.diamonds.toString(),
@@ -126,8 +123,6 @@ export default function PurchaseForm () {
         priceUSD: pkg.priceUSD, // Keep original USD price for Stripe
         priceARS: pkg.priceARS // Keep original ARS price
       }))
-
-      console.log('Mapped packages:', mapped) // Debug log
 
       setDiamondOptions(mapped)
       if (mapped.length > 0) {
@@ -164,9 +159,6 @@ export default function PurchaseForm () {
       // Find the selected package to get the correct price
       const selectedPackage = diamondOptions.find(opt => opt.id === quantity)
 
-      console.log('Selected package for Stripe:', selectedPackage)
-
-      // Use Stripe Checkout - this creates a session and redirects to Stripe
       const requestBody = {
         amount: selectedPackage.priceUSD, // Amount in dollars (backend will convert to cents)
         currency: 'USD',
@@ -177,8 +169,6 @@ export default function PurchaseForm () {
         successUrl: `${window.location.origin}/stripe-success?session_id={CHECKOUT_SESSION_ID}`,
         cancelUrl: `${window.location.origin}/stripe-cancel`
       }
-
-      console.log('Stripe checkout request:', requestBody)
 
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/StripePayments/checkout`,
@@ -213,8 +203,6 @@ export default function PurchaseForm () {
       }
 
       const responseData = await response.json()
-      console.log('Stripe checkout response:', responseData)
-
       // Get the session ID and redirect to Stripe
       const { sessionId, paymentId } = responseData
 

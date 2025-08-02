@@ -5,11 +5,13 @@ import PurchaseForm from './components/PurchaseForm'
 import Footer from './components/Footer'
 import FAQ from './components/FAQ'
 import Navbar from './components/Navbar'
+import MaintenanceScreen from './components/MaintenanceScreen'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faWhatsapp, faInstagram } from '@fortawesome/free-brands-svg-icons'
 import './App.css'
+import { useAuth } from './context/AuthContext' // Import useAuth
 
 function MainLayout () {
   const { t } = useTranslation()
@@ -18,6 +20,9 @@ function MainLayout () {
   const homeRef = useRef(null)
   const footerRef = useRef(null)
   const navigate = useNavigate()
+
+  // Use states from AuthContext
+  const { paymentsEnabled, isUserAdmin, loadingAuthContext } = useAuth()
 
   const handleScrollTo = ref => {
     ref.current?.scrollIntoView({ behavior: 'smooth' })
@@ -30,6 +35,43 @@ function MainLayout () {
   const handleInstagramClick = () => {
     // Replace with your actual Instagram profile URL
     window.open('https://instagram.com/ffdiamondzone', '_blank')
+  }
+
+  // Show loading while AuthContext is initializing
+  if (loadingAuthContext) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background:
+            'linear-gradient(135deg, #0e0b1f 0%, #1a1535 50%, #2d1b69 100%)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#fff'
+        }}
+      >
+        <div style={{ textAlign: 'center' }}>
+          <div
+            style={{
+              width: '40px',
+              height: '40px',
+              border: '3px solid #2b2145',
+              borderTop: '3px solid #9b4dff',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              margin: '0 auto 1rem'
+            }}
+          ></div>
+          <p>Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Display MaintenanceScreen if payments are disabled AND the user is not an admin
+  if (!paymentsEnabled && !isUserAdmin) {
+    return <MaintenanceScreen />
   }
 
   return (

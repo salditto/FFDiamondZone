@@ -29,7 +29,6 @@ export default function PaymentStatusMp () {
 
       try {
         const data = await getStatusPaymentMp(paymentId)
-        console.log('MercadoPago status:', data)
 
         const mappedStatus = mapMercadoPagoStatus(data.status)
         setStatus(mappedStatus)
