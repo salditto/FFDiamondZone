@@ -40,7 +40,7 @@ export default function AdminPanel () {
   const [paymentsEnabled, setPaymentsEnabled] = useState(true)
   const [updatingPayments, setUpdatingPayments] = useState(false)
 
-  // Estados posibles para los comprobantes
+  // Estados posibles para los comprobantes - Updated with correct mapping
   const statusOptions = {
     1: { label: 'Pendiente', color: '#ff9500', bgColor: '#ff950020' },
     2: { label: 'Procesando', color: '#00aaff', bgColor: '#00aaff20' },
@@ -108,20 +108,26 @@ export default function AdminPanel () {
     return receipt.status.toString() === filter
   })
 
-  const handleStatusChange = async (transferId, receiptId, newStatus) => {
+  const handleStatusChange = async (paymentId, userId, newStatus) => {
     try {
+      console.log('Updating status:', { paymentId, userId, newStatus })
+
       const response = await updateReceiptStatus({
-        transferId: transferId, // This should be the payment ID
-        status: newStatus,
-        id: receiptId // This should be the user ID
+        paymentId: paymentId, // This is the payment ID
+        status: newStatus, // This is the numeric enum value
+        userId: userId // This is the user ID
       })
+
       if (response?.status === 204 || response === undefined) {
+        // Refresh the receipts list after successful update
         const updatedReceipts = await getAllReceipts()
         setReceipts(updatedReceipts)
+        showSnackbar('Estado actualizado correctamente', 'success')
       } else {
+        // Fallback: update local state if API doesn't return updated data
         setReceipts(prev =>
           prev.map(receipt =>
-            receipt.id === receiptId
+            receipt.id === paymentId
               ? {
                   ...receipt,
                   status: newStatus,
@@ -130,9 +136,9 @@ export default function AdminPanel () {
               : receipt
           )
         )
+        showSnackbar('Estado actualizado correctamente', 'success')
       }
 
-      showSnackbar('Estado actualizado correctamente', 'success')
       setShowModal(false)
     } catch (error) {
       showSnackbar('Error al actualizar el estado', 'error')
@@ -574,9 +580,8 @@ export default function AdminPanel () {
                         )}
                         {receipt.status === 3 && (
                           <button
-                            onClick={
-                              () =>
-                                handleStatusChange(receipt.id, receipt.id, 4) // Use receipt.id for both parameters
+                            onClick={() =>
+                              handleStatusChange(receipt.id, receipt.userId, 4)
                             }
                             className='confirm-btn'
                           >

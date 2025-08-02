@@ -52,7 +52,7 @@
     "error_complete_previous_step": "Completá el paso anterior para continuar con el pago",
     "out_of_stock": "Sin Stock",
     "payment": {
-      "stripe": "Stripe",
+      "stripe": "Tarjeta Internacional (USD)",
       "mercadopago": "MercadoPago",
       "bank_transfer_ars": "Transferencia",
       "crypto": "Cripto"

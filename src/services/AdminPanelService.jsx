@@ -1,5 +1,3 @@
-// services/AdminDashboardService.js
-
 const BASE_URL = import.meta.env.VITE_API_BASE_URL
 const ENDPOINT = '/AdminDashboard'
 
@@ -65,11 +63,11 @@ export async function getReceiptById (id) {
   }
 }
 
-export async function updateReceiptStatus ({ transferId, status, id }) {
+export async function updateReceiptStatus ({ paymentId, status, userId }) {
   const token = sessionStorage.getItem('auth_token')
 
   try {
-    console.log('Sending update request:', { transferId, status, id }) // Debug log
+    console.log('Sending update request:', { paymentId, status, userId }) // Debug log
 
     const response = await fetch(`${BASE_URL}${ENDPOINT}/status`, {
       method: 'PUT',
@@ -79,9 +77,9 @@ export async function updateReceiptStatus ({ transferId, status, id }) {
         'ngrok-skip-browser-warning': 'true'
       },
       body: JSON.stringify({
-        transferId: transferId, // This should be the payment ID
-        status: status,
-        userId: id // Change 'id' to 'userId' to match the command
+        transferId: paymentId, // This is the payment ID
+        status: status, // This should be the numeric enum value
+        userId: userId // This is the user ID
       })
     })
 
