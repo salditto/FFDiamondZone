@@ -1,25 +1,49 @@
-// pages/AdminPanel.jsx
 import { useEffect, useState } from 'react'
 import { useSnackbar } from '../context/SnackBarContext'
 import {
   getAllReceipts,
-  updateReceiptStatus
+  updateReceiptStatus,
+  getAllPackages,
+  updatePackage
 } from '../services/AdminPanelService'
 import { getPdfFile } from '../services/BankTransfer.service'
 import { isAdmin } from '../services/AuthService'
 import { useNavigate } from 'react-router-dom'
+import {
+  updatePaymentsEnabled,
+  getPaymentsEnabled
+} from '../services/GlobalSettingsService'
 
 export default function AdminPanel () {
   const [receipts, setReceipts] = useState([])
+  const [packages, setPackages] = useState([])
   const [loading, setLoading] = useState(true)
   const [authorized, setAuthorized] = useState(null)
   const [filter, setFilter] = useState('all')
   const [selectedReceipt, setSelectedReceipt] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [showPackageModal, setShowPackageModal] = useState(false)
+  const [selectedPackage, setSelectedPackage] = useState(null)
+  const [editingPackage, setEditingPackage] = useState({
+    id: 0,
+    diamonds: 0,
+    priceARS: 0,
+    priceUSD: 0,
+    origin: ''
+  })
   const navigate = useNavigate()
   const { showSnackbar } = useSnackbar()
 
-  // Estados posibles para los comprobantes
+  const [paymentsEnabled, setPaymentsEnabled] = useState(true)
+  const [updatingPayments, setUpdatingPayments] = useState(false)
+
+  // Add accordion state
+  const [accordionOpen, setAccordionOpen] = useState({
+    maintenance: false,
+    packages: false
+  })
+
+  // Estados posibles para los comprobantes - Updated with correct mapping
   const statusOptions = {
     1: { label: 'Pendiente', color: '#ff9500', bgColor: '#ff950020' },
     2: { label: 'Procesando', color: '#00aaff', bgColor: '#00aaff20' },
@@ -53,52 +77,64 @@ export default function AdminPanel () {
 
   // Cargar datos desde la API
   useEffect(() => {
-    const fetchReceipts = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
-        const response = await getAllReceipts()
-        setReceipts(response)
+        const [receiptsResponse, packagesResponse] = await Promise.all([
+          getAllReceipts(),
+          getAllPackages()
+        ])
+        // Sort receipts by creation date (most recent first)
+        const sortedReceipts = receiptsResponse.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        )
+        setReceipts(sortedReceipts)
+        setPackages(packagesResponse)
       } catch (error) {
-        showSnackbar('Error al cargar los pagos', 'error')
-        console.error('Error fetching receipts:', error)
+        showSnackbar('Error al cargar los datos', 'error')
+        console.error('Error fetching data:', error)
       } finally {
         setLoading(false)
       }
     }
 
     if (authorized) {
-      fetchReceipts()
+      fetchData()
     }
   }, [authorized])
 
-  const filteredReceipts = receipts
-    .filter(receipt => {
-      if (filter === 'all') return true
-      if (filter === 'pending_bank') {
-        return receipt.method === 4 && receipt.status === 1
-      }
-      if (filter.startsWith('method_')) {
-        const methodId = Number.parseInt(filter.split('_')[1])
-        return receipt.method === methodId
-      }
-      return receipt.status.toString() === filter
-    })
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Sort by date, most recent first
+  const filteredReceipts = receipts.filter(receipt => {
+    if (filter === 'all') return true
+    if (filter === 'pending_bank') {
+      return receipt.method === 4 && receipt.status === 1
+    }
+    if (filter.startsWith('method_')) {
+      const methodId = Number.parseInt(filter.split('_')[1])
+      return receipt.method === methodId
+    }
+    return receipt.status.toString() === filter
+  })
 
-  const handleStatusChange = async (transferId, receiptId, newStatus) => {
+  const handleStatusChange = async (paymentId, userId, newStatus) => {
     try {
+      console.log('Updating status:', { paymentId, userId, newStatus })
+
       const response = await updateReceiptStatus({
-        transferId: transferId, // This should be the payment ID
-        status: newStatus,
-        id: receiptId // This should be the user ID
+        paymentId: paymentId, // This is the payment ID
+        status: newStatus, // This is the numeric enum value
+        userId: userId // This is the user ID
       })
+
       if (response?.status === 204 || response === undefined) {
+        // Refresh the receipts list after successful update
         const updatedReceipts = await getAllReceipts()
         setReceipts(updatedReceipts)
+        showSnackbar('Estado actualizado correctamente', 'success')
       } else {
+        // Fallback: update local state if API doesn't return updated data
         setReceipts(prev =>
           prev.map(receipt =>
-            receipt.id === receiptId
+            receipt.id === paymentId
               ? {
                   ...receipt,
                   status: newStatus,
@@ -107,9 +143,9 @@ export default function AdminPanel () {
               : receipt
           )
         )
+        showSnackbar('Estado actualizado correctamente', 'success')
       }
 
-      showSnackbar('Estado actualizado correctamente', 'success')
       setShowModal(false)
     } catch (error) {
       showSnackbar('Error al actualizar el estado', 'error')
@@ -120,6 +156,42 @@ export default function AdminPanel () {
   const openModal = receipt => {
     setSelectedReceipt(receipt)
     setShowModal(true)
+  }
+
+  const openPackageModal = (pkg = null) => {
+    if (pkg) {
+      setSelectedPackage(pkg)
+      setEditingPackage({
+        id: pkg.id,
+        diamonds: pkg.diamonds,
+        priceARS: pkg.priceARS,
+        priceUSD: pkg.priceUSD,
+        origin: pkg.origin
+      })
+    } else {
+      setSelectedPackage(null)
+      setEditingPackage({
+        id: 0,
+        diamonds: 0,
+        priceARS: 0,
+        priceUSD: 0,
+        origin: ''
+      })
+    }
+    setShowPackageModal(true)
+  }
+
+  const handlePackageUpdate = async () => {
+    try {
+      await updatePackage(editingPackage)
+      const updatedPackages = await getAllPackages()
+      setPackages(updatedPackages)
+      showSnackbar('Paquete actualizado correctamente', 'success')
+      setShowPackageModal(false)
+    } catch (error) {
+      showSnackbar('Error al actualizar el paquete', 'error')
+      console.error('Error updating package:', error)
+    }
   }
 
   const openFile = async receipt => {
@@ -138,17 +210,9 @@ export default function AdminPanel () {
 
   const formatDate = dateString => {
     const date = new Date(dateString)
-    // Convert to GMT-3 (Argentina timezone)
+    // Convert GMT to GMT-3 (Argentina timezone)
     const argentinaTime = new Date(date.getTime() - 3 * 60 * 60 * 1000)
-    return argentinaTime.toLocaleString('es-AR', {
-      timeZone: 'America/Argentina/Buenos_Aires',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    })
+    return argentinaTime.toLocaleString('es-AR')
   }
 
   const formatCurrency = amount => {
@@ -166,6 +230,24 @@ export default function AdminPanel () {
         icon: '❓'
       }
     )
+  }
+
+  const handleTogglePayments = async () => {
+    try {
+      setUpdatingPayments(true)
+      const newStatus = !paymentsEnabled
+      await updatePaymentsEnabled(newStatus)
+      setPaymentsEnabled(newStatus)
+      showSnackbar(
+        `Pagos ${newStatus ? 'habilitados' : 'deshabilitados'} correctamente`,
+        'success'
+      )
+    } catch (error) {
+      showSnackbar('Error al actualizar el estado de pagos', 'error')
+      console.error('Error updating payments status:', error)
+    } finally {
+      setUpdatingPayments(false)
+    }
   }
 
   // Calculate statistics
@@ -186,6 +268,22 @@ export default function AdminPanel () {
       return acc
     }, {})
   }
+
+  // Load payments status
+  useEffect(() => {
+    const fetchPaymentsStatus = async () => {
+      try {
+        const status = await getPaymentsEnabled()
+        setPaymentsEnabled(status)
+      } catch (error) {
+        console.error('Error fetching payments status:', error)
+      }
+    }
+
+    if (authorized) {
+      fetchPaymentsStatus()
+    }
+  }, [authorized])
 
   if (loading && !authorized) {
     return (
@@ -276,6 +374,111 @@ export default function AdminPanel () {
                 {formatCurrency(stats.totalRevenue)}
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Maintenance Toggle */}
+        <div className='maintenance-section'>
+          <div className='maintenance-card'>
+            <div
+              className='accordion-header'
+              onClick={() =>
+                setAccordionOpen(prev => ({
+                  ...prev,
+                  maintenance: !prev.maintenance
+                }))
+              }
+            >
+              <h3>Control de Mantenimiento</h3>
+              <span className='accordion-icon'>
+                {accordionOpen.maintenance ? '▼' : '▶'}
+              </span>
+            </div>
+            {accordionOpen.maintenance && (
+              <div className='accordion-content'>
+                <p>Habilitar o deshabilitar el acceso al sistema</p>
+                <div className='maintenance-controls'>
+                  <div className='status-indicator'>
+                    <span
+                      className={`status-dot ${
+                        paymentsEnabled ? 'active' : 'inactive'
+                      }`}
+                    ></span>
+                    <span className='status-text'>
+                      Sistema {paymentsEnabled ? 'Activo' : 'En Mantenimiento'}
+                    </span>
+                  </div>
+                  <button
+                    className={`toggle-btn ${
+                      paymentsEnabled ? 'active' : 'inactive'
+                    }`}
+                    onClick={handleTogglePayments}
+                    disabled={updatingPayments}
+                  >
+                    {updatingPayments ? (
+                      <span className='loading-spinner'></span>
+                    ) : (
+                      <>
+                        {paymentsEnabled
+                          ? '🟢 Deshabilitar Sistema'
+                          : '🔴 Habilitar Sistema'}
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Package Management Section */}
+        <div className='packages-section'>
+          <div className='packages-card'>
+            <div
+              className='accordion-header'
+              onClick={() =>
+                setAccordionOpen(prev => ({
+                  ...prev,
+                  packages: !prev.packages
+                }))
+              }
+            >
+              <h3>Gestión de Paquetes</h3>
+              <span className='accordion-icon'>
+                {accordionOpen.packages ? '▼' : '▶'}
+              </span>
+            </div>
+            {accordionOpen.packages && (
+              <div className='accordion-content'>
+                <p>Administrar precios y configuración de paquetes</p>
+                <div className='packages-grid'>
+                  {packages.map(pkg => (
+                    <div key={pkg.id} className='package-item'>
+                      <div className='package-info'>
+                        <div className='package-diamonds'>
+                          💎 {pkg.diamonds}
+                        </div>
+                        <div className='package-prices'>
+                          <div className='price-ars'>
+                            ${pkg.priceARS.toLocaleString()} ARS
+                          </div>
+                          <div className='price-usd'>
+                            ${pkg.priceUSD.toLocaleString()} USD
+                          </div>
+                        </div>
+                        <div className='package-origin'>{pkg.origin}</div>
+                      </div>
+                      <button
+                        className='edit-package-btn'
+                        onClick={() => openPackageModal(pkg)}
+                      >
+                        ✏️ Editar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -419,9 +622,8 @@ export default function AdminPanel () {
                         )}
                         {receipt.status === 3 && (
                           <button
-                            onClick={
-                              () =>
-                                handleStatusChange(receipt.id, receipt.id, 4) // Use receipt.id for both parameters
+                            onClick={() =>
+                              handleStatusChange(receipt.id, receipt.userId, 4)
                             }
                             className='confirm-btn'
                           >
@@ -561,6 +763,100 @@ export default function AdminPanel () {
         </div>
       )}
 
+      {/* Modal para editar paquetes */}
+      {showPackageModal && (
+        <div
+          className='modal-overlay'
+          onClick={() => setShowPackageModal(false)}
+        >
+          <div className='modal-content' onClick={e => e.stopPropagation()}>
+            <div className='modal-header'>
+              <h3>Editar Paquete</h3>
+              <button
+                className='close-btn'
+                onClick={() => setShowPackageModal(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            <div className='modal-body'>
+              <div className='package-form'>
+                <div className='form-group'>
+                  <label>Diamantes:</label>
+                  <input
+                    type='number'
+                    value={editingPackage.diamonds}
+                    onChange={e =>
+                      setEditingPackage({
+                        ...editingPackage,
+                        diamonds: Number.parseInt(e.target.value) || 0
+                      })
+                    }
+                    className='form-input'
+                  />
+                </div>
+                <div className='form-group'>
+                  <label>Precio ARS:</label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={editingPackage.priceARS}
+                    onChange={e =>
+                      setEditingPackage({
+                        ...editingPackage,
+                        priceARS: Number.parseFloat(e.target.value) || 0
+                      })
+                    }
+                    className='form-input'
+                  />
+                </div>
+                <div className='form-group'>
+                  <label>Precio USD:</label>
+                  <input
+                    type='number'
+                    step='0.01'
+                    value={editingPackage.priceUSD}
+                    onChange={e =>
+                      setEditingPackage({
+                        ...editingPackage,
+                        priceUSD: Number.parseFloat(e.target.value) || 0
+                      })
+                    }
+                    className='form-input'
+                  />
+                </div>
+                <div className='form-group'>
+                  <label>Origen:</label>
+                  <input
+                    type='text'
+                    value={editingPackage.origin}
+                    onChange={e =>
+                      setEditingPackage({
+                        ...editingPackage,
+                        origin: e.target.value
+                      })
+                    }
+                    className='form-input'
+                  />
+                </div>
+                <div className='form-actions'>
+                  <button className='save-btn' onClick={handlePackageUpdate}>
+                    Guardar Cambios
+                  </button>
+                  <button
+                    className='cancel-btn'
+                    onClick={() => setShowPackageModal(false)}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style jsx>{`
         .admin-wrapper {
           background-color: #0e0b1f;
@@ -629,6 +925,359 @@ export default function AdminPanel () {
           font-size: 1.8rem;
           font-weight: 700;
           color: #9b4dff;
+        }
+
+        .maintenance-section {
+          margin-bottom: 2rem;
+        }
+
+        .maintenance-card {
+          background: #1c1534;
+          border: 2px solid #9b4dff;
+          border-radius: 0.75rem;
+          padding: 2rem;
+          box-shadow: 0 0 15px #9b4dff44;
+        }
+
+        .maintenance-header {
+          text-align: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .maintenance-header h3 {
+          color: #d4bfff;
+          margin: 0 0 0.5rem 0;
+          font-size: 1.5rem;
+        }
+
+        .maintenance-header p {
+          color: #9b4dff;
+          margin: 0;
+          font-size: 1rem;
+        }
+
+        .accordion-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          padding: 1.5rem;
+          border-bottom: 1px solid transparent;
+          transition: all 0.3s ease;
+          border-radius: 0.75rem 0.75rem 0 0;
+        }
+
+        .accordion-header:hover {
+          background: rgba(155, 77, 255, 0.1);
+        }
+
+        .accordion-header h3 {
+          color: #d4bfff;
+          margin: 0;
+          font-size: 1.5rem;
+        }
+
+        .accordion-icon {
+          color: #9b4dff;
+          font-size: 1.2rem;
+          font-weight: bold;
+          transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active .accordion-icon {
+          transform: rotate(180deg);
+        }
+
+        .accordion-content {
+          padding: 0 1.5rem 1.5rem 1.5rem;
+          animation: slideDown 0.3s ease-out;
+        }
+
+        .accordion-content p {
+          color: #9b4dff;
+          margin: 0 0 1.5rem 0;
+          font-size: 1rem;
+        }
+
+        @keyframes slideDown {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .maintenance-controls {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 2rem;
+        }
+
+        .status-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .status-dot {
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+        }
+
+        .status-dot.active {
+          background: #00ff88;
+          box-shadow: 0 0 10px #00ff88;
+        }
+
+        .status-dot.inactive {
+          background: #ff4757;
+          box-shadow: 0 0 10px #ff4757;
+        }
+
+        .status-text {
+          color: #d4bfff;
+          font-weight: 600;
+          font-size: 1.1rem;
+        }
+
+        .toggle-btn {
+          padding: 1rem 2rem;
+          border: 2px solid;
+          border-radius: 0.75rem;
+          font-weight: 600;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          min-width: 200px;
+          justify-content: center;
+        }
+
+        .toggle-btn.active {
+          background: rgba(255, 71, 87, 0.2);
+          border-color: #ff4757;
+          color: #ff4757;
+        }
+
+        .toggle-btn.inactive {
+          background: rgba(0, 255, 136, 0.2);
+          border-color: #00ff88;
+          color: #00ff88;
+        }
+
+        .toggle-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(155, 77, 255, 0.3);
+        }
+
+        .toggle-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .loading-spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid transparent;
+          border-top: 2px solid currentColor;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        .packages-section {
+          margin-bottom: 2rem;
+        }
+
+        .packages-card {
+          background: #1c1534;
+          border: 2px solid #9b4dff;
+          border-radius: 0.75rem;
+          padding: 2rem;
+          box-shadow: 0 0 15px #9b4dff44;
+        }
+
+        .packages-header {
+          text-align: center;
+          margin-bottom: 1.5rem;
+        }
+
+        .packages-header h3 {
+          color: #d4bfff;
+          margin: 0 0 0.5rem 0;
+          font-size: 1.5rem;
+        }
+
+        .packages-header p {
+          color: #9b4dff;
+          margin: 0;
+          font-size: 1rem;
+        }
+
+        .packages-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+        }
+
+        .package-item {
+          background: rgba(155, 77, 255, 0.1);
+          border: 1px solid #9b4dff;
+          border-radius: 0.75rem;
+          padding: 1.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          transition: all 0.3s ease;
+        }
+
+        .package-item:hover {
+          background: rgba(155, 77, 255, 0.15);
+          transform: translateY(-2px);
+        }
+
+        .package-info {
+          flex: 1;
+        }
+
+        .package-diamonds {
+          font-size: 1.3rem;
+          font-weight: 700;
+          color: #c77dff;
+          margin-bottom: 0.5rem;
+        }
+
+        .package-prices {
+          display: flex;
+          gap: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .price-ars {
+          color: #00ff88;
+          font-weight: 600;
+        }
+
+        .price-usd {
+          color: #9b4dff;
+          font-weight: 600;
+        }
+
+        .package-origin {
+          color: #d4bfff;
+          font-size: 0.9rem;
+        }
+
+        .edit-package-btn {
+          background: #9b4dff;
+          color: white;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          cursor: pointer;
+          font-weight: 600;
+          transition: all 0.3s ease;
+        }
+
+        .edit-package-btn:hover {
+          background: #b86bff;
+          transform: translateY(-1px);
+        }
+
+        .package-form {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .form-group label {
+          color: #9b4dff;
+          font-weight: 600;
+        }
+
+        .form-input {
+          background: rgba(155, 77, 255, 0.1);
+          border: 2px solid #9b4dff;
+          border-radius: 0.5rem;
+          padding: 0.75rem;
+          color: #d4bfff;
+          font-size: 1rem;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-color: #c77dff;
+          box-shadow: 0 0 10px rgba(155, 77, 255, 0.3);
+        }
+
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          justify-content: flex-end;
+        }
+
+        .save-btn {
+          background: #00ff88;
+          color: #0e0b1f;
+          border: none;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+          background: #33ff99;
+          transform: translateY(-1px);
+        }
+
+        .cancel-btn {
+          background: transparent;
+          color: #9b4dff;
+          border: 2px solid #9b4dff;
+          padding: 0.75rem 1.5rem;
+          border-radius: 0.5rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+          background: rgba(155, 77, 255, 0.1);
+        }
+
+        @keyframes pulse {
+          0%,
+          100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
         }
 
         .filters-section {
@@ -982,6 +1631,29 @@ export default function AdminPanel () {
           }
 
           .status-buttons {
+            flex-direction: column;
+          }
+
+          .maintenance-controls {
+            flex-direction: column;
+            gap: 1rem;
+          }
+
+          .toggle-btn {
+            width: 100%;
+          }
+
+          .packages-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .package-item {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+          }
+
+          .form-actions {
             flex-direction: column;
           }
         }
