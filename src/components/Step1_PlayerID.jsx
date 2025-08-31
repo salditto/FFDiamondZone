@@ -1,61 +1,61 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 
 const Step1_PlayerID = ({ formData, setFormData, nextStep }) => {
-  const [error, setError] = useState('');
+  const [error, setError] = useState('')
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setFormData({ ...formData, playerId: value });
+  const handleChange = e => {
+    const value = e.target.value
+    setFormData({ ...formData, playerId: value })
 
     // Basic validation feedback
-    if (value && !/^[0-9]{8,10}$/.test(value)) {
-      setError('Player ID must be 8-10 digits.');
+    if (value && !/^[0-9]{8,11}$/.test(value)) {
+      setError('Player ID must be 8-11 digits.')
     } else {
-      setError('');
+      setError('')
     }
-  };
+  }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = e => {
+    e.preventDefault()
     // Final check before proceeding
-    if (/^[0-9]{8,10}$/.test(formData.playerId)) {
-      setError('');
-      nextStep();
+    if (/^[0-9]{8,11}$/.test(formData.playerId)) {
+      setError('')
+      nextStep()
     } else {
-      setError('Player ID must be 8-10 digits.');
+      setError('Player ID must be 8-11 digits.')
     }
-  };
+  }
 
-  const isValid = formData.playerId && /^[0-9]{8,10}$/.test(formData.playerId);
+  const isValid = formData.playerId && /^[0-9]{8,11}$/.test(formData.playerId)
 
   return (
-    <div className="step-container step1-container">
-      <h2 className="step-title">Enter Your Player ID</h2>
-      
+    <div className='step-container step1-container'>
+      <h2 className='step-title'>Enter Your Player ID</h2>
+
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="playerId">Player ID</label>
+        <div className='form-group'>
+          <label htmlFor='playerId'>Player ID</label>
           <input
-            type="text" // Keep as text to allow pattern matching
-            id="playerId"
-            name="playerId"
+            type='text' // Keep as text to allow pattern matching
+            id='playerId'
+            name='playerId'
             value={formData.playerId}
             onChange={handleChange}
-            placeholder="Enter your 8-10 digit Player ID"
+            placeholder='Enter your 8-11 digit Player ID'
             required
             className={`input-field ${error ? 'input-error' : ''}`}
-            pattern="^[0-9]{8,10}$" // Regex validation
-            title="Player ID must be 8-10 digits."
-            minLength="8" // Optional: reinforces length
-            maxLength="10" // Optional: reinforces length
-            inputMode="numeric" // Hint for mobile keyboards
+            pattern='^[0-9]{8,11}$' // Regex validation
+            title='Player ID must be 8-11 digits.'
+            minLength='8' // Optional: reinforces length
+            maxLength='11' // Optional: reinforces length
+            inputMode='numeric' // Hint for mobile keyboards
           />
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className='error-message'>{error}</p>}
         </div>
-        
-        <button 
-          type="submit" 
-          className="btn btn-primary step-button"
+
+        <button
+          type='submit'
+          className='btn btn-primary step-button'
           disabled={!isValid} // Disable if not valid
         >
           Continue
@@ -116,10 +116,10 @@ const Step1_PlayerID = ({ formData, setFormData, nextStep }) => {
         }
 
         .input-error:focus {
-          border-color: #ff3333; 
+          border-color: #ff3333;
           box-shadow: 0 0 8px rgba(255, 51, 51, 0.7);
         }
-        
+
         .error-message {
           color: #ff4d4d;
           font-size: 0.9rem;
@@ -135,12 +135,14 @@ const Step1_PlayerID = ({ formData, setFormData, nextStep }) => {
         .step-button:disabled {
           opacity: 0.5;
           cursor: not-allowed;
-          background-color: var(--accent-color); /* Keep color but lower opacity */
+          background-color: var(
+            --accent-color
+          ); /* Keep color but lower opacity */
           border-color: var(--accent-color);
         }
       `}</style>
     </div>
-  );
-};
+  )
+}
 
-export default Step1_PlayerID; 
+export default Step1_PlayerID

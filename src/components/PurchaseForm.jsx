@@ -61,7 +61,7 @@ export default function PurchaseForm () {
   function validatePlayerId (id) {
     if (!id) return t('form.error_playerId_required')
     if (!/^\d+$/.test(id)) return t('form.error_playerId_numeric')
-    if (id.length < 8 || id.length > 10) return t('form.error_playerId_length')
+    if (id.length < 8 || id.length > 11) return t('form.error_playerId_length')
     return ''
   }
 
@@ -295,7 +295,7 @@ export default function PurchaseForm () {
               onChange={handlePlayerIdChange}
               placeholder={t('form.playerId_placeholder')}
               className={playerIdError ? 'input-error' : ''}
-              maxLength={10}
+              maxLength={11}
               disabled={isSuccess}
             />
           </div>

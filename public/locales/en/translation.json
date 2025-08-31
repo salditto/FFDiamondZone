@@ -37,11 +37,11 @@
   },
   "form": {
     "step1_title": "Enter Player ID & Region",
-    "playerId_placeholder": "Enter your 8-10 digit Player ID",
+    "playerId_placeholder": "Enter your 8-11 digit Player ID",
     "region_select": "Select Region",
     "error_playerId_required": "Player ID is required.",
     "error_playerId_numeric": "Player ID must contain only numbers.",
-    "error_playerId_length": "Player ID must be between 8 and 10 digits.",
+    "error_playerId_length": "Player ID must be between 8 and 11 digits.",
     "step2_title": "Select Diamond Quantity",
     "bonus_text": "+ {{bonus}} Bonus!",
     "diamonds_label": "{{label}} Diamonds",

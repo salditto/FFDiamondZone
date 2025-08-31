@@ -37,11 +37,11 @@
   },
   "form": {
     "step1_title": "Ingresa ID de Jugador y Región",
-    "playerId_placeholder": "Ingresa tu ID de Jugador (8-10 dígitos)",
+    "playerId_placeholder": "Ingresa tu ID de Jugador (8-11 dígitos)",
     "region_select": "Seleccionar Región",
     "error_playerId_required": "El ID de Jugador es obligatorio.",
     "error_playerId_numeric": "El ID de Jugador debe contener solo números.",
-    "error_playerId_length": "El ID de Jugador debe tener entre 8 y 10 dígitos.",
+    "error_playerId_length": "El ID de Jugador debe tener entre 8 y 11 dígitos.",
     "step2_title": "Selecciona Cantidad de Diamantes",
     "bonus_text": "+ ¡{{bonus}} de Bonus!",
     "diamonds_label": "{{label}} Diamantes",
